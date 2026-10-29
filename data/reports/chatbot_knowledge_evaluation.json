@@ -1,0 +1,3375 @@
+{
+  "schema_version": 1,
+  "evaluation": "automotive_knowledge_retrieval_regression",
+  "case_file": "data\\reports\\chatbot_knowledge_eval_questions.json",
+  "case_count": 126,
+  "metrics": {
+    "top1_expected_topic_or_abstention_accuracy": 1.0,
+    "expected_topic_recall_at_6_or_abstention_accuracy": 1.0,
+    "unsupported_query_abstention_accuracy": 1.0,
+    "safety_term_check_accuracy": 1.0,
+    "safety_term_cases": 17,
+    "vehicle_specific_uncertainty_accuracy": 1.0,
+    "vehicle_specific_uncertainty_cases": 6
+  },
+  "scope_and_limits": {
+    "measures": [
+      "Deterministic topic retrieval against curated expected IDs.",
+      "Abstention on curated unsupported questions.",
+      "Presence of specified safety phrases in selected answers."
+    ],
+    "not_automatically_verified": [
+      "Mechanical factual correctness.",
+      "Whether every cited source supports every statement.",
+      "Whether diagnostic reasoning matches an exact vehicle's service procedure.",
+      "Expert or technician review of answer completeness."
+    ],
+    "source_references_fetched_during_answers": 0,
+    "human_review_required": true,
+    "manual_review_rubric": {
+      "score_each_0_to_2": [
+        "Relevance and factual correctness",
+        "Coverage of requested topic",
+        "Diagnostic reasoning and uncertainty",
+        "Source relevance and traceability",
+        "Unsupported or vehicle-specific claims",
+        "Safety of advice",
+        "Handling of unknown questions"
+      ],
+      "human_scores": null
+    }
+  },
+  "results": [
+    {
+      "id": "misfire-01",
+      "question": "Why is my engine misfiring?",
+      "expected_knowledge_id": "engine_misfire",
+      "acceptable_knowledge_ids": [
+        "engine_misfire"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_misfire",
+      "top_ranked_knowledge_ids": [
+        "engine_misfire",
+        "clutch_drivetrain_vibration",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "misfire-02",
+      "question": "The car shakes and idles rough; could an ignition coil cause it?",
+      "expected_knowledge_id": "engine_misfire",
+      "acceptable_knowledge_ids": [
+        "engine_misfire",
+        "fuel_ignition_air"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fuel_ignition_air",
+      "top_ranked_knowledge_ids": [
+        "fuel_ignition_air",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_wear",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.615,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "misfire-03",
+      "question": "What should I do when the check-engine light flashes and the engine runs rough?",
+      "expected_knowledge_id": "engine_misfire",
+      "acceptable_knowledge_ids": [
+        "engine_misfire"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_misfire",
+      "top_ranked_knowledge_ids": [
+        "engine_misfire",
+        "dashboard_warning_obd",
+        "fuel_ignition_air",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "timing_engine_wear"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "misfire-04",
+      "question": "My van stalls after starting and has lost power. What information helps diagnose it?",
+      "expected_knowledge_id": "engine_misfire",
+      "acceptable_knowledge_ids": [
+        "engine_misfire"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_misfire",
+      "top_ranked_knowledge_ids": [
+        "engine_misfire",
+        "fuel_ignition_air",
+        "battery_charging_starting",
+        "exhaust_emissions_dpf",
+        "vehicle_health_data_limits",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.715,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "cooling-01",
+      "question": "What could cause an engine to overheat?",
+      "expected_knowledge_id": "engine_overheating",
+      "acceptable_knowledge_ids": [
+        "engine_overheating"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_overheating",
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "oil_pressure_leak",
+        "transmission_slip",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.48,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "never remove",
+        "do not continue driving"
+      ],
+      "safety_terms_found": [
+        "never remove",
+        "do not continue driving"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "cooling-02",
+      "question": "My car gets hot in traffic but cools down on the highway. Why?",
+      "expected_knowledge_id": "engine_overheating",
+      "acceptable_knowledge_ids": [
+        "engine_overheating"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_overheating",
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "coolant_leaks_fluids",
+        "timing_engine_wear",
+        "battery_charging_starting",
+        "filters_routine_service",
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "retrieval_score": 0.16,
+      "retrieved_passage_count": 5,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "fan"
+      ],
+      "safety_terms_found": [
+        "fan"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "cooling-03",
+      "question": "Can a coolant leak or water pump make my motorcycle overheat?",
+      "expected_knowledge_id": "engine_overheating",
+      "acceptable_knowledge_ids": [
+        "engine_overheating"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_overheating",
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "coolant_leaks_fluids",
+        "motorcycle_chain_drive",
+        "transmission_slip",
+        "pre_rental_inspection",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.615,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "cooling-04",
+      "question": "The heater suddenly blows cold while the temperature warning comes on. What should I do?",
+      "expected_knowledge_id": "engine_overheating",
+      "acceptable_knowledge_ids": [
+        "engine_overheating"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_overheating",
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "hvac_air_conditioning",
+        "transmission_slip",
+        "dashboard_warning_obd",
+        "timing_engine_wear",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.2743,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "switch off",
+        "hot coolant"
+      ],
+      "safety_terms_found": [
+        "switch off",
+        "hot coolant"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-pressure-01",
+      "question": "The red oil pressure light came on while driving. Is it safe to continue?",
+      "expected_knowledge_id": "oil_pressure_leak",
+      "acceptable_knowledge_ids": [
+        "oil_pressure_leak"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_pressure_leak",
+      "top_ranked_knowledge_ids": [
+        "oil_pressure_leak",
+        "coolant_leaks_fluids",
+        "dashboard_warning_obd",
+        "symptom_vs_fault",
+        "oil_change_schedule",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop the engine"
+      ],
+      "safety_terms_found": [
+        "stop the engine"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-pressure-02",
+      "question": "Why is there oil under my pickup and a burning smell?",
+      "expected_knowledge_id": "oil_pressure_leak",
+      "acceptable_knowledge_ids": [
+        "oil_pressure_leak"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_pressure_leak",
+      "top_ranked_knowledge_ids": [
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "battery_charging_starting",
+        "engine_misfire",
+        "engine_overheating",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.16,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-pressure-03",
+      "question": "Does a normal dipstick level prove oil pressure is okay?",
+      "expected_knowledge_id": "oil_pressure_leak",
+      "acceptable_knowledge_ids": [
+        "oil_pressure_leak"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_pressure_leak",
+      "top_ranked_knowledge_ids": [
+        "oil_pressure_leak",
+        "engine_overheating",
+        "oil_change_schedule",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids",
+        "pre_rental_inspection"
+      ],
+      "retrieval_score": 0.4,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-pressure-04",
+      "question": "My engine is using oil but I cannot see a puddle. What could explain it?",
+      "expected_knowledge_id": "oil_pressure_leak",
+      "acceptable_knowledge_ids": [
+        "oil_pressure_leak"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_pressure_leak",
+      "top_ranked_knowledge_ids": [
+        "oil_pressure_leak",
+        "engine_overheating",
+        "oil_change_schedule",
+        "timing_engine_wear",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.2588,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-service-01",
+      "question": "How often should I change the engine oil in my car?",
+      "expected_knowledge_id": "oil_change_schedule",
+      "acceptable_knowledge_ids": [
+        "oil_change_schedule"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_change_schedule",
+      "top_ranked_knowledge_ids": [
+        "oil_change_schedule",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "clutch_drivetrain_vibration",
+        "filters_routine_service",
+        "hvac_air_conditioning"
+      ],
+      "retrieval_score": 0.3844,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-service-02",
+      "question": "What oil grade and service interval does my 2022 Toyota Corolla need?",
+      "expected_knowledge_id": "oil_change_schedule",
+      "acceptable_knowledge_ids": [
+        "oil_change_schedule",
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "oil_change_schedule",
+        "oil_pressure_leak",
+        "filters_routine_service",
+        "pre_rental_inspection",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.5721,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-service-03",
+      "question": "Is an oil-life reminder the same as a red oil pressure warning?",
+      "expected_knowledge_id": "oil_change_schedule",
+      "acceptable_knowledge_ids": [
+        "oil_change_schedule",
+        "oil_pressure_leak"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_pressure_leak",
+      "top_ranked_knowledge_ids": [
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "dashboard_warning_obd",
+        "symptom_vs_fault",
+        "brake_warning_abs",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.6525,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "oil-service-04",
+      "question": "What does engine oil do, and why is the filter changed?",
+      "expected_knowledge_id": "oil_change_schedule",
+      "acceptable_knowledge_ids": [
+        "oil_change_schedule"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "oil_change_schedule",
+      "top_ranked_knowledge_ids": [
+        "oil_change_schedule",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "filters_routine_service",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fuel-01",
+      "question": "I smell gasoline near the car. What should I do first?",
+      "expected_knowledge_id": "fuel_ignition_air",
+      "acceptable_knowledge_ids": [
+        "fuel_ignition_air"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fuel_ignition_air",
+      "top_ranked_knowledge_ids": [
+        "fuel_ignition_air",
+        "engine_misfire",
+        "engine_overheating",
+        "battery_charging_starting",
+        "exhaust_emissions_dpf",
+        "timing_engine_wear"
+      ],
+      "retrieval_score": 0.3838,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "fire risk",
+        "ignition sources"
+      ],
+      "safety_terms_found": [
+        "fire risk",
+        "ignition sources"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fuel-02",
+      "question": "The engine cranks but will not start. Could it be fuel, air, or ignition?",
+      "expected_knowledge_id": "fuel_ignition_air",
+      "acceptable_knowledge_ids": [
+        "fuel_ignition_air"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fuel_ignition_air",
+      "top_ranked_knowledge_ids": [
+        "fuel_ignition_air",
+        "engine_misfire",
+        "hvac_air_conditioning",
+        "engine_overheating",
+        "filters_routine_service",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.3355,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fuel-03",
+      "question": "Can a vacuum leak cause rough running and hesitation?",
+      "expected_knowledge_id": "fuel_ignition_air",
+      "acceptable_knowledge_ids": [
+        "fuel_ignition_air"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fuel_ignition_air",
+      "top_ranked_knowledge_ids": [
+        "fuel_ignition_air",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "dashboard_warning_obd",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.2711,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fuel-04",
+      "question": "How do a fuel pump and injectors affect engine operation?",
+      "expected_knowledge_id": "fuel_ignition_air",
+      "acceptable_knowledge_ids": [
+        "fuel_ignition_air"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fuel_ignition_air",
+      "top_ranked_knowledge_ids": [
+        "fuel_ignition_air",
+        "engine_misfire",
+        "engine_overheating",
+        "timing_engine_wear",
+        "clutch_drivetrain_vibration",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.615,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "timing-01",
+      "question": "When should the timing belt be replaced on my van?",
+      "expected_knowledge_id": "timing_engine_wear",
+      "acceptable_knowledge_ids": [
+        "timing_engine_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "timing_engine_wear",
+      "top_ranked_knowledge_ids": [
+        "timing_engine_wear",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_change_schedule",
+        "fuel_ignition_air",
+        "dashboard_warning_obd"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "timing-02",
+      "question": "My engine has a new rattling noise near the timing chain. What now?",
+      "expected_knowledge_id": "timing_engine_wear",
+      "acceptable_knowledge_ids": [
+        "timing_engine_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "timing_engine_wear",
+      "top_ranked_knowledge_ids": [
+        "timing_engine_wear",
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "transmission_slip"
+      ],
+      "retrieval_score": 0.54,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "timing-03",
+      "question": "Do all engines have a timing belt rather than a chain?",
+      "expected_knowledge_id": "timing_engine_wear",
+      "acceptable_knowledge_ids": [
+        "timing_engine_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "timing_engine_wear",
+      "top_ranked_knowledge_ids": [
+        "timing_engine_wear",
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "fleet_maintenance_prioritization",
+        "oil_change_schedule",
+        "coolant_leaks_fluids"
+      ],
+      "retrieval_score": 0.5721,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "timing-04",
+      "question": "Can worn timing components cause an engine to run abnormally?",
+      "expected_knowledge_id": "timing_engine_wear",
+      "acceptable_knowledge_ids": [
+        "timing_engine_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "timing_engine_wear",
+      "top_ranked_knowledge_ids": [
+        "timing_engine_wear",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "brake_wear",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.2743,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brakes-01",
+      "question": "What happens if I keep driving with worn brake pads?",
+      "expected_knowledge_id": "brake_wear",
+      "acceptable_knowledge_ids": [
+        "brake_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_wear",
+      "top_ranked_knowledge_ids": [
+        "brake_wear",
+        "steering_suspension",
+        "coolant_leaks_fluids",
+        "brake_warning_abs",
+        "engine_overheating",
+        "timing_engine_wear"
+      ],
+      "retrieval_score": 0.855,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brakes-02",
+      "question": "My brakes grind when I slow down. What could be wrong?",
+      "expected_knowledge_id": "brake_wear",
+      "acceptable_knowledge_ids": [
+        "brake_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_wear",
+      "top_ranked_knowledge_ids": [
+        "brake_wear",
+        "engine_overheating",
+        "brake_warning_abs",
+        "clutch_drivetrain_vibration",
+        "steering_suspension",
+        "battery_charging_starting"
+      ],
+      "retrieval_score": 0.192,
+      "retrieved_passage_count": 3,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brakes-03",
+      "question": "The brake pedal feels soft and stopping takes longer. Can I keep driving?",
+      "expected_knowledge_id": "brake_wear",
+      "acceptable_knowledge_ids": [
+        "brake_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_wear",
+      "top_ranked_knowledge_ids": [
+        "brake_wear",
+        "brake_warning_abs",
+        "coolant_leaks_fluids",
+        "transmission_slip",
+        "oil_pressure_leak",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.54,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brakes-04",
+      "question": "Does squealing tell me exactly how much brake pad remains?",
+      "expected_knowledge_id": "brake_wear",
+      "acceptable_knowledge_ids": [
+        "brake_wear"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_wear",
+      "top_ranked_knowledge_ids": [
+        "brake_wear",
+        "brake_warning_abs",
+        "clutch_drivetrain_vibration",
+        "steering_suspension",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids"
+      ],
+      "retrieval_score": 0.2868,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brake-warning-01",
+      "question": "The ABS warning light is on but the brake pedal feels normal. What does that mean?",
+      "expected_knowledge_id": "brake_warning_abs",
+      "acceptable_knowledge_ids": [
+        "brake_warning_abs"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_warning_abs",
+      "top_ranked_knowledge_ids": [
+        "brake_warning_abs",
+        "brake_wear",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids",
+        "symptom_vs_fault",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.59,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brake-warning-02",
+      "question": "A red brake warning and fluid leak appeared. Should I drive?",
+      "expected_knowledge_id": "brake_warning_abs",
+      "acceptable_knowledge_ids": [
+        "brake_warning_abs"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_warning_abs",
+      "top_ranked_knowledge_ids": [
+        "brake_warning_abs",
+        "transmission_slip",
+        "coolant_leaks_fluids",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "pre_rental_inspection"
+      ],
+      "retrieval_score": 0.3641,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brake-warning-03",
+      "question": "Does an ABS code prove that the ABS module has failed?",
+      "expected_knowledge_id": "brake_warning_abs",
+      "acceptable_knowledge_ids": [
+        "brake_warning_abs"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_warning_abs",
+      "top_ranked_knowledge_ids": [
+        "brake_warning_abs",
+        "fuel_ignition_air",
+        "dashboard_warning_obd",
+        "symptom_vs_fault",
+        "exhaust_emissions_dpf",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.1957,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "brake-warning-04",
+      "question": "What is the difference between the ABS light and the red brake warning?",
+      "expected_knowledge_id": "brake_warning_abs",
+      "acceptable_knowledge_ids": [
+        "brake_warning_abs"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "brake_warning_abs",
+      "top_ranked_knowledge_ids": [
+        "brake_warning_abs",
+        "symptom_vs_fault",
+        "brake_wear",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.615,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "transmission-01",
+      "question": "What can cause an automatic transmission to slip?",
+      "expected_knowledge_id": "transmission_slip",
+      "acceptable_knowledge_ids": [
+        "transmission_slip"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "transmission_slip",
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "coolant_leaks_fluids",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_wear",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "transmission-02",
+      "question": "My van shifts late and the transmission temperature warning came on. What should I do?",
+      "expected_knowledge_id": "transmission_slip",
+      "acceptable_knowledge_ids": [
+        "transmission_slip"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "transmission_slip",
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "engine_overheating",
+        "clutch_drivetrain_vibration",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids",
+        "hvac_air_conditioning"
+      ],
+      "retrieval_score": 0.2743,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "transmission-03",
+      "question": "Can low or incorrect transmission fluid cause shifting problems?",
+      "expected_knowledge_id": "transmission_slip",
+      "acceptable_knowledge_ids": [
+        "transmission_slip"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "transmission_slip",
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "coolant_leaks_fluids",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "battery_charging_starting",
+        "brake_warning_abs"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "transmission-04",
+      "question": "How does diagnosis differ for an automatic and a CVT?",
+      "expected_knowledge_id": "transmission_slip",
+      "acceptable_knowledge_ids": [
+        "transmission_slip"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "transmission_slip",
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "engine_misfire",
+        "engine_overheating",
+        "dashboard_warning_obd",
+        "pre_rental_inspection",
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "drivetrain-01",
+      "question": "Why does my car shake when I accelerate?",
+      "expected_knowledge_id": "clutch_drivetrain_vibration",
+      "acceptable_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "engine_misfire"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "clutch_drivetrain_vibration",
+      "top_ranked_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "engine_misfire",
+        "transmission_slip",
+        "exhaust_emissions_dpf",
+        "brake_wear",
+        "brake_warning_abs"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "drivetrain-02",
+      "question": "My motorcycle clutch slips under acceleration. What might be involved?",
+      "expected_knowledge_id": "clutch_drivetrain_vibration",
+      "acceptable_knowledge_ids": [
+        "clutch_drivetrain_vibration"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "clutch_drivetrain_vibration",
+      "top_ranked_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "motorcycle_chain_drive",
+        "transmission_slip",
+        "symptom_vs_fault",
+        "fuel_ignition_air",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.254,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "drivetrain-03",
+      "question": "What can cause a clunk from a driveshaft or differential?",
+      "expected_knowledge_id": "clutch_drivetrain_vibration",
+      "acceptable_knowledge_ids": [
+        "clutch_drivetrain_vibration"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "clutch_drivetrain_vibration",
+      "top_ranked_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "transmission_slip",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_wear",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.54,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "drivetrain-04",
+      "question": "A vibration starts only when I accelerate at highway speed. What details matter?",
+      "expected_knowledge_id": "clutch_drivetrain_vibration",
+      "acceptable_knowledge_ids": [
+        "clutch_drivetrain_vibration"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "clutch_drivetrain_vibration",
+      "top_ranked_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "engine_overheating",
+        "steering_suspension",
+        "hybrid_ev_high_voltage_safety",
+        "vehicle_health_data_limits",
+        "battery_charging_starting"
+      ],
+      "retrieval_score": 0.2169,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "tires-01",
+      "question": "What tire pressure should I use on my car?",
+      "expected_knowledge_id": "tire_pressure_tread",
+      "acceptable_knowledge_ids": [
+        "tire_pressure_tread"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "tire_pressure_tread",
+      "top_ranked_knowledge_ids": [
+        "tire_pressure_tread",
+        "engine_overheating",
+        "steering_suspension",
+        "pre_rental_inspection",
+        "engine_misfire",
+        "oil_pressure_leak"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "tires-02",
+      "question": "There is a bulge on the tire sidewall. Can I drive to work?",
+      "expected_knowledge_id": "tire_pressure_tread",
+      "acceptable_knowledge_ids": [
+        "tire_pressure_tread"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "tire_pressure_tread",
+      "top_ranked_knowledge_ids": [
+        "tire_pressure_tread",
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "oil_change_schedule",
+        "fuel_ignition_air",
+        "timing_engine_wear"
+      ],
+      "retrieval_score": 0.24,
+      "retrieved_passage_count": 4,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "tires-03",
+      "question": "Why are the front tires wearing unevenly?",
+      "expected_knowledge_id": "tire_pressure_tread",
+      "acceptable_knowledge_ids": [
+        "tire_pressure_tread"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "tire_pressure_tread",
+      "top_ranked_knowledge_ids": [
+        "tire_pressure_tread",
+        "steering_suspension",
+        "timing_engine_wear",
+        "brake_wear",
+        "transmission_slip",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.24,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "tires-04",
+      "question": "Is the maximum pressure printed on a tire the recommended pressure?",
+      "expected_knowledge_id": "tire_pressure_tread",
+      "acceptable_knowledge_ids": [
+        "tire_pressure_tread"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "tire_pressure_tread",
+      "top_ranked_knowledge_ids": [
+        "tire_pressure_tread",
+        "steering_suspension",
+        "pre_rental_inspection",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak"
+      ],
+      "retrieval_score": 0.384,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "steering-01",
+      "question": "My steering feels loose and the van wanders. Is this urgent?",
+      "expected_knowledge_id": "steering_suspension",
+      "acceptable_knowledge_ids": [
+        "steering_suspension"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "steering_suspension",
+      "top_ranked_knowledge_ids": [
+        "steering_suspension",
+        "engine_overheating",
+        "oil_change_schedule",
+        "brake_wear",
+        "brake_warning_abs",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "stop safely"
+      ],
+      "safety_terms_found": [
+        "stop safely"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "steering-02",
+      "question": "What can cause a clunk over bumps in the suspension?",
+      "expected_knowledge_id": "steering_suspension",
+      "acceptable_knowledge_ids": [
+        "steering_suspension"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "steering_suspension",
+      "top_ranked_knowledge_ids": [
+        "steering_suspension",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_wear",
+        "transmission_slip",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.855,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "steering-03",
+      "question": "Why does my vehicle pull to one side after I hit a pothole?",
+      "expected_knowledge_id": "steering_suspension",
+      "acceptable_knowledge_ids": [
+        "steering_suspension"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "steering_suspension",
+      "top_ranked_knowledge_ids": [
+        "steering_suspension",
+        "engine_overheating",
+        "brake_wear",
+        "battery_charging_starting",
+        "maintenance_schedule_overdue",
+        "symptom_vs_fault"
+      ],
+      "retrieval_score": 0.1453,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "steering-04",
+      "question": "Can a wheel bearing make a humming noise that changes with speed?",
+      "expected_knowledge_id": "steering_suspension",
+      "acceptable_knowledge_ids": [
+        "steering_suspension"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "steering_suspension",
+      "top_ranked_knowledge_ids": [
+        "steering_suspension",
+        "clutch_drivetrain_vibration",
+        "engine_overheating",
+        "transmission_slip",
+        "symptom_vs_fault",
+        "motorcycle_chain_drive"
+      ],
+      "retrieval_score": 0.4032,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "electrical-01",
+      "question": "How can I tell whether a weak battery, starter, or alternator is involved?",
+      "expected_knowledge_id": "battery_charging_starting",
+      "acceptable_knowledge_ids": [
+        "battery_charging_starting"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "battery_charging_starting",
+      "top_ranked_knowledge_ids": [
+        "battery_charging_starting",
+        "fuel_ignition_air",
+        "hybrid_ev_high_voltage_safety",
+        "engine_misfire",
+        "engine_overheating",
+        "timing_engine_wear"
+      ],
+      "retrieval_score": 0.3401,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "electrical-02",
+      "question": "My car clicks once and will not crank. What should be checked?",
+      "expected_knowledge_id": "battery_charging_starting",
+      "acceptable_knowledge_ids": [
+        "battery_charging_starting"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "battery_charging_starting",
+      "top_ranked_knowledge_ids": [
+        "battery_charging_starting",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "transmission_slip",
+        "maintenance_schedule_overdue",
+        "pre_rental_inspection"
+      ],
+      "retrieval_score": 0.1975,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "electrical-03",
+      "question": "The battery warning light came on while driving. What does it indicate?",
+      "expected_knowledge_id": "battery_charging_starting",
+      "acceptable_knowledge_ids": [
+        "battery_charging_starting"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "battery_charging_starting",
+      "top_ranked_knowledge_ids": [
+        "battery_charging_starting",
+        "dashboard_warning_obd",
+        "oil_pressure_leak",
+        "engine_misfire",
+        "brake_warning_abs",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "electrical-04",
+      "question": "Can a loose ground cause intermittent electrical problems?",
+      "expected_knowledge_id": "battery_charging_starting",
+      "acceptable_knowledge_ids": [
+        "battery_charging_starting"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "battery_charging_starting",
+      "top_ranked_knowledge_ids": [
+        "battery_charging_starting",
+        "engine_overheating",
+        "hvac_air_conditioning",
+        "engine_misfire",
+        "oil_pressure_leak",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.3298,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "obd-01",
+      "question": "What does OBD-II do on a modern car?",
+      "expected_knowledge_id": "dashboard_warning_obd",
+      "acceptable_knowledge_ids": [
+        "dashboard_warning_obd"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
+      "top_ranked_knowledge_ids": [
+        "dashboard_warning_obd",
+        "maintenance_model_explanation",
+        "hvac_air_conditioning",
+        "vehicle_health_data_limits",
+        "timing_engine_wear",
+        "motorcycle_chain_drive"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "obd-02",
+      "question": "Does diagnostic code P0300 prove the spark plugs are bad?",
+      "expected_knowledge_id": "dashboard_warning_obd",
+      "acceptable_knowledge_ids": [
+        "dashboard_warning_obd"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
+      "top_ranked_knowledge_ids": [
+        "dashboard_warning_obd",
+        "fuel_ignition_air",
+        "symptom_vs_fault",
+        "engine_misfire",
+        "filters_routine_service",
+        "vehicle_health_data_limits"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "obd-03",
+      "question": "Should I clear a check-engine code before recording freeze-frame data?",
+      "expected_knowledge_id": "dashboard_warning_obd",
+      "acceptable_knowledge_ids": [
+        "dashboard_warning_obd"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
+      "top_ranked_knowledge_ids": [
+        "dashboard_warning_obd",
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_change_schedule",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.4114,
+      "retrieved_passage_count": 1,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "obd-04",
+      "question": "What is the difference between a pending and stored diagnostic trouble code?",
+      "expected_knowledge_id": "dashboard_warning_obd",
+      "acceptable_knowledge_ids": [
+        "dashboard_warning_obd"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
+      "top_ranked_knowledge_ids": [
+        "dashboard_warning_obd",
+        "engine_misfire",
+        "symptom_vs_fault",
+        "exhaust_emissions_dpf",
+        "vehicle_health_data_limits",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.765,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fluids-01",
+      "question": "There is a puddle under the car. Can fluid color identify it for certain?",
+      "expected_knowledge_id": "coolant_leaks_fluids",
+      "acceptable_knowledge_ids": [
+        "coolant_leaks_fluids"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "coolant_leaks_fluids",
+      "top_ranked_knowledge_ids": [
+        "coolant_leaks_fluids",
+        "engine_overheating",
+        "brake_warning_abs",
+        "engine_misfire",
+        "oil_change_schedule",
+        "brake_wear"
+      ],
+      "retrieval_score": 0.1994,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fluids-02",
+      "question": "I see coolant on the driveway and the temperature is rising. What should I do?",
+      "expected_knowledge_id": "coolant_leaks_fluids",
+      "acceptable_knowledge_ids": [
+        "coolant_leaks_fluids",
+        "engine_overheating"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "engine_overheating",
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "coolant_leaks_fluids",
+        "oil_pressure_leak",
+        "transmission_slip",
+        "dashboard_warning_obd",
+        "hvac_air_conditioning"
+      ],
+      "retrieval_score": 0.288,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "do not continue driving"
+      ],
+      "safety_terms_found": [
+        "do not continue driving"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fluids-03",
+      "question": "Can I mix different coolant types if the colors look alike?",
+      "expected_knowledge_id": "coolant_leaks_fluids",
+      "acceptable_knowledge_ids": [
+        "coolant_leaks_fluids"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "coolant_leaks_fluids",
+      "top_ranked_knowledge_ids": [
+        "coolant_leaks_fluids",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_warning_abs",
+        "transmission_slip",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.8293,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fluids-04",
+      "question": "What could cause a transmission fluid leak?",
+      "expected_knowledge_id": "coolant_leaks_fluids",
+      "acceptable_knowledge_ids": [
+        "coolant_leaks_fluids"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "coolant_leaks_fluids",
+      "top_ranked_knowledge_ids": [
+        "coolant_leaks_fluids",
+        "transmission_slip",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_warning_abs",
+        "dashboard_warning_obd"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "filters-01",
+      "question": "How often should I replace the engine air filter?",
+      "expected_knowledge_id": "filters_routine_service",
+      "acceptable_knowledge_ids": [
+        "filters_routine_service"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "filters_routine_service",
+      "top_ranked_knowledge_ids": [
+        "filters_routine_service",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.3008,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "filters-02",
+      "question": "What does a cabin air filter do?",
+      "expected_knowledge_id": "filters_routine_service",
+      "acceptable_knowledge_ids": [
+        "filters_routine_service"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "filters_routine_service",
+      "top_ranked_knowledge_ids": [
+        "filters_routine_service",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "engine_misfire",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.48,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "filters-03",
+      "question": "Do all cars have the same spark plug replacement interval?",
+      "expected_knowledge_id": "filters_routine_service",
+      "acceptable_knowledge_ids": [
+        "filters_routine_service"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "filters_routine_service",
+      "top_ranked_knowledge_ids": [
+        "filters_routine_service",
+        "fuel_ignition_air",
+        "timing_engine_wear",
+        "engine_misfire",
+        "hybrid_ev_high_voltage_safety",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "filters-04",
+      "question": "Can a clogged fuel filter cause poor engine performance?",
+      "expected_knowledge_id": "filters_routine_service",
+      "acceptable_knowledge_ids": [
+        "filters_routine_service"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "filters_routine_service",
+      "top_ranked_knowledge_ids": [
+        "filters_routine_service",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "engine_misfire",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.3626,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "schedule-01",
+      "question": "What maintenance is overdue on my vehicle at 60,000 kilometers?",
+      "expected_knowledge_id": "maintenance_schedule_overdue",
+      "acceptable_knowledge_ids": [
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "filters_routine_service",
+        "fleet_maintenance_prioritization",
+        "pre_rental_inspection",
+        "oil_change_schedule",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.2498,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "schedule-02",
+      "question": "Can you calculate the next service date without the owner's manual or service history?",
+      "expected_knowledge_id": "maintenance_schedule_overdue",
+      "acceptable_knowledge_ids": [
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "oil_change_schedule",
+        "engine_overheating",
+        "brake_warning_abs",
+        "tire_pressure_tread",
+        "dashboard_warning_obd"
+      ],
+      "retrieval_score": 0.35,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "schedule-03",
+      "question": "Do severe operating conditions change the maintenance schedule?",
+      "expected_knowledge_id": "maintenance_schedule_overdue",
+      "acceptable_knowledge_ids": [
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "oil_change_schedule",
+        "filters_routine_service",
+        "engine_misfire",
+        "steering_suspension",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.675,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "schedule-04",
+      "question": "How do time-based and mileage-based service intervals differ?",
+      "expected_knowledge_id": "maintenance_schedule_overdue",
+      "acceptable_knowledge_ids": [
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "oil_change_schedule",
+        "oil_pressure_leak",
+        "timing_engine_wear",
+        "transmission_slip",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.5721,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-inspection-01",
+      "question": "What should we inspect before releasing a rental car?",
+      "expected_knowledge_id": "pre_rental_inspection",
+      "acceptable_knowledge_ids": [
+        "pre_rental_inspection"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "pre_rental_inspection",
+      "top_ranked_knowledge_ids": [
+        "pre_rental_inspection",
+        "brake_wear",
+        "vehicle_health_data_limits",
+        "engine_overheating",
+        "maintenance_model_explanation",
+        "coolant_leaks_fluids"
+      ],
+      "retrieval_score": 0.3945,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-inspection-02",
+      "question": "Should a rental van be released with an unresolved brake warning?",
+      "expected_knowledge_id": "pre_rental_inspection",
+      "acceptable_knowledge_ids": [
+        "pre_rental_inspection"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "pre_rental_inspection",
+      "top_ranked_knowledge_ids": [
+        "pre_rental_inspection",
+        "brake_wear",
+        "brake_warning_abs",
+        "dashboard_warning_obd",
+        "coolant_leaks_fluids",
+        "symptom_vs_fault"
+      ],
+      "retrieval_score": 0.3198,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "safety-critical"
+      ],
+      "safety_terms_found": [
+        "safety-critical"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-inspection-03",
+      "question": "What information belongs in a post-rental vehicle condition record?",
+      "expected_knowledge_id": "pre_rental_inspection",
+      "acceptable_knowledge_ids": [
+        "pre_rental_inspection"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "pre_rental_inspection",
+      "top_ranked_knowledge_ids": [
+        "pre_rental_inspection",
+        "vehicle_health_data_limits",
+        "engine_overheating",
+        "oil_change_schedule",
+        "fuel_ignition_air",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.3397,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-inspection-04",
+      "question": "Does a clean visual inspection replace scheduled maintenance?",
+      "expected_knowledge_id": "pre_rental_inspection",
+      "acceptable_knowledge_ids": [
+        "pre_rental_inspection",
+        "maintenance_schedule_overdue"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "pre_rental_inspection",
+        "timing_engine_wear",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.192,
+      "retrieved_passage_count": 2,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "health-01",
+      "question": "Can you confirm my car is safe based only on its mileage?",
+      "expected_knowledge_id": "vehicle_health_data_limits",
+      "acceptable_knowledge_ids": [
+        "vehicle_health_data_limits"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "vehicle_health_data_limits",
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "maintenance_schedule_overdue",
+        "maintenance_model_explanation",
+        "engine_overheating",
+        "steering_suspension",
+        "coolant_leaks_fluids"
+      ],
+      "retrieval_score": 0.2724,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "health-02",
+      "question": "What details do you need to assess a vehicle health concern?",
+      "expected_knowledge_id": "vehicle_health_data_limits",
+      "acceptable_knowledge_ids": [
+        "vehicle_health_data_limits"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "vehicle_health_data_limits",
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "engine_overheating",
+        "brake_warning_abs",
+        "transmission_slip",
+        "pre_rental_inspection",
+        "hvac_air_conditioning"
+      ],
+      "retrieval_score": 0.2657,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "health-03",
+      "question": "Can a model score prove that a vehicle has no faults?",
+      "expected_knowledge_id": "vehicle_health_data_limits",
+      "acceptable_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "maintenance_model_explanation"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_model_explanation",
+      "top_ranked_knowledge_ids": [
+        "maintenance_model_explanation",
+        "vehicle_health_data_limits",
+        "hybrid_ev_high_voltage_safety",
+        "motorcycle_chain_drive",
+        "engine_misfire",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.384,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "health-04",
+      "question": "How should reported symptoms be separated from technician-confirmed faults?",
+      "expected_knowledge_id": "vehicle_health_data_limits",
+      "acceptable_knowledge_ids": [
+        "vehicle_health_data_limits"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "vehicle_health_data_limits",
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "symptom_vs_fault",
+        "oil_pressure_leak",
+        "brake_wear",
+        "transmission_slip",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.4402,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "model-01",
+      "question": "Why did the predictive maintenance model flag this vehicle?",
+      "expected_knowledge_id": "maintenance_model_explanation",
+      "acceptable_knowledge_ids": [
+        "maintenance_model_explanation"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_model_explanation",
+      "top_ranked_knowledge_ids": [
+        "maintenance_model_explanation",
+        "fleet_maintenance_prioritization",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_change_schedule",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.1663,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "model-02",
+      "question": "Does a high maintenance risk score mean a part will fail next week?",
+      "expected_knowledge_id": "maintenance_model_explanation",
+      "acceptable_knowledge_ids": [
+        "maintenance_model_explanation"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_model_explanation",
+      "top_ranked_knowledge_ids": [
+        "maintenance_model_explanation",
+        "engine_misfire",
+        "engine_overheating",
+        "fuel_ignition_air",
+        "battery_charging_starting",
+        "dashboard_warning_obd"
+      ],
+      "retrieval_score": 0.6525,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "model-03",
+      "question": "Can I treat a low model score as proof that the vehicle is safe?",
+      "expected_knowledge_id": "maintenance_model_explanation",
+      "acceptable_knowledge_ids": [
+        "maintenance_model_explanation",
+        "vehicle_health_data_limits"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "vehicle_health_data_limits",
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "maintenance_model_explanation",
+        "engine_overheating",
+        "fleet_maintenance_prioritization",
+        "hybrid_ev_high_voltage_safety",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.32,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "model-04",
+      "question": "What evidence is needed before trusting a maintenance prediction?",
+      "expected_knowledge_id": "maintenance_model_explanation",
+      "acceptable_knowledge_ids": [
+        "maintenance_model_explanation"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "maintenance_model_explanation",
+      "top_ranked_knowledge_ids": [
+        "maintenance_model_explanation",
+        "engine_overheating",
+        "fuel_ignition_air",
+        "battery_charging_starting",
+        "dashboard_warning_obd",
+        "fleet_maintenance_prioritization"
+      ],
+      "retrieval_score": 0.1548,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-priority-01",
+      "question": "Which vehicles in my fleet need attention first?",
+      "expected_knowledge_id": "fleet_maintenance_prioritization",
+      "acceptable_knowledge_ids": [
+        "fleet_maintenance_prioritization"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "top_ranked_knowledge_ids": [
+        "fleet_maintenance_prioritization",
+        "pre_rental_inspection",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.3914,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-priority-02",
+      "question": "Can you prioritize the fleet without actual service and inspection records?",
+      "expected_knowledge_id": "fleet_maintenance_prioritization",
+      "acceptable_knowledge_ids": [
+        "fleet_maintenance_prioritization"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "top_ranked_knowledge_ids": [
+        "fleet_maintenance_prioritization",
+        "maintenance_schedule_overdue",
+        "pre_rental_inspection",
+        "vehicle_health_data_limits",
+        "engine_overheating",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.3312,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-priority-03",
+      "question": "How should recurring repair patterns be reviewed across rental vehicles?",
+      "expected_knowledge_id": "fleet_maintenance_prioritization",
+      "acceptable_knowledge_ids": [
+        "fleet_maintenance_prioritization"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "top_ranked_knowledge_ids": [
+        "fleet_maintenance_prioritization",
+        "pre_rental_inspection",
+        "engine_overheating",
+        "steering_suspension",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.2238,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "fleet-priority-04",
+      "question": "Does a fleet priority list confirm a component has failed?",
+      "expected_knowledge_id": "fleet_maintenance_prioritization",
+      "acceptable_knowledge_ids": [
+        "fleet_maintenance_prioritization"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "top_ranked_knowledge_ids": [
+        "fleet_maintenance_prioritization",
+        "symptom_vs_fault",
+        "exhaust_emissions_dpf",
+        "vehicle_health_data_limits",
+        "engine_misfire",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.2506,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "symptom-code-fault-01",
+      "question": "Is a diagnostic code the same thing as a confirmed failed component?",
+      "expected_knowledge_id": "symptom_vs_fault",
+      "acceptable_knowledge_ids": [
+        "symptom_vs_fault"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "symptom_vs_fault",
+      "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
+        "dashboard_warning_obd",
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "vehicle_health_data_limits",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.3903,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "symptom-code-fault-02",
+      "question": "What is the difference between a symptom, a DTC, and a diagnosis?",
+      "expected_knowledge_id": "symptom_vs_fault",
+      "acceptable_knowledge_ids": [
+        "symptom_vs_fault",
+        "dashboard_warning_obd"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
+      "top_ranked_knowledge_ids": [
+        "dashboard_warning_obd",
+        "symptom_vs_fault",
+        "pre_rental_inspection",
+        "hybrid_ev_high_voltage_safety",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.615,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "symptom-code-fault-03",
+      "question": "Can one fault code have several possible causes?",
+      "expected_knowledge_id": "symptom_vs_fault",
+      "acceptable_knowledge_ids": [
+        "symptom_vs_fault"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "symptom_vs_fault",
+      "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
+        "brake_wear",
+        "dashboard_warning_obd",
+        "hvac_air_conditioning",
+        "engine_misfire",
+        "engine_overheating"
+      ],
+      "retrieval_score": 0.48,
+      "retrieved_passage_count": 1,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "symptom-code-fault-04",
+      "question": "Should a mechanic confirm the cause before replacing a part?",
+      "expected_knowledge_id": "symptom_vs_fault",
+      "acceptable_knowledge_ids": [
+        "symptom_vs_fault"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "symptom_vs_fault",
+      "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
+        "dashboard_warning_obd",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.3198,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hv-01",
+      "question": "Can I open the high-voltage battery pack on my electric vehicle?",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "engine_overheating",
+        "hvac_air_conditioning",
+        "engine_misfire",
+        "battery_charging_starting",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": 0.4727,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "do not touch"
+      ],
+      "safety_terms_found": [
+        "do not touch"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hv-02",
+      "question": "My hybrid has a high-voltage warning and reduced power. What should I do?",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "engine_overheating",
+        "engine_misfire",
+        "fuel_ignition_air",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": 0.4,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hv-03",
+      "question": "Do hybrids and electric cars use only one coolant circuit?",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "engine_overheating",
+        "hvac_air_conditioning",
+        "coolant_leaks_fluids",
+        "motorcycle_chain_drive",
+        "oil_pressure_leak"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hv-04",
+      "question": "What exact isolation procedure should I use on an EV?",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "oil_change_schedule",
+        "timing_engine_wear",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.288,
+      "retrieved_passage_count": 5,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hvac-01",
+      "question": "The car air conditioner blows warm air but airflow is strong. What could cause it?",
+      "expected_knowledge_id": "hvac_air_conditioning",
+      "acceptable_knowledge_ids": [
+        "hvac_air_conditioning"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hvac_air_conditioning",
+      "top_ranked_knowledge_ids": [
+        "hvac_air_conditioning",
+        "fuel_ignition_air",
+        "engine_overheating",
+        "filters_routine_service",
+        "exhaust_emissions_dpf",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.2266,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hvac-02",
+      "question": "The cabin blower has weak airflow at every setting. What should be checked?",
+      "expected_knowledge_id": "hvac_air_conditioning",
+      "acceptable_knowledge_ids": [
+        "hvac_air_conditioning"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hvac_air_conditioning",
+      "top_ranked_knowledge_ids": [
+        "hvac_air_conditioning",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "transmission_slip",
+        "tire_pressure_tread"
+      ],
+      "retrieval_score": 0.2743,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hvac-03",
+      "question": "Can I open an A/C fitting to check the refrigerant?",
+      "expected_knowledge_id": "hvac_air_conditioning",
+      "acceptable_knowledge_ids": [
+        "hvac_air_conditioning"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hvac_air_conditioning",
+      "top_ranked_knowledge_ids": [
+        "hvac_air_conditioning",
+        "engine_overheating",
+        "brake_warning_abs",
+        "coolant_leaks_fluids",
+        "filters_routine_service",
+        "pre_rental_inspection"
+      ],
+      "retrieval_score": 0.36,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "do not handle refrigerant"
+      ],
+      "safety_terms_found": [
+        "do not handle refrigerant"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "hvac-04",
+      "question": "Why might the heater and defroster stop working in a hybrid?",
+      "expected_knowledge_id": "hvac_air_conditioning",
+      "acceptable_knowledge_ids": [
+        "hvac_air_conditioning"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hvac_air_conditioning",
+      "top_ranked_knowledge_ids": [
+        "hvac_air_conditioning",
+        "engine_overheating",
+        "hybrid_ev_high_voltage_safety",
+        "engine_misfire",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.2976,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "exhaust-01",
+      "question": "I smell exhaust fumes inside the cabin. What should I do?",
+      "expected_knowledge_id": "exhaust_emissions_dpf",
+      "acceptable_knowledge_ids": [
+        "exhaust_emissions_dpf"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "exhaust_emissions_dpf",
+      "top_ranked_knowledge_ids": [
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "engine_overheating",
+        "fuel_ignition_air",
+        "battery_charging_starting",
+        "filters_routine_service"
+      ],
+      "retrieval_score": 0.384,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "carbon monoxide",
+        "stop using the vehicle"
+      ],
+      "safety_terms_found": [
+        "carbon monoxide",
+        "stop using the vehicle"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "exhaust-02",
+      "question": "Does an oxygen sensor code prove the sensor itself failed?",
+      "expected_knowledge_id": "exhaust_emissions_dpf",
+      "acceptable_knowledge_ids": [
+        "exhaust_emissions_dpf"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "exhaust_emissions_dpf",
+      "top_ranked_knowledge_ids": [
+        "exhaust_emissions_dpf",
+        "fuel_ignition_air",
+        "dashboard_warning_obd",
+        "symptom_vs_fault",
+        "hvac_air_conditioning",
+        "engine_misfire"
+      ],
+      "retrieval_score": 0.32,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "exhaust-03",
+      "question": "What does a diesel particulate filter warning mean?",
+      "expected_knowledge_id": "exhaust_emissions_dpf",
+      "acceptable_knowledge_ids": [
+        "exhaust_emissions_dpf"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "exhaust_emissions_dpf",
+      "top_ranked_knowledge_ids": [
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "filters_routine_service",
+        "engine_misfire",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": 0.855,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "exhaust-04",
+      "question": "Can I force a DPF regeneration without knowing the vehicle procedure?",
+      "expected_knowledge_id": "exhaust_emissions_dpf",
+      "acceptable_knowledge_ids": [
+        "exhaust_emissions_dpf"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "exhaust_emissions_dpf",
+      "top_ranked_knowledge_ids": [
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "brake_wear",
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "transmission_slip"
+      ],
+      "retrieval_score": 0.24,
+      "retrieved_passage_count": 5,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "moto-drive-01",
+      "question": "How do I check motorcycle chain slack?",
+      "expected_knowledge_id": "motorcycle_chain_drive",
+      "acceptable_knowledge_ids": [
+        "motorcycle_chain_drive"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "motorcycle_chain_drive",
+      "top_ranked_knowledge_ids": [
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "timing_engine_wear",
+        "exhaust_emissions_dpf",
+        "battery_charging_starting",
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "moto-drive-02",
+      "question": "My motorcycle chain has a tight spot and clicking noise. Is it safe to ride?",
+      "expected_knowledge_id": "motorcycle_chain_drive",
+      "acceptable_knowledge_ids": [
+        "motorcycle_chain_drive"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "motorcycle_chain_drive",
+      "top_ranked_knowledge_ids": [
+        "motorcycle_chain_drive",
+        "timing_engine_wear",
+        "battery_charging_starting",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "brake_wear"
+      ],
+      "retrieval_score": 0.3914,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [
+        "do not ride"
+      ],
+      "safety_terms_found": [
+        "do not ride"
+      ],
+      "safety_expectation_met": true,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "moto-drive-03",
+      "question": "Are motorcycle chain and shaft-drive maintenance procedures the same?",
+      "expected_knowledge_id": "motorcycle_chain_drive",
+      "acceptable_knowledge_ids": [
+        "motorcycle_chain_drive"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "motorcycle_chain_drive",
+      "top_ranked_knowledge_ids": [
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "timing_engine_wear",
+        "oil_pressure_leak",
+        "oil_change_schedule",
+        "transmission_slip"
+      ],
+      "retrieval_score": 0.4938,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "moto-drive-04",
+      "question": "What exact torque and adjustment value should I use on my unknown motorcycle?",
+      "expected_knowledge_id": "motorcycle_chain_drive",
+      "acceptable_knowledge_ids": [
+        "motorcycle_chain_drive"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "motorcycle_chain_drive",
+      "top_ranked_knowledge_ids": [
+        "motorcycle_chain_drive",
+        "engine_overheating",
+        "timing_engine_wear",
+        "filters_routine_service",
+        "exhaust_emissions_dpf",
+        "coolant_leaks_fluids"
+      ],
+      "retrieval_score": 0.2897,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-01",
+      "question": "How do I bake sourdough bread?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "engine_misfire",
+        "tire_pressure_tread",
+        "hvac_air_conditioning",
+        "brake_wear",
+        "coolant_leaks_fluids",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-02",
+      "question": "Who won the football match yesterday?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "battery_charging_starting",
+        "fuel_ignition_air",
+        "motorcycle_chain_drive",
+        "clutch_drivetrain_vibration",
+        "engine_overheating"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-03",
+      "question": "What is the weather forecast for Manila tomorrow?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "clutch_drivetrain_vibration",
+        "oil_change_schedule",
+        "transmission_slip",
+        "pre_rental_inspection",
+        "symptom_vs_fault",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-04",
+      "question": "Explain the proof of Fermat's Last Theorem.",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
+        "maintenance_schedule_overdue",
+        "engine_misfire",
+        "engine_overheating",
+        "oil_pressure_leak",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-05",
+      "question": "What are the exact torque values for every bolt on my Toyota?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "oil_change_schedule",
+        "motorcycle_chain_drive",
+        "maintenance_model_explanation",
+        "timing_engine_wear",
+        "brake_warning_abs"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-06",
+      "question": "What exact coolant capacity and fluid specification does my unknown vehicle require?",
+      "expected_knowledge_id": "coolant_leaks_fluids",
+      "acceptable_knowledge_ids": [
+        "coolant_leaks_fluids"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "coolant_leaks_fluids",
+      "top_ranked_knowledge_ids": [
+        "coolant_leaks_fluids",
+        "transmission_slip",
+        "engine_overheating",
+        "oil_change_schedule",
+        "brake_warning_abs",
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "retrieval_score": 0.2359,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-07",
+      "question": "Write a Python script that downloads my bank password.",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "dashboard_warning_obd",
+        "battery_charging_starting",
+        "brake_wear",
+        "maintenance_schedule_overdue",
+        "fleet_maintenance_prioritization"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-08",
+      "question": "What is the current price of a specific stock?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "maintenance_schedule_overdue",
+        "engine_overheating",
+        "timing_engine_wear",
+        "dashboard_warning_obd",
+        "vehicle_health_data_limits",
+        "fleet_maintenance_prioritization"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-09",
+      "question": "Diagnose my car. I have no symptoms, vehicle details, codes, or measurements.",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "vehicle_health_data_limits",
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "fuel_ignition_air",
+        "brake_wear"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-10",
+      "question": "Tell me the manufacturer procedure for opening this high-voltage battery pack.",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "engine_overheating",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf",
+        "engine_misfire",
+        "transmission_slip"
+      ],
+      "retrieval_score": 0.4114,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-11",
+      "question": "What exact torque should I use on the wheel lug nuts of an unspecified van?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "motorcycle_chain_drive",
+        "timing_engine_wear",
+        "transmission_slip",
+        "filters_routine_service",
+        "engine_overheating",
+        "steering_suspension"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-12",
+      "question": "Which exact refrigerant and charge quantity does my unidentified vehicle require?",
+      "expected_knowledge_id": "hvac_air_conditioning",
+      "acceptable_knowledge_ids": [
+        "hvac_air_conditioning"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hvac_air_conditioning",
+      "top_ranked_knowledge_ids": [
+        "hvac_air_conditioning",
+        "battery_charging_starting",
+        "hybrid_ev_high_voltage_safety",
+        "exhaust_emissions_dpf",
+        "engine_overheating",
+        "oil_pressure_leak"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-13",
+      "question": "Give me the pinout and voltage values for an unidentified engine control module.",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "engine_misfire",
+        "fuel_ignition_air",
+        "hybrid_ev_high_voltage_safety",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-14",
+      "question": "What is the exact valve clearance for my motorcycle without its model or engine code?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "engine_overheating",
+        "dashboard_warning_obd",
+        "exhaust_emissions_dpf",
+        "motorcycle_chain_drive",
+        "engine_misfire",
+        "oil_change_schedule"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-15",
+      "question": "Can you verify whether my specific vehicle has an open safety recall?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "timing_engine_wear",
+        "dashboard_warning_obd",
+        "hybrid_ev_high_voltage_safety",
+        "engine_misfire",
+        "engine_overheating",
+        "fuel_ignition_air"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-16",
+      "question": "How much will a repair cost at a repair shop today?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
+        "fuel_ignition_air",
+        "engine_overheating",
+        "steering_suspension",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-17",
+      "question": "What is the correct transmission fluid capacity for my vehicle if I do not know its model?",
+      "expected_knowledge_id": "transmission_slip",
+      "acceptable_knowledge_ids": [
+        "transmission_slip"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "transmission_slip",
+      "top_ranked_knowledge_ids": [
+        "transmission_slip",
+        "coolant_leaks_fluids",
+        "maintenance_model_explanation",
+        "engine_overheating",
+        "oil_change_schedule",
+        "brake_warning_abs"
+      ],
+      "retrieval_score": 0.9,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-18",
+      "question": "What does my manufacturer's service bulletin say for this VIN?",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "filters_routine_service",
+        "hybrid_ev_high_voltage_safety",
+        "oil_change_schedule",
+        "transmission_slip",
+        "maintenance_schedule_overdue",
+        "engine_misfire"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-19",
+      "question": "What exact pressure should I use for a fully loaded pickup with unknown tire size and axle load?",
+      "expected_knowledge_id": "tire_pressure_tread",
+      "acceptable_knowledge_ids": [
+        "tire_pressure_tread"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "tire_pressure_tread",
+      "top_ranked_knowledge_ids": [
+        "tire_pressure_tread",
+        "engine_overheating",
+        "exhaust_emissions_dpf",
+        "timing_engine_wear",
+        "brake_warning_abs",
+        "clutch_drivetrain_vibration"
+      ],
+      "retrieval_score": 0.2182,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-20",
+      "question": "What is the exact hybrid battery isolation procedure for my vehicle?",
+      "expected_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "acceptable_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
+      "top_ranked_knowledge_ids": [
+        "hybrid_ev_high_voltage_safety",
+        "engine_overheating",
+        "exhaust_emissions_dpf",
+        "motorcycle_chain_drive",
+        "hvac_air_conditioning",
+        "battery_charging_starting"
+      ],
+      "retrieval_score": 0.48,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": true,
+      "vehicle_specific_uncertainty_met": true
+    },
+    {
+      "id": "unknown-21",
+      "question": "Tell me today's traffic conditions and road closures.",
+      "expected_knowledge_id": null,
+      "acceptable_knowledge_ids": [],
+      "expected_abstention": true,
+      "retrieved_knowledge_id": null,
+      "top_ranked_knowledge_ids": [
+        "oil_change_schedule",
+        "transmission_slip",
+        "steering_suspension",
+        "dashboard_warning_obd",
+        "filters_routine_service",
+        "maintenance_schedule_overdue"
+      ],
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    },
+    {
+      "id": "unknown-22",
+      "question": "Can you confirm the vehicle passed inspection when no inspection record was supplied?",
+      "expected_knowledge_id": "vehicle_health_data_limits",
+      "acceptable_knowledge_ids": [
+        "vehicle_health_data_limits"
+      ],
+      "expected_abstention": false,
+      "retrieved_knowledge_id": "vehicle_health_data_limits",
+      "top_ranked_knowledge_ids": [
+        "vehicle_health_data_limits",
+        "symptom_vs_fault",
+        "hybrid_ev_high_voltage_safety",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf",
+        "motorcycle_chain_drive"
+      ],
+      "retrieval_score": 0.4117,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": true,
+      "safety_terms_expected": [],
+      "safety_terms_found": [],
+      "safety_expectation_met": null,
+      "vehicle_specific_uncertainty_expected": false,
+      "vehicle_specific_uncertainty_met": null
+    }
+  ]
+}
