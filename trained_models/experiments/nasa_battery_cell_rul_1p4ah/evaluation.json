@@ -1,0 +1,54 @@
+{
+  "task": "laboratory battery-cell RUL to 1.4 Ah",
+  "status": "evaluated_experiment",
+  "target": "remaining_discharge_cycles",
+  "test_rows": 125,
+  "test_cells": [
+    "B0005"
+  ],
+  "train_cells": [
+    "B0006",
+    "B0018"
+  ],
+  "group_overlap": 0,
+  "split_strategy": "GroupShuffleSplit",
+  "random_state": 42,
+  "features": [
+    "discharge_cycle_index",
+    "capacity_ah",
+    "ambient_temperature_c"
+  ],
+  "metrics": {
+    "random_forest": {
+      "mae_cycles": 14.194759803418808,
+      "rmse_cycles": 15.79951164370811,
+      "r2": 0.8082760613059384
+    },
+    "median_baseline": {
+      "mae_cycles": 32.216,
+      "rmse_cycles": 37.72267222772003,
+      "r2": -0.0929339477726574
+    }
+  },
+  "per_test_cell": {
+    "B0005": {
+      "mae_cycles": 14.194759803418808,
+      "rmse_cycles": 15.79951164370811,
+      "r2": 0.8082760613059384
+    }
+  },
+  "artifact_path": "trained_models\\experiments\\nasa_battery_cell_rul_1p4ah\\pipeline.joblib",
+  "artifact_sha256": "809fbea43a2775c16d4cd096a967d608c7820ad38397cbd9fdc14e149cc3b7c6",
+  "prepared_dataset_sha256": "bc0f54bd03a6717b9b190e23279d88bed171755b1945e824eb8ff5dd28e1fb04",
+  "inference_smoke_test": {
+    "passed": true,
+    "rows_predicted": 125,
+    "finite_predictions": true
+  },
+  "limitations": [
+    "Evaluation has one held-out laboratory cell and two training cells; the estimate is highly uncertain.",
+    "The selected cells use different discharge cutoff voltages; this can confound cross-cell generalization.",
+    "There is no fleet maintenance or vehicle failure evaluation.",
+    "This experiment is not registered, promoted, or used by Django inference."
+  ]
+}
