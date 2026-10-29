@@ -1,0 +1,84 @@
+{
+  "task": "laboratory battery-cell remaining useful life",
+  "target": "remaining_discharge_cycles",
+  "target_definition": "Number of discharge cycles remaining until the first observed positive capacity at or below 1.4 Ah.",
+  "eol_capacity_ah": 1.4,
+  "feature_columns": [
+    "discharge_cycle_index",
+    "capacity_ah",
+    "ambient_temperature_c"
+  ],
+  "group_column": "cell_id",
+  "source": "NASA Li-ion Battery Aging Datasets",
+  "source_url": "https://data.nasa.gov/dataset/li-ion-battery-aging-datasets",
+  "prepared_at": "2026-10-29T02:28:36.082052+00:00",
+  "prepared_csv": "discharge_cycles.csv",
+  "prepared_csv_sha256": "bc0f54bd03a6717b9b190e23279d88bed171755b1945e824eb8ff5dd28e1fb04",
+  "row_count": 331,
+  "cell_count": 3,
+  "raw_files": [
+    {
+      "cell_id": "B0005",
+      "path": "5. Battery Data Set/1. BatteryAgingARC-FY08Q4/B0005.mat",
+      "sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+      "file_bytes": 15956874,
+      "discharge_records": 168,
+      "prepared_records": 125,
+      "invalid_capacity_records": 0,
+      "first_capacity_ah": 1.8564874208181574,
+      "eol_capacity_ah": 1.3967008232726328,
+      "eol_cycle_index": 124
+    },
+    {
+      "cell_id": "B0006",
+      "path": "5. Battery Data Set/1. BatteryAgingARC-FY08Q4/B0006.mat",
+      "sha256": "fa818ab4db5db8ab21e910b6dd6c3e20d3761bb9672089e1a4de8f96074616c5",
+      "file_bytes": 16028159,
+      "discharge_records": 168,
+      "prepared_records": 109,
+      "invalid_capacity_records": 0,
+      "first_capacity_ah": 2.035337591005598,
+      "eol_capacity_ah": 1.395164296571563,
+      "eol_cycle_index": 108
+    },
+    {
+      "cell_id": "B0018",
+      "path": "5. Battery Data Set/1. BatteryAgingARC-FY08Q4/B0018.mat",
+      "sha256": "d1e6c923a43ea1c9666b3a90bbb521757a067fd60b4d17dbfaa49c50b179da69",
+      "file_bytes": 8502218,
+      "discharge_records": 132,
+      "prepared_records": 97,
+      "invalid_capacity_records": 0,
+      "first_capacity_ah": 1.8550045207910817,
+      "eol_capacity_ah": 1.3968547782872414,
+      "eol_cycle_index": 96
+    }
+  ],
+  "excluded_files": [],
+  "transformations": [
+    "Read MATLAB files with scipy.io.loadmat; raw files were not changed.",
+    "Kept only documented discharge operations and their measured capacity (Ah).",
+    "Excluded non-finite, zero, and negative capacity values as invalid measurements.",
+    "Required the first valid capacity to be above 1.4 Ah and an observed crossing at or below 1.4 Ah.",
+    "Kept each cell only through its first valid EOL-threshold crossing.",
+    "Defined RUL as the difference between source discharge-cycle index and the first crossing index.",
+    "Retained cell_id only as an evaluation grouping key, not as a model feature.",
+    "No scaler, imputer, selector, or other learned transform was fit during preparation."
+  ],
+  "limits": [
+    "This is laboratory cell-aging prognosis, not installed vehicle battery-pack RUL.",
+    "Only three independent cell groups are included; one cell is held out, so the test result is highly uncertain.",
+    "The selected cohort is described as room temperature with 2 A discharge; cutoff voltage differs by cell.",
+    "Local data bundle does not include a separate license statement; do not redistribute without confirming reuse terms."
+  ],
+  "cohort_exclusions": [
+    "B0007: observed capacity does not cross 1.4 Ah.",
+    "B0042-B0044: unusually low capacity records are explicitly unresolved in the local README; observed first threshold values are approximately 0.06-0.08 Ah.",
+    "B0045: initial capacity is already below 1.4 Ah.",
+    "B0046-B0048: local README warns of unexplained low-capacity runs and the cohort uses different protocols/cutoffs.",
+    "B0049-B0052: local README reports the experiment ended after control software crashed.",
+    "B0053-B0056: low capacities are flagged in the local README and initial capacities are below the selected threshold.",
+    "B0025-B0032: local documentation does not establish the selected common EOL threshold.",
+    "B0033-B0040: local documentation specifies a different 1.6 Ah/20% threshold."
+  ]
+}
