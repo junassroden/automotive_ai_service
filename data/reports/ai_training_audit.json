@@ -1,0 +1,367 @@
+{
+  "audit_time": "2026-10-29T09:28:27.338+08:00",
+  "project": "automotive_ai_service",
+  "verification_only": true,
+  "project_changes_outside_audit_reports": false,
+  "model_artifact_scan": {
+    "project_artifact_count": 2,
+    "project_artifacts": [
+      {
+        "model_name": "legacy_vehicle_maintenance_model",
+        "artifact_path": "trained_models/vehicle_maintenance_model.joblib",
+        "bytes": 21678344,
+        "last_modified_utc": "2026-10-28T15:22:35.0500089Z",
+        "sha256": "876ae394173a696ac02fa98d7ee17489a310f6d2a4860b4a3019a1391b621af7",
+        "provenance": "Unknown; no producing training script, matching run record, or accepted registry entry found.",
+        "deserialized": false,
+        "used_by_current_inference": false
+      },
+      {
+        "model_name": "chatbot_intent_classifier",
+        "artifact_path": "trained_models/chatbot_nlp.joblib",
+        "bytes": 811706,
+        "last_modified_utc": "2026-10-29T01:26:17.1907523Z",
+        "sha256": "72fe528173c1fec703b75f5ed179a0169667b255ab89226c375733429b66a01e",
+        "provenance": "train_chatbot.py; matching source hash, training report, model registry status, artifact hash, and timestamp.",
+        "deserialized": true,
+        "loader": "ai_api.chatbot_service.load_chatbot",
+        "used_by_current_inference": true
+      }
+    ],
+    "other_project_model_formats_found": [],
+    "venv_package_test_fixtures": {
+      "count": 11,
+      "extensions": [
+        ".pkl"
+      ],
+      "treated_as_project_models": false,
+      "deserialized": false
+    }
+  },
+  "models": [
+    {
+      "model_name": "legacy_vehicle_maintenance_model",
+      "intended_task": "fleet vehicle-maintenance risk prediction",
+      "verification_status": "ARTIFACT_EXISTS_UNVERIFIED",
+      "current_pipeline_attempt_status": "TRAINING_BLOCKED",
+      "artifact_path": "trained_models/vehicle_maintenance_model.joblib",
+      "training_source": null,
+      "training_provenance": "Cannot establish source script, training run, or source dataset. Current pipeline does not emit this artifact path.",
+      "datasets": [],
+      "current_candidate_dataset": {
+        "source": "data/raw/EngineFaultDB-main/EngineFaultDB-main/EngineFaultDB_Final.csv",
+        "prepared_path": "data/processed/enginefaultdb/enginefaultdb_normalized.csv",
+        "source_sha256": "70021a35b2b2efb294e49f4c78b80a391a05414d44d4564c429645eb32260763",
+        "prepared_sha256": "9674ea43606ffefacd4c687df518c2a90d7f388cd826e1b17984d2e602683da0",
+        "prepared_records": 55998,
+        "class_counts": {
+          "0": 16000,
+          "1": 10998,
+          "2": 15000,
+          "3": 14000
+        },
+        "target": "fault_class",
+        "target_semantics_verified": false,
+        "group_identifier_available": false
+      },
+      "legacy_documented_feature_names_unverified": [
+        "vehicle_type",
+        "brand",
+        "model",
+        "engine_type",
+        "make_year",
+        "region",
+        "mileage_range",
+        "mileage"
+      ],
+      "actual_artifact_features_and_targets": null,
+      "actual_model_training_records": 0,
+      "actual_model_test_records": 0,
+      "evaluation": null,
+      "inference_test": {
+        "legacy_artifact_loaded": false,
+        "reason": "Unknown provenance; current registry fails closed before deserialization.",
+        "maintenance_endpoint_http_status": 503,
+        "response_status": "unavailable",
+        "score_returned": false
+      },
+      "suitable_for_intended_task": false,
+      "missing_evidence": [
+        "Reproducible producer/training script and training-run record.",
+        "Known source dataset and verified maintenance target definitions.",
+        "Artifact feature schema and trained estimator inspection.",
+        "Independent vehicle/acquisition groups and valid group-disjoint test set.",
+        "Evaluation metrics, baseline comparison, and calibrated probability evidence.",
+        "Matching accepted registry entry."
+      ]
+    },
+    {
+      "model_name": "enginefaultdb_laboratory_classification_candidate",
+      "intended_task": "four-class laboratory engine-state/fault classification",
+      "verification_status": "TRAINING_BLOCKED",
+      "artifact_path": null,
+      "training_source": "data_pipeline/cli.py train-maintenance -> train_grouped_classifier",
+      "datasets": [
+        {
+          "path": "data/processed/enginefaultdb/enginefaultdb_normalized.csv",
+          "records_available": 55998,
+          "records_fitted": 0,
+          "records_tested": 0,
+          "features": [
+            "map_kpa",
+            "throttle_position_pct",
+            "force_n",
+            "power_kw",
+            "rpm",
+            "fuel_consumption_lph",
+            "fuel_consumption_l_per_100km",
+            "speed_kmh",
+            "co_pct",
+            "hc_ppm",
+            "co2_pct",
+            "o2_pct",
+            "lambda",
+            "air_fuel_ratio"
+          ],
+          "target": "fault_class",
+          "target_class_counts": {
+            "0": 16000,
+            "1": 10998,
+            "2": 15000,
+            "3": 14000
+          },
+          "missing_values": 0,
+          "exact_duplicates_removed": 1,
+          "class_names_verified": false,
+          "independent_group_ids": 0
+        }
+      ],
+      "evaluation_metrics": null,
+      "reason": "train-maintenance was blocked because acquisition_run_id is absent; no split or fit was performed.",
+      "suitable_for_fleet_maintenance": false
+    },
+    {
+      "model_name": "fleet_remaining_useful_life",
+      "intended_task": "remaining useful life estimation for fleet components",
+      "verification_status": "NOT_FOUND",
+      "artifact_path": null,
+      "training_source": null,
+      "datasets": [],
+      "evaluation_metrics": null,
+      "service_readiness": "not_supported_for_fleet_vehicles",
+      "suitable_for_intended_task": false,
+      "missing_evidence": [
+        "Time-ordered vehicle/component degradation or run-to-failure labels.",
+        "Vehicle/component identifiers and independent time/group holdouts.",
+        "Trained artifact and task-specific evaluation report."
+      ]
+    },
+    {
+      "model_name": "chatbot_intent_classifier",
+      "intended_task": "custom authored-example chatbot intent classification",
+      "verification_status": "VERIFIED_TRAINED_AND_EVALUATED",
+      "artifact_path": "trained_models/chatbot_nlp.joblib",
+      "artifact_bytes": 811706,
+      "artifact_last_modified_utc": "2026-10-29T01:26:17.1907523Z",
+      "artifact_sha256": "72fe528173c1fec703b75f5ed179a0169667b255ab89226c375733429b66a01e",
+      "training_source": "train_chatbot.py",
+      "source_dataset": "data/chatbot_intents.json",
+      "source_dataset_sha256": "5c9f4709e01036b2285ff7354c10631a4ff686b40d30d361cb3d11bb7f7469b5",
+      "training_timestamp": "2026-10-29T01:26:16.447107+00:00",
+      "training_rows_final_artifact": 2780,
+      "evaluation_train_records": 2085,
+      "evaluation_test_records": 695,
+      "evaluation_split": {
+        "method": "stratified train_test_split",
+        "test_fraction": 0.25,
+        "random_state": 42,
+        "group_split": false
+      },
+      "features": {
+        "input": "text",
+        "preprocessing": {
+          "vectorizer": "TfidfVectorizer",
+          "lowercase": true,
+          "strip_accents": "unicode",
+          "ngram_range": [
+            1,
+            2
+          ],
+          "sublinear_tf": true
+        }
+      },
+      "target": {
+        "name": "intent tag",
+        "class_count": 23,
+        "classes": [
+          "booking_reservation",
+          "brakes",
+          "cancellation_rescheduling",
+          "capabilities",
+          "car_availability",
+          "cooling",
+          "deposits_payments",
+          "explain_score",
+          "filters_fluids",
+          "fleet_analysis",
+          "goodbye",
+          "greeting",
+          "maintenance_schedule",
+          "oil",
+          "pickup_return",
+          "rental_duration",
+          "rental_pricing",
+          "rental_requirements",
+          "rental_support",
+          "safety",
+          "troubleshooting",
+          "vehicle_features",
+          "vehicle_prediction"
+        ]
+      },
+      "class_imbalance": {
+        "smallest_class_count": 23,
+        "largest_class_count": 1920,
+        "largest_class": "troubleshooting",
+        "largest_class_share": 0.6906
+      },
+      "classifier": {
+        "name": "LogisticRegression",
+        "max_iter": 3000,
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "evaluation": {
+        "accuracy": 0.9381,
+        "macro_f1": 0.8618,
+        "weighted_f1": 0.94,
+        "most_frequent_baseline_accuracy": 0.6906,
+        "most_frequent_baseline_macro_f1": 0.0355,
+        "acceptance_macro_f1_threshold": 0.75,
+        "acceptance_threshold_passed": true,
+        "per_class_metrics_and_confusion_matrix_path": "data/reports/chatbot_training.json",
+        "roc_auc_or_pr_auc": null,
+        "balanced_accuracy": null,
+        "limitations": [
+          "Authored-example random holdout; similar wording may inflate results.",
+          "Metrics evaluate the fixed training procedure; final saved estimator is refit on all 2780 examples.",
+          "No independent real-user query evaluation is documented."
+        ]
+      },
+      "report_consistency": {
+        "artifact_sha256_matches_training_report": true,
+        "source_data_sha256_matches_training_report": true,
+        "matching_evaluation_report": "trained_models/chatbot_evaluation.json"
+      },
+      "inference_test": {
+        "trusted_loader": "ai_api.chatbot_service.load_chatbot",
+        "loaded_successfully": true,
+        "classes_loaded": 23,
+        "responses_loaded": 23,
+        "django_chat_endpoint_http_status": 200,
+        "example_intent": "greeting"
+      },
+      "suitable_for_intended_task": "Yes, narrowly for local authored-intent routing; not a generative assistant or maintenance model."
+    }
+  ],
+  "training_status_evidence": {
+    "maintenance_status": "blocked",
+    "maintenance_reason": "Group column not found: acquisition_run_id; row-random splitting is disabled.",
+    "maintenance_status_training_records_field_interpretation": "55998 is the prepared candidate dataset row count, not records fitted; actual fitted records are zero.",
+    "maintenance_registry_artifact_path": null,
+    "maintenance_registry_eligible_for_inference": false,
+    "maintenance_run_metrics": null,
+    "chatbot_status": "evaluated_accepted",
+    "chatbot_status_artifact_sha256_matches_file": true
+  },
+  "configuration_and_inference": {
+    "AI_MODEL_PATH_setting_present": false,
+    "AI_ENABLE_UNVERIFIED_MAINTENANCE_PREDICTIONS_setting_present": false,
+    "current_maintenance_registry_setting": "AI_MAINTENANCE_MODEL_REGISTRY_PATH",
+    "current_registry_path": "models/model_registry.json",
+    "registry_maintenance_status": "blocked",
+    "maintenance_service_load_attempted_on_legacy_file": false,
+    "api_maintenance_response": {
+      "http_status": 503,
+      "status": "unavailable",
+      "code": "model_not_eligible",
+      "fabricated_score_returned": false
+    },
+    "accepted_format_controlled_fixture": {
+      "test": "test_registered_accepted_compatible_model_can_predict",
+      "passed": true,
+      "purpose": "Inference-path plumbing only; not evidence for a real maintenance model."
+    }
+  },
+  "dataset_inventory": {
+    "raw_files_inspected": 237,
+    "top_level_directories": 14,
+    "content_inspection_errors": 0,
+    "raw_data_used_by_maintenance_model": false,
+    "raw_data_used_by_chatbot_model": false,
+    "chatbot_uses_authored_dataset": "data/chatbot_intents.json"
+  },
+  "verification": {
+    "full_django_test_suite": {
+      "command": ".\\venv\\Scripts\\python.exe manage.py test",
+      "result": "passed",
+      "tests_passed": 41,
+      "system_check": "clean"
+    },
+    "focused_maintenance_tests": {
+      "command": ".\\venv\\Scripts\\python.exe manage.py test ai_api.tests.HealthEndpointTests ai_api.tests.PredictionEndpointTests",
+      "result": "passed",
+      "tests_passed": 6,
+      "system_check": "clean"
+    },
+    "live_test_client_smoke": {
+      "chat_http_status": 200,
+      "chat_intent": "greeting",
+      "maintenance_http_status": 503
+    },
+    "retraining_performed_during_audit": false,
+    "raw_files_modified": false,
+    "existing_model_artifacts_modified": false
+  },
+  "intended_task_completion": {
+    "task_inventory_basis": "Four model tasks explicitly named by current capabilities/training readiness and chatbot model registry; fleet prioritization is included under the shared maintenance predictor; local reference retrieval is not a trained model.",
+    "tasks": [
+      {
+        "task": "fleet vehicle-maintenance risk prediction",
+        "fully_verified_trained_and_evaluated": false,
+        "status": "ARTIFACT_EXISTS_UNVERIFIED"
+      },
+      {
+        "task": "EngineFaultDB laboratory engine-state classification",
+        "fully_verified_trained_and_evaluated": false,
+        "status": "TRAINING_BLOCKED"
+      },
+      {
+        "task": "fleet remaining-useful-life estimation",
+        "fully_verified_trained_and_evaluated": false,
+        "status": "NOT_FOUND"
+      },
+      {
+        "task": "chatbot intent classification",
+        "fully_verified_trained_and_evaluated": true,
+        "status": "VERIFIED_TRAINED_AND_EVALUATED"
+      }
+    ],
+    "numerator": 1,
+    "denominator": 4,
+    "percentage": 25.0,
+    "calculation": "1 / 4 * 100"
+  },
+  "direct_answers": {
+    "maintenance_model_actually_trained": "Not verifiably. A legacy artifact exists, but its training history is unknown; current reproducible maintenance training was blocked before fitting.",
+    "maintenance_model_trained_on_downloaded_datasets": "No evidence. The legacy artifact has no traceable dataset; the EngineFaultDB attempt used prepared downloaded data but did not fit.",
+    "maintenance_model_passed_valid_evaluation": false,
+    "django_can_safely_use_maintenance_artifact": false,
+    "chatbot_trained_successfully": "Yes, for authored-intent routing; not for vehicle diagnosis or maintenance prediction.",
+    "verified_intended_ai_task_percentage": "25% (1 of 4 explicitly enumerated model tasks)."
+  },
+  "audit_report_files": [
+    "data/reports/ai_training_audit.md",
+    "data/reports/ai_training_audit.json"
+  ]
+}
