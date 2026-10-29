@@ -1,0 +1,50 @@
+{
+  "experiment_name": "carobd_sensor_anomaly_v1",
+  "task": "unsupervised OBD-II sensor-pattern anomaly scoring",
+  "not_a_failure_prediction_model": true,
+  "features": [
+    "ENGINE_RPM ()",
+    "VEHICLE_SPEED ()",
+    "THROTTLE ()",
+    "ENGINE_LOAD ()",
+    "COOLANT_TEMPERATURE ()",
+    "LONG_TERM_FUEL_TRIM_BANK_1 ()",
+    "SHORT_TERM_FUEL_TRIM_BANK_1 ()",
+    "INTAKE_MANIFOLD_PRESSURE ()",
+    "FUEL_TANK ()",
+    "ABSOLUTE_THROTTLE_B ()"
+  ],
+  "random_state": 42,
+  "estimator": {
+    "class": "sklearn.ensemble.IsolationForest",
+    "n_estimators": 300,
+    "contamination": "auto",
+    "max_samples": "auto"
+  },
+  "score_definition": "anomaly_score = -Pipeline.score_samples(X); larger scores are more unusual relative to the fitted training distribution.",
+  "thresholds": {
+    "training_score_percentile_99.0": 0.6228363376892305,
+    "training_score_percentile_95.0": 0.5444283988930391,
+    "training_score_percentile_90.0": 0.5068058890897421
+  },
+  "training_rows": 192293,
+  "evaluation_rows": 82678,
+  "train_fraction_per_session": 0.7,
+  "prepared_dataset_sha256": "c43307063f181414466bc7d125ce03b9530e1ebb5762f3b618b9ec25579a2e09",
+  "provenance_sha256": "a960203362e52174ed84f5775249cdda796e6e3008d8a90ea8bfdd01c580d5cd",
+  "pipeline_sha256": "d7d44332fe2ca6b82269126f236db23e005b2d3f3e33ad5742343ecdc9e1f1d5",
+  "training_session_modes": {
+    "live": 62608,
+    "idle": 42204,
+    "long": 39517,
+    "drive": 25737,
+    "ufpe": 22227
+  },
+  "evaluation_session_modes": {
+    "live": 26917,
+    "idle": 18179,
+    "long": 16961,
+    "drive": 11063,
+    "ufpe": 9558
+  }
+}
