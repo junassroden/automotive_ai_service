@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "maintenance_model": {
+    "status": "blocked",
+    "model_name": "maintenance_model",
+    "task": "vehicle maintenance prediction",
+    "dataset": "EngineFaultDB",
+    "source_dataset": "C:\\laragon\\www\\Car_Rental_System\\automotive_ai_service\\data\\processed\\enginefaultdb\\enginefaultdb_normalized.csv",
+    "source_sha256": "9674ea43606ffefacd4c687df518c2a90d7f388cd826e1b17984d2e602683da0",
+    "target_definitions": {},
+    "training_records": 55998,
+    "test_records": 0,
+    "training_groups": 0,
+    "test_groups": 0,
+    "metrics": null,
+    "artifact_path": null,
+    "eligible_for_inference": false,
+    "reason": "Group column not found: acquisition_run_id. A vehicle, trip, or acquisition-run identifier is required; row-random splitting is intentionally disabled.",
+    "updated_at": "2026-10-29T01:24:00.218006+00:00"
+  }
+}
