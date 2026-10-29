@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "models": {
+    "maintenance_model": {
+      "status": "blocked",
+      "model_name": "maintenance_model",
+      "task": "vehicle maintenance prediction",
+      "dataset": "EngineFaultDB",
+      "source_dataset": "C:\\laragon\\www\\Car_Rental_System\\automotive_ai_service\\data\\processed\\enginefaultdb\\enginefaultdb_normalized.csv",
+      "source_sha256": "9674ea43606ffefacd4c687df518c2a90d7f388cd826e1b17984d2e602683da0",
+      "target_definitions": {},
+      "training_records": 55998,
+      "test_records": 0,
+      "training_groups": 0,
+      "test_groups": 0,
+      "metrics": null,
+      "artifact_path": null,
+      "eligible_for_inference": false,
+      "reason": "Group column not found: acquisition_run_id. A vehicle, trip, or acquisition-run identifier is required; row-random splitting is intentionally disabled.",
+      "updated_at": "2026-10-29T01:24:00.218006+00:00"
+    },
+    "chatbot_intent_classifier": {
+      "status": "evaluated_accepted",
+      "task": "custom automotive chatbot intent classification",
+      "dataset": "data\\chatbot_intents.json",
+      "source_sha256": "5c9f4709e01036b2285ff7354c10631a4ff686b40d30d361cb3d11bb7f7469b5",
+      "training_records": 2085,
+      "test_records": 695,
+      "model_version": "1.0",
+      "feature_schema": {
+        "vectorizer": "TfidfVectorizer",
+        "lowercase": true,
+        "strip_accents": "unicode",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "sublinear_tf": true
+      },
+      "artifact_sha256": "72fe528173c1fec703b75f5ed179a0169667b255ab89226c375733429b66a01e",
+      "metrics": {
+        "accuracy": 0.9381,
+        "macro_f1": 0.8618,
+        "weighted_f1": 0.94,
+        "baseline_accuracy": 0.6906,
+        "baseline_macro_f1": 0.0355
+      },
+      "artifact_path": "trained_models\\chatbot_nlp.joblib",
+      "eligible_for_inference": true,
+      "reason": "Authored-intent holdout met the internal macro-F1 threshold.",
+      "updated_at": "2026-10-29T01:26:16.447107+00:00"
+    }
+  }
+}
