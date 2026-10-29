@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "description": "Fixed retrieval regression set. Expected topic IDs measure retrieval behavior, not factual correctness or mechanic-level diagnostic accuracy.",
+  "cases": [
+    {"id":"misfire-01","question":"Why is my engine misfiring?","expected_knowledge_id":"engine_misfire"},
+    {"id":"misfire-02","question":"The car shakes and idles rough; could an ignition coil cause it?","expected_knowledge_id":"engine_misfire","expected_knowledge_ids":["engine_misfire","fuel_ignition_air"]},
+    {"id":"misfire-03","question":"What should I do when the check-engine light flashes and the engine runs rough?","expected_knowledge_id":"engine_misfire","safety_terms":["stop safely"]},
+    {"id":"misfire-04","question":"My van stalls after starting and has lost power. What information helps diagnose it?","expected_knowledge_id":"engine_misfire"},
+
+    {"id":"cooling-01","question":"What could cause an engine to overheat?","expected_knowledge_id":"engine_overheating","safety_terms":["never remove","do not continue driving"]},
+    {"id":"cooling-02","question":"My car gets hot in traffic but cools down on the highway. Why?","expected_knowledge_id":"engine_overheating","safety_terms":["fan"]},
+    {"id":"cooling-03","question":"Can a coolant leak or water pump make my motorcycle overheat?","expected_knowledge_id":"engine_overheating"},
+    {"id":"cooling-04","question":"The heater suddenly blows cold while the temperature warning comes on. What should I do?","expected_knowledge_id":"engine_overheating","safety_terms":["switch off","hot coolant"]},
+
+    {"id":"oil-pressure-01","question":"The red oil pressure light came on while driving. Is it safe to continue?","expected_knowledge_id":"oil_pressure_leak","safety_terms":["stop the engine"]},
+    {"id":"oil-pressure-02","question":"Why is there oil under my pickup and a burning smell?","expected_knowledge_id":"oil_pressure_leak"},
+    {"id":"oil-pressure-03","question":"Does a normal dipstick level prove oil pressure is okay?","expected_knowledge_id":"oil_pressure_leak"},
+    {"id":"oil-pressure-04","question":"My engine is using oil but I cannot see a puddle. What could explain it?","expected_knowledge_id":"oil_pressure_leak"},
+
+    {"id":"oil-service-01","question":"How often should I change the engine oil in my car?","expected_knowledge_id":"oil_change_schedule"},
+    {"id":"oil-service-02","question":"What oil grade and service interval does my 2022 Toyota Corolla need?","expected_knowledge_id":"oil_change_schedule","expected_knowledge_ids":["oil_change_schedule","maintenance_schedule_overdue"]},
+    {"id":"oil-service-03","question":"Is an oil-life reminder the same as a red oil pressure warning?","expected_knowledge_id":"oil_change_schedule","expected_knowledge_ids":["oil_change_schedule","oil_pressure_leak"]},
+    {"id":"oil-service-04","question":"What does engine oil do, and why is the filter changed?","expected_knowledge_id":"oil_change_schedule"},
+
+    {"id":"fuel-01","question":"I smell gasoline near the car. What should I do first?","expected_knowledge_id":"fuel_ignition_air","safety_terms":["fire risk","ignition sources"]},
+    {"id":"fuel-02","question":"The engine cranks but will not start. Could it be fuel, air, or ignition?","expected_knowledge_id":"fuel_ignition_air"},
+    {"id":"fuel-03","question":"Can a vacuum leak cause rough running and hesitation?","expected_knowledge_id":"fuel_ignition_air"},
+    {"id":"fuel-04","question":"How do a fuel pump and injectors affect engine operation?","expected_knowledge_id":"fuel_ignition_air"},
+
+    {"id":"timing-01","question":"When should the timing belt be replaced on my van?","expected_knowledge_id":"timing_engine_wear"},
+    {"id":"timing-02","question":"My engine has a new rattling noise near the timing chain. What now?","expected_knowledge_id":"timing_engine_wear"},
+    {"id":"timing-03","question":"Do all engines have a timing belt rather than a chain?","expected_knowledge_id":"timing_engine_wear"},
+    {"id":"timing-04","question":"Can worn timing components cause an engine to run abnormally?","expected_knowledge_id":"timing_engine_wear"},
+
+    {"id":"brakes-01","question":"What happens if I keep driving with worn brake pads?","expected_knowledge_id":"brake_wear","safety_terms":["stop safely"]},
+    {"id":"brakes-02","question":"My brakes grind when I slow down. What could be wrong?","expected_knowledge_id":"brake_wear"},
+    {"id":"brakes-03","question":"The brake pedal feels soft and stopping takes longer. Can I keep driving?","expected_knowledge_id":"brake_wear","safety_terms":["stop safely"]},
+    {"id":"brakes-04","question":"Does squealing tell me exactly how much brake pad remains?","expected_knowledge_id":"brake_wear"},
+
+    {"id":"brake-warning-01","question":"The ABS warning light is on but the brake pedal feels normal. What does that mean?","expected_knowledge_id":"brake_warning_abs"},
+    {"id":"brake-warning-02","question":"A red brake warning and fluid leak appeared. Should I drive?","expected_knowledge_id":"brake_warning_abs","safety_terms":["stop safely"]},
+    {"id":"brake-warning-03","question":"Does an ABS code prove that the ABS module has failed?","expected_knowledge_id":"brake_warning_abs"},
+    {"id":"brake-warning-04","question":"What is the difference between the ABS light and the red brake warning?","expected_knowledge_id":"brake_warning_abs"},
+
+    {"id":"transmission-01","question":"What can cause an automatic transmission to slip?","expected_knowledge_id":"transmission_slip"},
+    {"id":"transmission-02","question":"My van shifts late and the transmission temperature warning came on. What should I do?","expected_knowledge_id":"transmission_slip"},
+    {"id":"transmission-03","question":"Can low or incorrect transmission fluid cause shifting problems?","expected_knowledge_id":"transmission_slip"},
+    {"id":"transmission-04","question":"How does diagnosis differ for an automatic and a CVT?","expected_knowledge_id":"transmission_slip"},
+
+    {"id":"drivetrain-01","question":"Why does my car shake when I accelerate?","expected_knowledge_id":"clutch_drivetrain_vibration","expected_knowledge_ids":["clutch_drivetrain_vibration","engine_misfire"]},
+    {"id":"drivetrain-02","question":"My motorcycle clutch slips under acceleration. What might be involved?","expected_knowledge_id":"clutch_drivetrain_vibration"},
+    {"id":"drivetrain-03","question":"What can cause a clunk from a driveshaft or differential?","expected_knowledge_id":"clutch_drivetrain_vibration"},
+    {"id":"drivetrain-04","question":"A vibration starts only when I accelerate at highway speed. What details matter?","expected_knowledge_id":"clutch_drivetrain_vibration"},
+
+    {"id":"tires-01","question":"What tire pressure should I use on my car?","expected_knowledge_id":"tire_pressure_tread"},
+    {"id":"tires-02","question":"There is a bulge on the tire sidewall. Can I drive to work?","expected_knowledge_id":"tire_pressure_tread","safety_terms":["stop safely"]},
+    {"id":"tires-03","question":"Why are the front tires wearing unevenly?","expected_knowledge_id":"tire_pressure_tread"},
+    {"id":"tires-04","question":"Is the maximum pressure printed on a tire the recommended pressure?","expected_knowledge_id":"tire_pressure_tread"},
+
+    {"id":"steering-01","question":"My steering feels loose and the van wanders. Is this urgent?","expected_knowledge_id":"steering_suspension","safety_terms":["stop safely"]},
+    {"id":"steering-02","question":"What can cause a clunk over bumps in the suspension?","expected_knowledge_id":"steering_suspension"},
+    {"id":"steering-03","question":"Why does my vehicle pull to one side after I hit a pothole?","expected_knowledge_id":"steering_suspension"},
+    {"id":"steering-04","question":"Can a wheel bearing make a humming noise that changes with speed?","expected_knowledge_id":"steering_suspension"},
+
+    {"id":"electrical-01","question":"How can I tell whether a weak battery, starter, or alternator is involved?","expected_knowledge_id":"battery_charging_starting"},
+    {"id":"electrical-02","question":"My car clicks once and will not crank. What should be checked?","expected_knowledge_id":"battery_charging_starting"},
+    {"id":"electrical-03","question":"The battery warning light came on while driving. What does it indicate?","expected_knowledge_id":"battery_charging_starting"},
+    {"id":"electrical-04","question":"Can a loose ground cause intermittent electrical problems?","expected_knowledge_id":"battery_charging_starting"},
+
+    {"id":"obd-01","question":"What does OBD-II do on a modern car?","expected_knowledge_id":"dashboard_warning_obd"},
+    {"id":"obd-02","question":"Does diagnostic code P0300 prove the spark plugs are bad?","expected_knowledge_id":"dashboard_warning_obd"},
+    {"id":"obd-03","question":"Should I clear a check-engine code before recording freeze-frame data?","expected_knowledge_id":"dashboard_warning_obd"},
+    {"id":"obd-04","question":"What is the difference between a pending and stored diagnostic trouble code?","expected_knowledge_id":"dashboard_warning_obd"},
+
+    {"id":"fluids-01","question":"There is a puddle under the car. Can fluid color identify it for certain?","expected_knowledge_id":"coolant_leaks_fluids"},
+    {"id":"fluids-02","question":"I see coolant on the driveway and the temperature is rising. What should I do?","expected_knowledge_id":"coolant_leaks_fluids","expected_knowledge_ids":["coolant_leaks_fluids","engine_overheating"],"safety_terms":["do not continue driving"]},
+    {"id":"fluids-03","question":"Can I mix different coolant types if the colors look alike?","expected_knowledge_id":"coolant_leaks_fluids"},
+    {"id":"fluids-04","question":"What could cause a transmission fluid leak?","expected_knowledge_id":"coolant_leaks_fluids"},
+
+    {"id":"filters-01","question":"How often should I replace the engine air filter?","expected_knowledge_id":"filters_routine_service"},
+    {"id":"filters-02","question":"What does a cabin air filter do?","expected_knowledge_id":"filters_routine_service"},
+    {"id":"filters-03","question":"Do all cars have the same spark plug replacement interval?","expected_knowledge_id":"filters_routine_service"},
+    {"id":"filters-04","question":"Can a clogged fuel filter cause poor engine performance?","expected_knowledge_id":"filters_routine_service"},
+
+    {"id":"schedule-01","question":"What maintenance is overdue on my vehicle at 60,000 kilometers?","expected_knowledge_id":"maintenance_schedule_overdue"},
+    {"id":"schedule-02","question":"Can you calculate the next service date without the owner's manual or service history?","expected_knowledge_id":"maintenance_schedule_overdue"},
+    {"id":"schedule-03","question":"Do severe operating conditions change the maintenance schedule?","expected_knowledge_id":"maintenance_schedule_overdue"},
+    {"id":"schedule-04","question":"How do time-based and mileage-based service intervals differ?","expected_knowledge_id":"maintenance_schedule_overdue"},
+
+    {"id":"fleet-inspection-01","question":"What should we inspect before releasing a rental car?","expected_knowledge_id":"pre_rental_inspection"},
+    {"id":"fleet-inspection-02","question":"Should a rental van be released with an unresolved brake warning?","expected_knowledge_id":"pre_rental_inspection","safety_terms":["safety-critical"]},
+    {"id":"fleet-inspection-03","question":"What information belongs in a post-rental vehicle condition record?","expected_knowledge_id":"pre_rental_inspection"},
+    {"id":"fleet-inspection-04","question":"Does a clean visual inspection replace scheduled maintenance?","expected_knowledge_id":"pre_rental_inspection","expected_knowledge_ids":["pre_rental_inspection","maintenance_schedule_overdue"]},
+
+    {"id":"health-01","question":"Can you confirm my car is safe based only on its mileage?","expected_knowledge_id":"vehicle_health_data_limits"},
+    {"id":"health-02","question":"What details do you need to assess a vehicle health concern?","expected_knowledge_id":"vehicle_health_data_limits"},
+    {"id":"health-03","question":"Can a model score prove that a vehicle has no faults?","expected_knowledge_id":"vehicle_health_data_limits","expected_knowledge_ids":["vehicle_health_data_limits","maintenance_model_explanation"]},
+    {"id":"health-04","question":"How should reported symptoms be separated from technician-confirmed faults?","expected_knowledge_id":"vehicle_health_data_limits"},
+
+    {"id":"model-01","question":"Why did the predictive maintenance model flag this vehicle?","expected_knowledge_id":"maintenance_model_explanation"},
+    {"id":"model-02","question":"Does a high maintenance risk score mean a part will fail next week?","expected_knowledge_id":"maintenance_model_explanation"},
+    {"id":"model-03","question":"Can I treat a low model score as proof that the vehicle is safe?","expected_knowledge_id":"maintenance_model_explanation","expected_knowledge_ids":["maintenance_model_explanation","vehicle_health_data_limits"]},
+    {"id":"model-04","question":"What evidence is needed before trusting a maintenance prediction?","expected_knowledge_id":"maintenance_model_explanation"},
+
+    {"id":"fleet-priority-01","question":"Which vehicles in my fleet need attention first?","expected_knowledge_id":"fleet_maintenance_prioritization"},
+    {"id":"fleet-priority-02","question":"Can you prioritize the fleet without actual service and inspection records?","expected_knowledge_id":"fleet_maintenance_prioritization"},
+    {"id":"fleet-priority-03","question":"How should recurring repair patterns be reviewed across rental vehicles?","expected_knowledge_id":"fleet_maintenance_prioritization"},
+    {"id":"fleet-priority-04","question":"Does a fleet priority list confirm a component has failed?","expected_knowledge_id":"fleet_maintenance_prioritization"},
+
+    {"id":"symptom-code-fault-01","question":"Is a diagnostic code the same thing as a confirmed failed component?","expected_knowledge_id":"symptom_vs_fault"},
+    {"id":"symptom-code-fault-02","question":"What is the difference between a symptom, a DTC, and a diagnosis?","expected_knowledge_id":"symptom_vs_fault","expected_knowledge_ids":["symptom_vs_fault","dashboard_warning_obd"]},
+    {"id":"symptom-code-fault-03","question":"Can one fault code have several possible causes?","expected_knowledge_id":"symptom_vs_fault"},
+    {"id":"symptom-code-fault-04","question":"Should a mechanic confirm the cause before replacing a part?","expected_knowledge_id":"symptom_vs_fault"},
+
+    {"id":"hv-01","question":"Can I open the high-voltage battery pack on my electric vehicle?","expected_knowledge_id":"hybrid_ev_high_voltage_safety","safety_terms":["do not touch"]},
+    {"id":"hv-02","question":"My hybrid has a high-voltage warning and reduced power. What should I do?","expected_knowledge_id":"hybrid_ev_high_voltage_safety"},
+    {"id":"hv-03","question":"Do hybrids and electric cars use only one coolant circuit?","expected_knowledge_id":"hybrid_ev_high_voltage_safety"},
+    {"id":"hv-04","question":"What exact isolation procedure should I use on an EV?","expected_knowledge_id":"hybrid_ev_high_voltage_safety"},
+
+    {"id":"hvac-01","question":"The car air conditioner blows warm air but airflow is strong. What could cause it?","expected_knowledge_id":"hvac_air_conditioning"},
+    {"id":"hvac-02","question":"The cabin blower has weak airflow at every setting. What should be checked?","expected_knowledge_id":"hvac_air_conditioning"},
+    {"id":"hvac-03","question":"Can I open an A/C fitting to check the refrigerant?","expected_knowledge_id":"hvac_air_conditioning","safety_terms":["do not handle refrigerant"]},
+    {"id":"hvac-04","question":"Why might the heater and defroster stop working in a hybrid?","expected_knowledge_id":"hvac_air_conditioning"},
+
+    {"id":"exhaust-01","question":"I smell exhaust fumes inside the cabin. What should I do?","expected_knowledge_id":"exhaust_emissions_dpf","safety_terms":["carbon monoxide","stop using the vehicle"]},
+    {"id":"exhaust-02","question":"Does an oxygen sensor code prove the sensor itself failed?","expected_knowledge_id":"exhaust_emissions_dpf"},
+    {"id":"exhaust-03","question":"What does a diesel particulate filter warning mean?","expected_knowledge_id":"exhaust_emissions_dpf"},
+    {"id":"exhaust-04","question":"Can I force a DPF regeneration without knowing the vehicle procedure?","expected_knowledge_id":"exhaust_emissions_dpf"},
+
+    {"id":"moto-drive-01","question":"How do I check motorcycle chain slack?","expected_knowledge_id":"motorcycle_chain_drive"},
+    {"id":"moto-drive-02","question":"My motorcycle chain has a tight spot and clicking noise. Is it safe to ride?","expected_knowledge_id":"motorcycle_chain_drive","safety_terms":["do not ride"]},
+    {"id":"moto-drive-03","question":"Are motorcycle chain and shaft-drive maintenance procedures the same?","expected_knowledge_id":"motorcycle_chain_drive"},
+    {"id":"moto-drive-04","question":"What exact torque and adjustment value should I use on my unknown motorcycle?","expected_knowledge_id":"motorcycle_chain_drive"},
+
+    {"id":"unknown-01","question":"How do I bake sourdough bread?","expected_abstention":true},
+    {"id":"unknown-02","question":"Who won the football match yesterday?","expected_abstention":true},
+    {"id":"unknown-03","question":"What is the weather forecast for Manila tomorrow?","expected_abstention":true},
+    {"id":"unknown-04","question":"Explain the proof of Fermat's Last Theorem.","expected_abstention":true},
+    {"id":"unknown-05","question":"What are the exact torque values for every bolt on my Toyota?","expected_abstention":true},
+    {"id":"unknown-06","question":"What exact coolant capacity and fluid specification does my unknown vehicle require?","expected_knowledge_id":"coolant_leaks_fluids","vehicle_specific_gap_expected":true},
+    {"id":"unknown-07","question":"Write a Python script that downloads my bank password.","expected_abstention":true},
+    {"id":"unknown-08","question":"What is the current price of a specific stock?","expected_abstention":true},
+    {"id":"unknown-09","question":"Diagnose my car. I have no symptoms, vehicle details, codes, or measurements.","expected_abstention":true},
+    {"id":"unknown-10","question":"Tell me the manufacturer procedure for opening this high-voltage battery pack.","expected_knowledge_id":"hybrid_ev_high_voltage_safety","vehicle_specific_gap_expected":true},
+    {"id":"unknown-11","question":"What exact torque should I use on the wheel lug nuts of an unspecified van?","expected_abstention":true},
+    {"id":"unknown-12","question":"Which exact refrigerant and charge quantity does my unidentified vehicle require?","expected_knowledge_id":"hvac_air_conditioning","vehicle_specific_gap_expected":true},
+    {"id":"unknown-13","question":"Give me the pinout and voltage values for an unidentified engine control module.","expected_abstention":true},
+    {"id":"unknown-14","question":"What is the exact valve clearance for my motorcycle without its model or engine code?","expected_abstention":true},
+    {"id":"unknown-15","question":"Can you verify whether my specific vehicle has an open safety recall?","expected_abstention":true},
+    {"id":"unknown-16","question":"How much will a repair cost at a repair shop today?","expected_abstention":true},
+    {"id":"unknown-17","question":"What is the correct transmission fluid capacity for my vehicle if I do not know its model?","expected_knowledge_id":"transmission_slip","vehicle_specific_gap_expected":true},
+    {"id":"unknown-18","question":"What does my manufacturer's service bulletin say for this VIN?","expected_abstention":true},
+    {"id":"unknown-19","question":"What exact pressure should I use for a fully loaded pickup with unknown tire size and axle load?","expected_knowledge_id":"tire_pressure_tread","vehicle_specific_gap_expected":true},
+    {"id":"unknown-20","question":"What is the exact hybrid battery isolation procedure for my vehicle?","expected_knowledge_id":"hybrid_ev_high_voltage_safety","vehicle_specific_gap_expected":true},
+    {"id":"unknown-21","question":"Tell me today's traffic conditions and road closures.","expected_abstention":true},
+    {"id":"unknown-22","question":"Can you confirm the vehicle passed inspection when no inspection record was supplied?","expected_knowledge_id":"vehicle_health_data_limits"}
+  ]
+}
