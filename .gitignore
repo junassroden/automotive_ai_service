@@ -1,0 +1,16 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Local environment and database
+.env
+db.sqlite3
+
+# Large third-party raw datasets (download separately)
+data/raw/*
+!data/raw/README.md
+
+# Large intermediate experiment data
+trained_models/experiments/**/prepared_*.csv
