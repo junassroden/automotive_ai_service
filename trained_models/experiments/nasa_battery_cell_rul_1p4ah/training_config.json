@@ -1,0 +1,32 @@
+{
+  "experiment_name": "nasa_battery_cell_rul_1p4ah",
+  "task": "laboratory battery-cell RUL to 1.4 Ah",
+  "target_column": "remaining_discharge_cycles",
+  "feature_columns": [
+    "discharge_cycle_index",
+    "capacity_ah",
+    "ambient_temperature_c"
+  ],
+  "group_column": "cell_id",
+  "model": {
+    "estimator": "RandomForestRegressor",
+    "n_estimators": 300,
+    "min_samples_leaf": 3,
+    "random_state": 42,
+    "preprocessing": "median imputer fitted on training cells only"
+  },
+  "baseline": "DummyRegressor(strategy='median') fitted on training rows",
+  "training_rows": 206,
+  "test_rows": 125,
+  "training_cells": [
+    "B0006",
+    "B0018"
+  ],
+  "test_cells": [
+    "B0005"
+  ],
+  "prepared_dataset_sha256": "bc0f54bd03a6717b9b190e23279d88bed171755b1945e824eb8ff5dd28e1fb04",
+  "prepared_dataset_path": "data/processed/nasa_battery_rul/discharge_cycles.csv",
+  "dataset_manifest_sha256": "82e88f5bcd1323caffb10461798dd4d4d15a52f18c4b3ab8618842789a72a623",
+  "artifact_sha256": "809fbea43a2775c16d4cd096a967d608c7820ad38397cbd9fdc14e149cc3b7c6"
+}
