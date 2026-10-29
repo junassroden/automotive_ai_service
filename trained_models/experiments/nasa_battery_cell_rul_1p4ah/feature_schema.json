@@ -1,0 +1,30 @@
+{
+  "features": [
+    {
+      "name": "discharge_cycle_index",
+      "unit": "cycle"
+    },
+    {
+      "name": "capacity_ah",
+      "unit": "Ah"
+    },
+    {
+      "name": "ambient_temperature_c",
+      "unit": "degrees C"
+    }
+  ],
+  "target": {
+    "name": "remaining_discharge_cycles",
+    "unit": "discharge cycles",
+    "meaning": "Remaining cycles to first observed positive capacity <= 1.4 Ah."
+  },
+  "group_only": {
+    "name": "cell_id",
+    "used_as_feature": false
+  },
+  "feature_order": [
+    "discharge_cycle_index",
+    "capacity_ah",
+    "ambient_temperature_c"
+  ]
+}
