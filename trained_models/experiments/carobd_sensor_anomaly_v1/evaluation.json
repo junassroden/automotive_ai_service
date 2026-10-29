@@ -1,0 +1,261 @@
+{
+  "status": "evaluated_unsupervised_experiment",
+  "task": "unlabeled OBD-II sensor-pattern anomaly scoring",
+  "not_a_fault_classifier_or_future_failure_predictor": true,
+  "dataset": "carOBD Toyota Etios telemetry",
+  "source_vehicle_claim": "one 2014 Toyota Etios, according to local README",
+  "training_rows": 192293,
+  "evaluation_rows": 82678,
+  "features": [
+    "ENGINE_RPM ()",
+    "VEHICLE_SPEED ()",
+    "THROTTLE ()",
+    "ENGINE_LOAD ()",
+    "COOLANT_TEMPERATURE ()",
+    "LONG_TERM_FUEL_TRIM_BANK_1 ()",
+    "SHORT_TERM_FUEL_TRIM_BANK_1 ()",
+    "INTAKE_MANIFOLD_PRESSURE ()",
+    "FUEL_TANK ()",
+    "ABSOLUTE_THROTTLE_B ()"
+  ],
+  "feature_units": "not specified in local CSV headers",
+  "training_period": {
+    "definition": "approximately first 70% of each CSV session in source order / non-decreasing engine run time; tied boundary times stay on one side",
+    "session_count": 129
+  },
+  "evaluation_period": {
+    "definition": "later session tail after the run-time boundary; boundary ties stay in training, with no elapsed run-time value overlap",
+    "session_count": 129,
+    "absolute_calendar_timestamps_available": false
+  },
+  "score_definition": "anomaly_score = -Pipeline.score_samples(X); larger scores are more unusual relative to the fitted training distribution.",
+  "score_distribution": {
+    "minimum": 0.3697918163377642,
+    "p25": 0.40454115451835465,
+    "median": 0.4211734760400162,
+    "p75": 0.44740057112736953,
+    "p90": 0.49774109157859564,
+    "p95": 0.5479667026846552,
+    "p99": 0.6202530520812605,
+    "maximum": 0.7284815094243224
+  },
+  "threshold_sensitivity": {
+    "training_99.0th_percentile": {
+      "score_threshold": 0.6228363376892305,
+      "flagged_records": 793,
+      "evaluation_records": 82678,
+      "flagged_percentage": 0.9591426981784756
+    },
+    "training_95.0th_percentile": {
+      "score_threshold": 0.5444283988930391,
+      "flagged_records": 4386,
+      "evaluation_records": 82678,
+      "flagged_percentage": 5.304917874162413
+    },
+    "training_90.0th_percentile": {
+      "score_threshold": 0.5068058890897421,
+      "flagged_records": 7385,
+      "evaluation_records": 82678,
+      "flagged_percentage": 8.932243160211907
+    }
+  },
+  "default_threshold": {
+    "selection": "95th percentile of training anomaly scores",
+    "score_threshold": 0.5444283988930391,
+    "flagged_records": 4386,
+    "evaluation_records": 82678,
+    "flagged_percentage": 5.304917874162413,
+    "interpretation": "flag rate, not accuracy or error rate"
+  },
+  "simple_baseline": {
+    "method": "maximum absolute median/MAD-scaled feature deviation",
+    "feature statistics_fit_on_training_only": true,
+    "threshold_sensitivity": {
+      "training_99.0th_percentile": {
+        "score_threshold": 26.5,
+        "flagged_records": 11,
+        "flagged_percentage": 0.013304627591378602
+      },
+      "training_95.0th_percentile": {
+        "score_threshold": 18.5,
+        "flagged_records": 86,
+        "flagged_percentage": 0.10401799753259634
+      },
+      "training_90.0th_percentile": {
+        "score_threshold": 13.0,
+        "flagged_records": 209,
+        "flagged_percentage": 0.2527879242361934
+      }
+    }
+  },
+  "temporal_stability": {
+    "early": {
+      "rows": 27606,
+      "median_anomaly_score": 0.4218550911800909,
+      "p95_anomaly_score": 0.558826430741982,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.010251394624357023,
+        "95.0": 0.06480475259001667,
+        "90.0": 0.10454249076287764
+      }
+    },
+    "middle": {
+      "rows": 27558,
+      "median_anomaly_score": 0.4197594200012511,
+      "p95_anomaly_score": 0.5485604439986735,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.009398359822918935,
+        "95.0": 0.05355976485956891,
+        "90.0": 0.09111691704768125
+      }
+    },
+    "late": {
+      "rows": 27514,
+      "median_anomaly_score": 0.4218583309084005,
+      "p95_anomaly_score": 0.5313548997866806,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.009122628480046522,
+        "95.0": 0.040742894526422914,
+        "90.0": 0.07225412517263938
+      }
+    }
+  },
+  "operating_mode_analysis": {
+    "drive": {
+      "rows": 11063,
+      "median_anomaly_score": 0.42350061625865987,
+      "p95_anomaly_score": 0.5309991515732736,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.0033444816053511705,
+        "95.0": 0.037422037422037424,
+        "90.0": 0.07882129621260056
+      }
+    },
+    "idle": {
+      "rows": 18179,
+      "median_anomaly_score": 0.41267166282866685,
+      "p95_anomaly_score": 0.45249947344434027,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.0,
+        "95.0": 0.0,
+        "90.0": 0.0
+      }
+    },
+    "live": {
+      "rows": 26917,
+      "median_anomaly_score": 0.42370678045541255,
+      "p95_anomaly_score": 0.5176741654835424,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.002749191960471078,
+        "95.0": 0.028792213099528178,
+        "90.0": 0.060853735557454394
+      }
+    },
+    "long": {
+      "rows": 16961,
+      "median_anomaly_score": 0.4347897605457895,
+      "p95_anomaly_score": 0.6098779647651984,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.03785154177230116,
+        "95.0": 0.17098048464123577,
+        "90.0": 0.25246152939095573
+      }
+    },
+    "ufpe": {
+      "rows": 9558,
+      "median_anomaly_score": 0.4193213982789904,
+      "p95_anomaly_score": 0.5176967121531992,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.004184975936388366,
+        "95.0": 0.031073446327683617,
+        "90.0": 0.06204226825695752
+      }
+    },
+    "stationary_engine_running": {
+      "rows": 24981,
+      "median_anomaly_score": 0.4122888126238526,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.0,
+        "95.0": 0.0006805171930667307,
+        "90.0": 0.003722829350306233
+      }
+    },
+    "moving": {
+      "rows": 57693,
+      "median_anomaly_score": 0.4274510480086268,
+      "flag_rates_by_training_percentile": {
+        "99.0": 0.013745168391312637,
+        "95.0": 0.07565909209089491,
+        "90.0": 0.12632381744752397
+      }
+    }
+  },
+  "supervised_metrics": {
+    "accuracy": null,
+    "precision": null,
+    "recall": null,
+    "f1": null,
+    "reason": "No independently verified normal/fault/anomaly labels are present."
+  },
+  "duplicate_and_missing_handling": {
+    "source_rows": 304299,
+    "blank_rows": 5,
+    "trailing_empty_fields_removed": 288537,
+    "short_rows_padded": 2290,
+    "duplicate_rows_removed": 29328,
+    "usable_rows": 274971,
+    "all_selected_features_missing_rows_removed": 0,
+    "missing_values_by_column": {
+      "RELATIVE_THROTTLE_POSITION ()": 1,
+      "INTAKE_AIR_TEMP ()": 2,
+      "TIMING_ADVANCE ()": 2,
+      "CATALYST_TEMPERATURE_BANK1_SENSOR1 ()": 2,
+      "CATALYST_TEMPERATURE_BANK1_SENSOR2 ()": 2,
+      "CONTROL_MODULE_VOLTAGE ()": 2,
+      "COMMANDED_EVAPORATIVE_PURGE ()": 3,
+      "TIME_RUN_WITH_MIL_ON ()": 3,
+      "TIME_SINCE_TROUBLE_CODES_CLEARED ()": 2290,
+      "DISTANCE_TRAVELED_WITH_MIL_ON ()": 2290,
+      "WARM_UPS_SINCE_CODES_CLEARED ()": 2290
+    },
+    "non_numeric_values_by_column": {},
+    "non_finite_values_by_column": {},
+    "selected_feature_missing_values": {
+      "ENGINE_RPM ()": 0,
+      "VEHICLE_SPEED ()": 0,
+      "THROTTLE ()": 0,
+      "ENGINE_LOAD ()": 0,
+      "COOLANT_TEMPERATURE ()": 0,
+      "LONG_TERM_FUEL_TRIM_BANK_1 ()": 0,
+      "SHORT_TERM_FUEL_TRIM_BANK_1 ()": 0,
+      "INTAKE_MANIFOLD_PRESSURE ()": 0,
+      "FUEL_TANK ()": 0,
+      "ABSOLUTE_THROTTLE_B ()": 0
+    },
+    "selected_feature_missing_cells": 0,
+    "elapsed_time_backward_steps": 0,
+    "stationary_engine_running_rows": 86943,
+    "moving_rows": 187668,
+    "idle_named_session_rows": 60383
+  },
+  "model_loading_smoke_test": {
+    "passed": true,
+    "loaded_pipeline_class": "IsolationForest",
+    "finite_evaluation_scores": true,
+    "scored_records": 82678
+  },
+  "random_state": 42,
+  "limitations": [
+    "One vehicle only; no cross-vehicle generalization has been demonstrated.",
+    "No ground-truth fault/anomaly labels; flag rates are not accuracy or fault rates.",
+    "Unusual scores may reflect mode/drive changes, sensor polling/update behavior, or benign operating variation.",
+    "Sensor units are absent from the local CSV headers.",
+    "Engine run time is a within-session relative clock, not a calendar timestamp; time ties are common.",
+    "Threshold is selected from training score quantiles and is a sensitivity setting, not validated operational calibration.",
+    "Exact duplicate records are removed within sessions, but nearby correlated observations remain.",
+    "The local dataset has no verified formal data license; confirm reuse terms before redistribution."
+  ],
+  "artifact_sha256": "d7d44332fe2ca6b82269126f236db23e005b2d3f3e33ad5742343ecdc9e1f1d5",
+  "prepared_dataset_sha256": "c43307063f181414466bc7d125ce03b9530e1ebb5762f3b618b9ec25579a2e09",
+  "cross_session_overlap": "source session is intentionally shared; later rows only in evaluation"
+}
