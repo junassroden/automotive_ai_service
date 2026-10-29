@@ -1,0 +1,16 @@
+{
+  "random_state": 42,
+  "splitter": "GroupShuffleSplit",
+  "test_size": 0.25,
+  "group_column": "cell_id",
+  "train_cells": [
+    "B0006",
+    "B0018"
+  ],
+  "test_cells": [
+    "B0005"
+  ],
+  "train_rows": 206,
+  "test_rows": 125,
+  "group_overlap": 0
+}
