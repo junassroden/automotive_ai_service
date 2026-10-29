@@ -1,0 +1,64 @@
+{
+  "features": [
+    {
+      "name": "ENGINE_RPM ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 0
+    },
+    {
+      "name": "VEHICLE_SPEED ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 1
+    },
+    {
+      "name": "THROTTLE ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 2
+    },
+    {
+      "name": "ENGINE_LOAD ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 3
+    },
+    {
+      "name": "COOLANT_TEMPERATURE ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 4
+    },
+    {
+      "name": "LONG_TERM_FUEL_TRIM_BANK_1 ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 5
+    },
+    {
+      "name": "SHORT_TERM_FUEL_TRIM_BANK_1 ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 6
+    },
+    {
+      "name": "INTAKE_MANIFOLD_PRESSURE ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 7
+    },
+    {
+      "name": "FUEL_TANK ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 8
+    },
+    {
+      "name": "ABSOLUTE_THROTTLE_B ()",
+      "unit": "not specified in local CSV header (empty `()` unit field)",
+      "order": 9
+    }
+  ],
+  "excluded_metadata": [
+    "ENGINE_RUN_TINE () elapsed-time field",
+    "source_session",
+    "operating_mode",
+    "source_row_index",
+    "within_session_order",
+    "stationary_engine_running",
+    "moving"
+  ],
+  "missing_value_handling": "median SimpleImputer fit on training rows only; nonnumeric/nonfinite values are represented as missing during preparation."
+}
