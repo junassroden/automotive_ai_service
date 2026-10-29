@@ -1,0 +1,462 @@
+{
+  "assessment": "maintenance_dataset_readiness",
+  "verdict": "NO_SUITABLE_DATASET_FOUND",
+  "project": "automotive_ai_service",
+  "scope": {
+    "intended_task": "predict future maintenance or component failure for real fleet vehicles",
+    "vehicle_types_requested": [
+      "car",
+      "motorcycle",
+      "pickup",
+      "van",
+      "minivan"
+    ],
+    "read_only_assessment": true,
+    "training_performed": false,
+    "evaluation_performed": false,
+    "existing_artifacts_modified": false,
+    "api_or_settings_modified": false,
+    "training_script_created": false
+  },
+  "evidence": {
+    "dataset_inventory": "data/reports/dataset_inventory.json",
+    "inventory_files": 237,
+    "inventory_top_level_directories": 14,
+    "inventory_content_inspection_errors": 0,
+    "prior_training_audit": "data/reports/ai_training_audit.md",
+    "prior_training_summary": "data/reports/training_summary.md",
+    "maintenance_status": "TRAINING_BLOCKED",
+    "maintenance_block_reason": "acquisition_run_id is absent; no split or model fit occurred.",
+    "maintenance_training_records_note": "The recorded 55,998 is prepared candidate rows, not fitted training records.",
+    "legacy_maintenance_artifact": {
+      "path": "trained_models/vehicle_maintenance_model.joblib",
+      "status": "ARTIFACT_EXISTS_UNVERIFIED",
+      "source_dataset": null,
+      "accepted_for_inference": false
+    },
+    "chatbot_is_separate_task": true
+  },
+  "candidates": [
+    {
+      "name": "EngineFaultDB",
+      "path": "data/raw/EngineFaultDB-main/EngineFaultDB-main/EngineFaultDB_Final.csv",
+      "prepared_path": "data/processed/enginefaultdb/enginefaultdb_normalized.csv",
+      "vehicle_or_component_type": "Controlled laboratory C14NE spark-ignition engine; single engine",
+      "records": {
+        "source": 55999,
+        "prepared": 55998,
+        "exact_duplicates_removed": 1,
+        "missing_values": 0,
+        "features": [
+          "map_kpa",
+          "throttle_position_pct",
+          "force_n",
+          "power_kw",
+          "rpm",
+          "fuel_consumption_lph",
+          "fuel_consumption_l_per_100km",
+          "speed_kmh",
+          "co_pct",
+          "hc_ppm",
+          "co2_pct",
+          "o2_pct",
+          "lambda",
+          "air_fuel_ratio"
+        ]
+      },
+      "target": {
+        "column": "fault_class",
+        "meaning": "Four numeric laboratory engine-state/fault classes; numeric labels are not mapped to verified fault names.",
+        "class_counts": {
+          "0": 16000,
+          "1": 10998,
+          "2": 15000,
+          "3": 14000
+        },
+        "future_failure_or_maintenance_outcome": false
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "acquisition_run_id": false,
+        "available_metadata_resolves_missing_group": false,
+        "finding": "Neither the CSV, preparation metadata, local inventory/manifests, nor README maps rows to runs. README describes one engine and laboratory collection, not row-level run boundaries."
+      },
+      "leakage_safe_split": "Not feasible from local evidence; row-random splitting is unsafe and no documented group keys exist.",
+      "task_assessment": {
+        "fault_classification": "Potential limited laboratory research task only, but blocked by unknown class mapping and missing run groups.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Do not train for the requested task. Obtain authoritative original run/session metadata and label mapping before reconsidering laboratory classification."
+    },
+    {
+      "name": "Diesel OBD workbooks",
+      "path": "data/raw/OBD-Dataset-main/OBD-Dataset-main/MASTER_TRAIN_X.xlsx; data/raw/OBD-Dataset-main/OBD-Dataset-main/MASTER_TEST_X.xlsx",
+      "vehicle_or_component_type": "README claims multiple diesel vehicles; exact records and source are not independently verified",
+      "records": {
+        "train_features": 118477,
+        "test_features": 33838,
+        "train_columns": 26,
+        "test_columns": 26,
+        "train_exact_duplicate_rows": 90657,
+        "test_exact_duplicate_rows": 26280,
+        "missing_cells": 0
+      },
+      "features": "README lists 11 OBD PID signals, but workbook columns and their provenance require source-level verification.",
+      "target": {
+        "claimed": "README claims manually documented DTCs and healthy/fault labels.",
+        "verified_row_level_label": false,
+        "meaning": "No demonstrated row-level linkage from workbook features to vehicle-level DTCs/outcomes."
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "trip_or_run_id": false
+      },
+      "leakage_safe_split": "Not established; provided train/test vehicle independence is unknown.",
+      "task_assessment": {
+        "fault_classification": "Potential only after target/provenance verification.",
+        "maintenance_prediction": "Not supported by current evidence."
+      },
+      "decision": "Do not train until original acquisition files, labels, vehicle linkage, split semantics, and license are independently verified."
+    },
+    {
+      "name": "Vehicle Maintenance service records",
+      "path": "data/raw/Vehicle Maintenance- Service Records.csv",
+      "vehicle_or_component_type": "Car; two makes and four models in local records",
+      "records": {
+        "rows": 1139,
+        "columns": 24,
+        "missing_values": 0,
+        "exact_duplicates": 0,
+        "constant_service_fields": [
+          "oil_filter",
+          "engine_oil"
+        ]
+      },
+      "features": [
+        "vehicle_type",
+        "brand",
+        "model",
+        "engine_type",
+        "make_year",
+        "region",
+        "mileage_range",
+        "mileage"
+      ],
+      "target": {
+        "columns": "14 binary service-item indicators and cost",
+        "meaning": "Past/scheduled/service recommendation semantics are undocumented; no timestamps or confirmed future outcomes."
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "slno_is_vehicle_id": false,
+        "service_date": false
+      },
+      "leakage_safe_split": "Not feasible; slno is unique but is not documented as a vehicle key and event chronology is absent.",
+      "task_assessment": {
+        "fault_classification": "Not supported.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Do not train; establish source, vehicle identity, service-date meaning, and future outcome labels."
+    },
+    {
+      "name": "KIT Automotive OBD-II",
+      "path": "data/raw/10.35097-1130/data/dataset/OBD-II-Dataset.zip",
+      "mirrored_path": "data/raw/Automotive_Diagnostics-main/Automotive_Diagnostics-main/OBD-II-Dataset/",
+      "vehicle_or_component_type": "Seat Leon model telemetry; one vehicle model represented in filenames",
+      "records": {
+        "samples": 2693824,
+        "csv_sessions": 81,
+        "signals": 10
+      },
+      "target": {
+        "meaning": "Road/traffic operating condition tags, not fault, maintenance, or repair labels."
+      },
+      "group_identifiers": {
+        "session_or_file": true,
+        "stable_fleet_vehicle_id": false
+      },
+      "leakage_safe_split": "Session-level split is possible for descriptive signal studies, but there is no target outcome for maintenance evaluation.",
+      "task_assessment": {
+        "fault_classification": "Not supported by documented labels.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Telemetry-only; do not train a supervised maintenance model."
+    },
+    {
+      "name": "Navarra motorcycle telemetry",
+      "path": "data/raw/navarra_telemetry-raw/; data/raw/navarra-050926-tanda1/; data/raw/navarra-050926-tandas2-4/",
+      "vehicle_or_component_type": "Kawasaki Ninja 400 track motorcycle, one machine and one rider",
+      "records": {
+        "session_rows": [
+          134984,
+          19565,
+          31709
+        ],
+        "total_decoded_sample_rows": 186258,
+        "channels_per_session": 95
+      },
+      "target": {
+        "meaning": "No confirmed maintenance, fault, repair, loss-of-grip, or RUL labels. ECU control-cut codes are not fault labels."
+      },
+      "group_identifiers": {
+        "boot_id_and_session": true,
+        "independent_vehicle_groups": 1
+      },
+      "leakage_safe_split": "Continuity can be segmented by boot_id, but only one machine/rider and no labeled outcomes are present.",
+      "task_assessment": {
+        "fault_classification": "Not supported.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Single-machine sensor analysis only; no failure inference."
+    },
+    {
+      "name": "Root engine-condition tables",
+      "paths": [
+        "data/raw/raw_data.csv",
+        "data/raw/train.csv",
+        "data/raw/test.csv"
+      ],
+      "vehicle_or_component_type": "Engine-state measurements; source vehicle type unknown",
+      "records": {
+        "raw": 19535,
+        "train": 15628,
+        "test": 3907,
+        "numeric_measurements": 6,
+        "provided_split_exact_partition_of_raw": true
+      },
+      "target": {
+        "column": "Engine Condition / engine_condition",
+        "meaning": "Binary label; no source definition linking it to a confirmed fault or future maintenance outcome."
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "run_id": false
+      },
+      "leakage_safe_split": "Provided split is row-disjoint but cannot be established as group-disjoint.",
+      "task_assessment": {
+        "fault_classification": "Unverified binary engine-state classification only.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Do not treat as automotive fleet evidence without source, units, labels, groups, and license."
+    },
+    {
+      "name": "Unattributed Parquet",
+      "path": "data/raw/main_df_standardized.parquet",
+      "vehicle_or_component_type": "Unknown; sensor-like powertrain fields",
+      "records": {
+        "rows": 1572243,
+        "columns": 21,
+        "sensor_like_fields": 18,
+        "unique_fault_type_values": 10,
+        "exact_duplicates": 136,
+        "flag_missing": 1572210
+      },
+      "target": {
+        "column": "fault_type",
+        "meaning": "Ten observed values but no documentation, source, or verified semantics."
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "run_id": false
+      },
+      "leakage_safe_split": "Not feasible; group identity and temporal provenance are missing.",
+      "task_assessment": {
+        "fault_classification": "Not established due to unknown label semantics.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Exclude until provenance, units, target definitions, group keys, and license are verified."
+    },
+    {
+      "name": "CVFFAD generated fault events",
+      "path": "data/raw/Chinese Vehicle Fleet Fault Association Dataset/Chinese Vehicle Fleet Fault Association Dataset/fault_events.csv",
+      "related_vehicle_metadata": "data/raw/Chinese Vehicle Fleet Fault Association Dataset/Chinese Vehicle Fleet Fault Association Dataset/vehicle_fleet.csv",
+      "vehicle_or_component_type": "Generated event data presents eight vehicle-type categories",
+      "records": {
+        "fault_events": 29431,
+        "event_columns": 33,
+        "vehicle_rows": 936,
+        "vehicle_columns": 20,
+        "related_faults_missing": 28098
+      },
+      "target": {
+        "columns": [
+          "fault_code",
+          "fault_category",
+          "fault_name"
+        ],
+        "meaning": "README describes generated fault-event and annotation records; not verified real fleet outcomes.",
+        "prospective_failure_label": false
+      },
+      "group_identifiers": {
+        "vehicle_id_column_present": true,
+        "vehicle_id_independently_verified": false,
+        "event_or_run_id": "event_id present; no acquisition-run metadata verified"
+      },
+      "leakage_safe_split": "Vehicle grouping is syntactically possible, but generated IDs and records do not establish an independent real-world fleet evaluation.",
+      "task_assessment": {
+        "fault_classification": "Synthetic/generated event classification only.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Exclude for real/commercial fleet claims. Local DOI is placeholder and referenced license/provenance records are missing."
+    },
+    {
+      "name": "AI4I 2020 Predictive Maintenance",
+      "path": "data/raw/ai4i+2020+predictive+maintenance+dataset/ai4i2020.csv",
+      "vehicle_or_component_type": "Synthetic industrial machine tools, not road vehicles",
+      "records": {
+        "rows": 10000,
+        "fields": 14,
+        "machine_failure_positives": 339,
+        "missing_values": 0,
+        "duplicates": 0
+      },
+      "target": {
+        "columns": [
+          "Machine failure",
+          "TWF",
+          "HDF",
+          "PWF",
+          "OSF",
+          "RNF"
+        ],
+        "meaning": "Synthetic machine and component failure modes."
+      },
+      "group_identifiers": {
+        "product_id": true,
+        "road_vehicle_id": false
+      },
+      "leakage_safe_split": "Potential product-level holdout for the synthetic industrial dataset, not applicable to fleet vehicles.",
+      "task_assessment": {
+        "fault_classification": "Industrial failure classification only.",
+        "maintenance_prediction": "Not suitable for vehicle maintenance."
+      },
+      "decision": "Exclude from vehicle model training."
+    },
+    {
+      "name": "NASA Li-ion battery aging",
+      "path": "data/raw/5. Battery Data Set/",
+      "vehicle_or_component_type": "Laboratory lithium-ion cells, not installed vehicle packs",
+      "records": {
+        "mat_files_including_byte_identical_copies": 38,
+        "distinct_cell_files": 34,
+        "cycle_records_in_inventory_counting_copies": 7885
+      },
+      "target": {
+        "meaning": "Cycle capacity and documented 30% capacity-fade EOL criterion can support laboratory cell aging/RUL."
+      },
+      "group_identifiers": {
+        "cell_ids": true,
+        "vehicle_or_pack_ids": false
+      },
+      "leakage_safe_split": "Cell-disjoint split is conceptually possible after cycle-level preparation and duplicate-file removal.",
+      "task_assessment": {
+        "fault_classification": "Not the dataset's core target.",
+        "maintenance_prediction": "Lab-cell degradation/RUL research only; not vehicle fleet maintenance."
+      },
+      "decision": "Possible separate cell-aging research with reuse-term review; do not represent it as installed vehicle battery prediction."
+    },
+    {
+      "name": "Experimental Energy Characterization",
+      "path": "data/raw/Experimental Energy Characterization/",
+      "vehicle_or_component_type": "Unknown vehicle/component; unverified telemetry",
+      "records": {
+        "files": 8,
+        "rows_total": 31418,
+        "columns_per_file": "14–41",
+        "missingness": "Many empty cells"
+      },
+      "target": {
+        "meaning": "No documented failure, maintenance, or RUL labels."
+      },
+      "group_identifiers": {
+        "vehicle_id": false,
+        "run_id": false
+      },
+      "leakage_safe_split": "No verified grouping or outcomes.",
+      "task_assessment": {
+        "fault_classification": "Not supported.",
+        "maintenance_prediction": "Not supported."
+      },
+      "decision": "Keep out of supervised training until source, labels, and identifiers are supplied."
+    },
+    {
+      "name": "LEVIN telematics",
+      "path": "data/raw/levin-openData-master/",
+      "vehicle_or_component_type": "Repository describes four-wheelers; local raw measurement export is absent",
+      "records": {
+        "local_measurement_records": 0,
+        "local_contents": "Documentation and notebooks only"
+      },
+      "target": {
+        "meaning": "No local outcome records available."
+      },
+      "group_identifiers": {
+        "local_vehicle_or_run_records": false
+      },
+      "leakage_safe_split": "Not applicable; no local measurement table."
+      ,
+      "task_assessment": {
+        "fault_classification": "Not available from local files.",
+        "maintenance_prediction": "Not available from local files."
+      },
+      "decision": "No training use until the data files and documented license are available."
+    }
+  ],
+  "enginefaultdb_acquisition_run_id": {
+    "resolved_from_existing_metadata": false,
+    "evidence": [
+      "Raw CSV columns contain Fault and 14 numeric signals only.",
+      "Prepared metadata contains counts/transformations but no row-to-run mapping.",
+      "README describes a single controlled laboratory engine but not row-level acquisition groups.",
+      "Raw inventory/manifests identify files and hashes, not CSV row acquisition sessions."
+    ],
+    "prohibited_inference": "Do not invent IDs from row order, labels, values, or timestamps.",
+    "needed": "Authoritative source-side acquisition logs or row-to-run mapping verified against the unchanged CSV."
+  },
+  "recommendation": {
+    "best_dataset_for_first_fleet_maintenance_model": null,
+    "reason": "No candidate combines real, provenance-verified fleet data, time-ordered confirmed maintenance/failure outcomes, and vehicle/component groups for independent evaluation.",
+    "nearest_non_equivalent_candidates": [
+      {
+        "dataset": "EngineFaultDB",
+        "task": "Laboratory engine state/fault classification",
+        "remaining_prerequisites": [
+          "Authoritative class-to-fault mapping",
+          "Row-level acquisition-run IDs"
+        ]
+      },
+      {
+        "dataset": "NASA Li-ion battery aging",
+        "task": "Laboratory cell degradation/RUL",
+        "remaining_prerequisites": [
+          "Cycle-level preparation",
+          "Cell-disjoint evaluation",
+          "Reuse/license review"
+        ]
+      }
+    ],
+    "future_data_requirements": [
+      "Pseudonymous vehicle and component identifiers",
+      "Timestamped unit-defined telemetry and odometer readings",
+      "Trip/run/session IDs and preserved temporal order",
+      "Confirmed maintenance, inspection, fault, repair, replacement, and service outcomes",
+      "Healthy/no-event observation windows",
+      "Explicit future prediction horizon or run-to-failure target with censoring semantics",
+      "Enough independent vehicles/failures for vehicle-disjoint time-aware holdout",
+      "Documented provenance, collection protocol, label meanings, missingness, and reusable license",
+      "Evidence of coverage across the intended vehicle types"
+    ],
+    "next_action": "Obtain suitable fleet outcome records and authoritative group metadata, then reassess target definitions and leakage-safe evaluation before implementing a training script."
+  },
+  "training_plan_if_future_data_becomes_suitable": {
+    "script_created": false,
+    "evaluation_design": [
+      "Freeze vehicle/component-disjoint and time-aware holdout before preprocessing or model selection.",
+      "Compare most-frequent and simple domain baselines.",
+      "Report balanced accuracy, per-class precision/recall/F1, macro F1, confusion matrix, and appropriate PR-AUC/ROC-AUC.",
+      "Inspect target leakage, duplicates, calibration, class prevalence, and confidence intervals.",
+      "Bind report to exact dataset and artifact hashes.",
+      "Use prospective/time-forward labels for future-failure claims; name contemporaneous classification as fault classification."
+    ]
+  }
+}
