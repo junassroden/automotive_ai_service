@@ -1,0 +1,67 @@
+{
+  "dataset": "EngineFaultDB",
+  "source_files": [
+    "EngineFaultDB-main/EngineFaultDB-main/EngineFaultDB_Final.csv"
+  ],
+  "output_file": "enginefaultdb_normalized.csv",
+  "rows_before": 55999,
+  "rows_after": 55998,
+  "exact_duplicates_removed": 1,
+  "columns": [
+    "fault_class",
+    "map_kpa",
+    "throttle_position_pct",
+    "force_n",
+    "power_kw",
+    "rpm",
+    "fuel_consumption_lph",
+    "fuel_consumption_l_per_100km",
+    "speed_kmh",
+    "co_pct",
+    "hc_ppm",
+    "co2_pct",
+    "o2_pct",
+    "lambda",
+    "air_fuel_ratio"
+  ],
+  "missing_values": {
+    "fault_class": 0,
+    "map_kpa": 0,
+    "throttle_position_pct": 0,
+    "force_n": 0,
+    "power_kw": 0,
+    "rpm": 0,
+    "fuel_consumption_lph": 0,
+    "fuel_consumption_l_per_100km": 0,
+    "speed_kmh": 0,
+    "co_pct": 0,
+    "hc_ppm": 0,
+    "co2_pct": 0,
+    "o2_pct": 0,
+    "lambda": 0,
+    "air_fuel_ratio": 0
+  },
+  "label": {
+    "column": "fault_class",
+    "observed_counts": {
+      "0": 16000,
+      "1": 10998,
+      "2": 15000,
+      "3": 14000
+    },
+    "documented_semantics": "Four numeric fault classes are reported by the source README; a verified class-to-fault-name mapping is not supplied."
+  },
+  "transformations": [
+    "Renamed source columns to normalized snake_case names with units in names.",
+    "Verified numeric values and absence of missing/non-finite values.",
+    "Removed exact duplicate rows only."
+  ],
+  "limitations": [
+    "Controlled laboratory data for a single C14NE engine, not a fleet dataset.",
+    "No vehicle, run, trip, or acquisition-group identifier is present.",
+    "Adjacent/related sample independence cannot be established.",
+    "The four class labels are not mapped to documented fault mechanisms.",
+    "No vehicle-health or future-failure claim is supported."
+  ],
+  "training_status": "Blocked: a group-disjoint holdout cannot be constructed without a documented run or vehicle identifier."
+}
