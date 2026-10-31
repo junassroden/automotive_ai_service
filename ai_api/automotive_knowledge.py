@@ -185,20 +185,35 @@ def rank_knowledge(query):
     character_scores = (character_vectors @ character_query.T).toarray().ravel()
     normalized_query = _normalize(query)
     query_term_set = set(query_terms)
+    query_words = normalized_query.split()
     ranked = []
 
     for index, (document_index, passage) in enumerate(passages):
         document = documents[document_index]
         keywords = document.get("keywords", [])
         phrase_score = 0.0
+        phrase_length = 0
         for keyword in keywords:
             normalized_keyword = _normalize(keyword)
-            if normalized_keyword and normalized_keyword in normalized_query:
-                keyword_length = len(normalized_keyword.split())
-                phrase_score = max(
-                    phrase_score,
-                    min(1.0, keyword_length / max(1, len(query_terms)) + 0.35),
-                )
+            if not normalized_keyword:
+                continue
+            keyword_words = normalized_keyword.split()
+            keyword_length = len(keyword_words)
+            if normalized_keyword in normalized_query:
+                weight = 1.0
+            elif keyword_length >= 3 and all(
+                any(_terms_match(word, term) for term in query_words) for word in keyword_words
+            ):
+                # Every word of the keyword in another order ("check engine light is blinking"); on equal
+                # scores the longer, more specific keyword wins (see the sort below).
+                weight = 1.0
+            else:
+                continue
+            phrase_length = max(phrase_length, keyword_length)
+            phrase_score = max(
+                phrase_score,
+                weight * min(1.0, keyword_length / max(1, len(query_terms)) + 0.35),
+            )
 
         keyword_terms = set(_normalize(passage["lexical_text"]).split())
         matched_terms = 0
@@ -219,9 +234,12 @@ def rank_knowledge(query):
             "field": passage["field"],
             "text": passage["text"],
             "score": round(score, 4),
+            "phrase_length": phrase_length,
         })
 
-    ranked.sort(key=lambda item: item["score"], reverse=True)
+    # On equal scores the document whose keyword phrase matched more of the question wins
+    # ("white smoke from exhaust" over "smoke from exhaust").
+    ranked.sort(key=lambda item: (item["score"], item["phrase_length"]), reverse=True)
     return ranked
 
 
@@ -285,7 +303,7 @@ def retrieve_knowledge(
     return best
 
 
-def format_knowledge_answer(document, diagnostic_context=None, query=None):
+def format_knowledge_answer(document, diagnostic_context=None, query=None, concise=False):
     is_retrieval = "document" in document
     if is_retrieval:
         retrieval = document
@@ -473,4 +491,12 @@ def format_knowledge_answer(document, diagnostic_context=None, query=None):
         "This is general information, not a confirmed diagnosis or a "
         "determination that the vehicle is safe to drive."
     )
+    if concise:
+        # Chat answers: the direct answer, causes, signs, safe checks and next steps; background sections are left out.
+        sections = [section for section in sections if not section.startswith(CONCISE_OMIT)]
+        sections = [section.replace("Urgency: ", "Next steps: ", 1) for section in sections]
     return "\n\n".join(sections)
+
+
+CONCISE_OMIT = ("Relevant system operation:", "Workshop diagnostic approach:", "Vehicle-specific differences:",
+                "What remains unknown:", "Useful follow-up details:", "References:")
