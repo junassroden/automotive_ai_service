@@ -72,7 +72,13 @@
         "how to cancel",
         "reschedule",
         "change dates",
-        "modify booking"
+        "modify booking",
+        "cancellation fee",
+        "cancel fee",
+        "charge for cancelling",
+        "cancellation charge",
+        "fee for cancelling",
+        "cancellation penalty"
       ],
       "text": "Open My Reservations (/users/reservations) and cancel a reservation that is still pending or confirmed. Completed, rejected or already-cancelled reservations cannot be cancelled. There is no reschedule action: to change dates, cancel and create a new reservation, which is checked again for availability. The system stores no cancellation-fee rule, so ask the rental team about any fees.",
       "code_references": [
@@ -138,7 +144,18 @@
         "deposit refund",
         "refundable deposit",
         "pay with gcash",
-        "cash payment"
+        "cash payment",
+        "credit cards",
+        "accept credit cards",
+        "do you accept cards",
+        "card payment",
+        "debit card",
+        "pay online",
+        "online payment",
+        "payment methods",
+        "payment options",
+        "pay cash",
+        "accept gcash"
       ],
       "text": "Online payment is not implemented: there is no payment gateway, transaction endpoint or payment table, so the Payment and Payment History pages show that payments are unavailable and no card details are collected. Each vehicle stores a security-deposit amount that is shown with its details; how the deposit is collected and refunded is handled by the rental team outside the system.",
       "code_references": [
@@ -241,7 +258,11 @@
         "discounts",
         "late return fee",
         "late fee",
-        "penalty"
+        "penalty",
+        "promos",
+        "any promo",
+        "promotions",
+        "may promo"
       ],
       "text": "A reservation's total is the vehicle's daily rate multiplied by the number of rental days, counted from the pickup date up to but not including the return date. The system stores no discounts, promotions, free days, taxes or extra fees, and the listed security deposit is shown separately and is not added to the total. Ask the rental team about any charges they handle outside the system. No late-return fee or penalty is stored either.",
       "code_references": [
