@@ -2,30 +2,126 @@
   "schema_version": 1,
   "models": {
     "maintenance_model": {
-      "status": "blocked",
+      "status": "evaluated_rejected",
       "model_name": "maintenance_model",
-      "task": "vehicle maintenance prediction",
-      "dataset": "EngineFaultDB",
-      "source_dataset": "C:\\laragon\\www\\Car_Rental_System\\automotive_ai_service\\data\\processed\\enginefaultdb\\enginefaultdb_normalized.csv",
-      "source_sha256": "9674ea43606ffefacd4c687df518c2a90d7f388cd826e1b17984d2e602683da0",
-      "target_definitions": {},
-      "training_records": 55998,
-      "test_records": 0,
-      "training_groups": 0,
-      "test_groups": 0,
-      "metrics": null,
-      "artifact_path": null,
+      "model_version": "service_need_v3_3a435be143",
+      "task": "service_need_at_visit",
+      "dataset": "Vehicle Maintenance- Service Records.csv",
+      "source_sha256": "7b785211082064748502e7fc41d6ac5393e8ca160ba1381042daecfac6840847",
       "eligible_for_inference": false,
-      "reason": "Group column not found: acquisition_run_id. A vehicle, trip, or acquisition-run identifier is required; row-random splitting is intentionally disabled.",
-      "updated_at": "2026-10-29T01:24:00.218006+00:00"
+      "evaluation": {
+        "acceptance_criteria_passed": false
+      },
+      "artifact_path": "trained_models/service_need/service_need_v3_3a435be143/pipeline.joblib",
+      "artifact_sha256": "bce25e392485f7d9168eb843703ed50fd5ddfe92e42fe4d00c05492d9f3eacbb",
+      "evaluation_report_path": "trained_models/service_need/service_need_v3_3a435be143/evaluation.json",
+      "evaluation_report_sha256": "a424ac61dbf7f53b5bc26aaf479435ab4a982294efc28224f676ee23fc16ce38",
+      "feature_columns": [
+        "vehicle_type",
+        "fuel_type",
+        "mileage"
+      ],
+      "target_definitions": {
+        "dust_and_pollen_filter": {
+          "label": "Cabin dust and pollen filter",
+          "component_keys": [],
+          "action": "replacement"
+        },
+        "air_clean_filter": {
+          "label": "Air filter",
+          "component_keys": [
+            "engine"
+          ],
+          "action": "replacement"
+        },
+        "fuel_filter": {
+          "label": "Fuel filter",
+          "component_keys": [
+            "engine"
+          ],
+          "action": "replacement"
+        },
+        "brake_fluid": {
+          "label": "Brake fluid",
+          "component_keys": [
+            "brakes-front",
+            "brakes-rear"
+          ],
+          "action": "replacement"
+        },
+        "brake_and_clutch_oil": {
+          "label": "Brake and clutch fluid",
+          "component_keys": [
+            "brakes-front",
+            "brakes-rear",
+            "transmission"
+          ],
+          "action": "replacement"
+        },
+        "transmission_fluid": {
+          "label": "Transmission fluid",
+          "component_keys": [
+            "transmission"
+          ],
+          "action": "replacement"
+        },
+        "brake_pads": {
+          "label": "Brake pads",
+          "component_keys": [
+            "brakes-front",
+            "brakes-rear"
+          ],
+          "action": "inspection"
+        },
+        "clutch": {
+          "label": "Clutch",
+          "component_keys": [
+            "transmission"
+          ],
+          "action": "inspection"
+        }
+      },
+      "metrics": {
+        "balanced_accuracy": 0.7429,
+        "macro_f1": 0.5364,
+        "macro_pr_auc": 0.6312,
+        "macro_roc_auc": 0.8411,
+        "macro_brier": 0.1481,
+        "macro_ece": 0.1557,
+        "served_estimator": "milestone_frequency (training-group service frequency at the nearest 10,000 km milestone, smoothed towards prevalence)",
+        "baseline": "prevalence (training positive rate for every visit)",
+        "baseline_balanced_accuracy": 0.5,
+        "baseline_macro_f1": 0.0,
+        "baseline_macro_pr_auc": 0.2448,
+        "prevalence_baseline_macro_brier": 0.1788,
+        "best_ml_candidate": "logistic_regression {'C': 0.1, 'feature_set': 'full'} (calibrated)",
+        "best_ml_candidate_balanced_accuracy": 0.7251,
+        "best_ml_candidate_macro_f1": 0.4927,
+        "best_ml_candidate_macro_pr_auc": 0.6871,
+        "best_ml_candidate_macro_brier": 0.1392,
+        "served_targets": [
+          "air_clean_filter",
+          "brake_and_clutch_oil",
+          "brake_fluid",
+          "brake_pads",
+          "clutch",
+          "dust_and_pollen_filter",
+          "fuel_filter",
+          "transmission_fluid"
+        ],
+        "all_modeled_targets_macro_f1": 0.4831,
+        "all_modeled_targets_best_ml_macro_f1": 0.4481
+      },
+      "reason": "Service-need model did not meet the acceptance criteria; see evaluation.json.",
+      "updated_at": "2026-10-31T08:45:44.294343+00:00"
     },
     "chatbot_intent_classifier": {
       "status": "evaluated_accepted",
       "task": "custom automotive chatbot intent classification",
       "dataset": "data\\chatbot_intents.json",
-      "source_sha256": "5c9f4709e01036b2285ff7354c10631a4ff686b40d30d361cb3d11bb7f7469b5",
-      "training_records": 2085,
-      "test_records": 695,
+      "source_sha256": "458ca32c4691666d662a50b1760dfd97a1c0634bd4247d3f6c1e5d5cbf5d5782",
+      "training_records": 2175,
+      "test_records": 726,
       "model_version": "1.0",
       "feature_schema": {
         "vectorizer": "TfidfVectorizer",
@@ -37,18 +133,18 @@
         ],
         "sublinear_tf": true
       },
-      "artifact_sha256": "72fe528173c1fec703b75f5ed179a0169667b255ab89226c375733429b66a01e",
+      "artifact_sha256": "db9bf1c5d195b8261ff6e35122965cdd0c9ee5e3f6754e70b59390a27077411c",
       "metrics": {
-        "accuracy": 0.9381,
-        "macro_f1": 0.8618,
-        "weighted_f1": 0.94,
-        "baseline_accuracy": 0.6906,
-        "baseline_macro_f1": 0.0355
+        "accuracy": 0.9187,
+        "macro_f1": 0.7966,
+        "weighted_f1": 0.9191,
+        "baseline_accuracy": 0.6612,
+        "baseline_macro_f1": 0.0346
       },
       "artifact_path": "trained_models\\chatbot_nlp.joblib",
       "eligible_for_inference": true,
       "reason": "Authored-intent holdout met the internal macro-F1 threshold.",
-      "updated_at": "2026-10-29T01:26:16.447107+00:00"
+      "updated_at": "2026-10-31T14:25:54.261006+00:00"
     }
   }
 }
