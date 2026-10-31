@@ -1,0 +1,1677 @@
+{
+  "status": "evaluated_rejected",
+  "model_version": "service_need_v1_c3b20aee58",
+  "task": "service_need_at_visit",
+  "target_meaning": "1 = the service item was performed at the recorded workshop visit. Scheduled-service need, not an observed or predicted failure.",
+  "dataset": {
+    "file": "Vehicle Maintenance- Service Records.csv",
+    "sha256": "7b785211082064748502e7fc41d6ac5393e8ca160ba1381042daecfac6840847",
+    "rows_read": 1139,
+    "rejected": {},
+    "conflicting_label_rows_kept": 91,
+    "rows_used": 1139,
+    "groups": [
+      "amaze|chennai",
+      "amaze|mumbai",
+      "city|chennai",
+      "city|mumbai",
+      "fortuner|mumbai",
+      "jazz|chennai",
+      "jazz|mumbai"
+    ]
+  },
+  "group_split": {
+    "method": "GroupShuffleSplit(test_size=2 groups, seed 42); group = model|region",
+    "train_groups": [
+      "city|chennai",
+      "city|mumbai",
+      "fortuner|mumbai",
+      "jazz|chennai",
+      "jazz|mumbai"
+    ],
+    "test_groups": [
+      "amaze|chennai",
+      "amaze|mumbai"
+    ],
+    "train_group_count": 5,
+    "test_group_count": 2,
+    "group_overlap": 0,
+    "train_records": 818,
+    "test_records": 321,
+    "time_aware_split": "Not possible: the records have no visit dates or vehicle identifiers."
+  },
+  "class_distribution": {
+    "oil_filter": {
+      "train_positive_rate": 1.0,
+      "test_positive_rate": 1.0
+    },
+    "engine_oil": {
+      "train_positive_rate": 1.0,
+      "test_positive_rate": 1.0
+    },
+    "washer_plug_drain": {
+      "train_positive_rate": 0.8716,
+      "test_positive_rate": 0.9065
+    },
+    "dust_and_pollen_filter": {
+      "train_positive_rate": 0.3888,
+      "test_positive_rate": 0.0
+    },
+    "whell_alignment_and_balancing": {
+      "train_positive_rate": 0.2531,
+      "test_positive_rate": 0.2741
+    },
+    "air_clean_filter": {
+      "train_positive_rate": 0.3594,
+      "test_positive_rate": 0.4424
+    },
+    "fuel_filter": {
+      "train_positive_rate": 0.2714,
+      "test_positive_rate": 0.3271
+    },
+    "spark_plug": {
+      "train_positive_rate": 0.0452,
+      "test_positive_rate": 0.109
+    },
+    "brake_fluid": {
+      "train_positive_rate": 0.1479,
+      "test_positive_rate": 0.162
+    },
+    "brake_and_clutch_oil": {
+      "train_positive_rate": 0.0758,
+      "test_positive_rate": 0.2835
+    },
+    "transmission_fluid": {
+      "train_positive_rate": 0.1333,
+      "test_positive_rate": 0.1651
+    },
+    "brake_pads": {
+      "train_positive_rate": 0.1222,
+      "test_positive_rate": 0.19
+    },
+    "clutch": {
+      "train_positive_rate": 0.1284,
+      "test_positive_rate": 0.1433
+    },
+    "coolant": {
+      "train_positive_rate": 0.0672,
+      "test_positive_rate": 0.0249
+    }
+  },
+  "hyperparameter_search": {
+    "selected": {
+      "algorithm": "logistic_regression",
+      "params": {
+        "C": 0.1
+      },
+      "mean_inner_pr_auc": 0.5297
+    },
+    "best_by_algorithm": {
+      "logistic_regression": {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 0.1
+        },
+        "mean_inner_pr_auc": 0.5297
+      },
+      "random_forest": {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": 6
+        },
+        "mean_inner_pr_auc": 0.5244
+      },
+      "gradient_boosting": {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 3
+        },
+        "mean_inner_pr_auc": 0.5146
+      }
+    },
+    "trials": [
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 0.1
+        },
+        "mean_inner_pr_auc": 0.5297
+      },
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 1.0
+        },
+        "mean_inner_pr_auc": 0.5254
+      },
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 10.0
+        },
+        "mean_inner_pr_auc": 0.5218
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 2,
+          "max_depth": 6
+        },
+        "mean_inner_pr_auc": 0.5221
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 2,
+          "max_depth": null
+        },
+        "mean_inner_pr_auc": 0.5054
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": 6
+        },
+        "mean_inner_pr_auc": 0.5244
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": null
+        },
+        "mean_inner_pr_auc": 0.521
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 3
+        },
+        "mean_inner_pr_auc": 0.5146
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 6
+        },
+        "mean_inner_pr_auc": 0.5087
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.15,
+          "max_depth": 3
+        },
+        "mean_inner_pr_auc": 0.5002
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.15,
+          "max_depth": 6
+        },
+        "mean_inner_pr_auc": 0.4953
+      }
+    ]
+  },
+  "metrics": {
+    "balanced_accuracy": 0.8009,
+    "macro_f1": 0.73,
+    "macro_pr_auc": 0.7917,
+    "macro_roc_auc": 0.8636,
+    "macro_brier": 0.0973,
+    "macro_ece": 0.0973,
+    "baseline": "milestone_lookup (training-group service frequency at the nearest 10,000 km milestone, F1-tuned threshold)",
+    "baseline_balanced_accuracy": 0.821,
+    "baseline_macro_f1": 0.7516,
+    "baseline_macro_pr_auc": 0.7331,
+    "prevalence_baseline_macro_brier": 0.1749,
+    "served_targets": [
+      "air_clean_filter",
+      "brake_fluid",
+      "clutch",
+      "fuel_filter",
+      "transmission_fluid"
+    ],
+    "all_modeled_targets_macro_f1": 0.4481,
+    "all_modeled_targets_baseline_macro_f1": 0.4831
+  },
+  "per_target": {
+    "washer_plug_drain": {
+      "records": 321,
+      "positives": 291,
+      "threshold": 0.4,
+      "precision": 0.9065,
+      "recall": 1.0,
+      "f1": 0.951,
+      "balanced_accuracy": 0.5,
+      "pr_auc": 0.7592,
+      "roc_auc": 0.0105,
+      "brier": 0.0996,
+      "ece": 0.0884,
+      "prevalence": 0.9065,
+      "reliability": [
+        {
+          "bin": "0.5-0.6",
+          "count": 2,
+          "mean_predicted": 0.5868,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 3,
+          "mean_predicted": 0.6493,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 2,
+          "mean_predicted": 0.7714,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 87,
+          "mean_predicted": 0.8769,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 227,
+          "mean_predicted": 0.9354,
+          "observed_rate": 0.8678
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "dust_and_pollen_filter": {
+      "records": 321,
+      "positives": 0,
+      "threshold": 0.45,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "balanced_accuracy": null,
+      "pr_auc": null,
+      "roc_auc": null,
+      "brier": 0.2244,
+      "ece": 0.3646,
+      "prevalence": 0.0,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 109,
+          "mean_predicted": 0.0474,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 11,
+          "mean_predicted": 0.1372,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 47,
+          "mean_predicted": 0.2537,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 25,
+          "mean_predicted": 0.3356,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 21,
+          "mean_predicted": 0.4532,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 10,
+          "mean_predicted": 0.558,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 29,
+          "mean_predicted": 0.6594,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 33,
+          "mean_predicted": 0.7299,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 21,
+          "mean_predicted": 0.8663,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 15,
+          "mean_predicted": 0.9021,
+          "observed_rate": 0.0
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "whell_alignment_and_balancing": {
+      "records": 321,
+      "positives": 88,
+      "threshold": 0.15,
+      "precision": 0.2759,
+      "recall": 1.0,
+      "f1": 0.4324,
+      "balanced_accuracy": 0.5043,
+      "pr_auc": 0.1889,
+      "roc_auc": 0.2826,
+      "brier": 0.2173,
+      "ece": 0.1441,
+      "prevalence": 0.2741,
+      "reliability": [
+        {
+          "bin": "0.1-0.2",
+          "count": 40,
+          "mean_predicted": 0.1773,
+          "observed_rate": 0.4
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 221,
+          "mean_predicted": 0.2467,
+          "observed_rate": 0.3258
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 60,
+          "mean_predicted": 0.3314,
+          "observed_rate": 0.0
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "air_clean_filter": {
+      "records": 321,
+      "positives": 142,
+      "threshold": 0.425,
+      "precision": 0.8929,
+      "recall": 0.7042,
+      "f1": 0.7874,
+      "balanced_accuracy": 0.8186,
+      "pr_auc": 0.9276,
+      "roc_auc": 0.9514,
+      "brier": 0.1236,
+      "ece": 0.1478,
+      "prevalence": 0.4424,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 103,
+          "mean_predicted": 0.0468,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 37,
+          "mean_predicted": 0.1384,
+          "observed_rate": 0.1081
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 26,
+          "mean_predicted": 0.26,
+          "observed_rate": 0.3077
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 31,
+          "mean_predicted": 0.3515,
+          "observed_rate": 0.6452
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 48,
+          "mean_predicted": 0.4502,
+          "observed_rate": 0.8125
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 14,
+          "mean_predicted": 0.5613,
+          "observed_rate": 0.7857
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 22,
+          "mean_predicted": 0.6485,
+          "observed_rate": 0.9545
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 3,
+          "mean_predicted": 0.738,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 24,
+          "mean_predicted": 0.8649,
+          "observed_rate": 0.9583
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 13,
+          "mean_predicted": 0.9327,
+          "observed_rate": 1.0
+        }
+      ],
+      "served": true,
+      "served_reason": "Held-out ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "fuel_filter": {
+      "records": 321,
+      "positives": 105,
+      "threshold": 0.275,
+      "precision": 0.7172,
+      "recall": 0.6762,
+      "f1": 0.6961,
+      "balanced_accuracy": 0.7733,
+      "pr_auc": 0.7375,
+      "roc_auc": 0.8011,
+      "brier": 0.1616,
+      "ece": 0.1034,
+      "prevalence": 0.3271,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 145,
+          "mean_predicted": 0.0318,
+          "observed_rate": 0.1379
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 44,
+          "mean_predicted": 0.1353,
+          "observed_rate": 0.1364
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 38,
+          "mean_predicted": 0.2352,
+          "observed_rate": 0.2895
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 13,
+          "mean_predicted": 0.353,
+          "observed_rate": 0.6154
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 31,
+          "mean_predicted": 0.4312,
+          "observed_rate": 0.5161
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 15,
+          "mean_predicted": 0.5435,
+          "observed_rate": 0.9333
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 13,
+          "mean_predicted": 0.6523,
+          "observed_rate": 0.7692
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 9,
+          "mean_predicted": 0.765,
+          "observed_rate": 0.8889
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 12,
+          "mean_predicted": 0.8269,
+          "observed_rate": 0.9167
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 1,
+          "mean_predicted": 0.9158,
+          "observed_rate": 1.0
+        }
+      ],
+      "served": true,
+      "served_reason": "Held-out ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "spark_plug": {
+      "records": 321,
+      "positives": 35,
+      "threshold": 0.95,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "balanced_accuracy": 0.5,
+      "pr_auc": 0.0583,
+      "roc_auc": 0.007,
+      "brier": 0.109,
+      "ece": 0.109,
+      "prevalence": 0.109,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 321,
+          "mean_predicted": 0.0,
+          "observed_rate": 0.109
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "brake_fluid": {
+      "records": 321,
+      "positives": 52,
+      "threshold": 0.375,
+      "precision": 1.0,
+      "recall": 0.7692,
+      "f1": 0.8696,
+      "balanced_accuracy": 0.8846,
+      "pr_auc": 0.9143,
+      "roc_auc": 0.965,
+      "brier": 0.053,
+      "ece": 0.0877,
+      "prevalence": 0.162,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 194,
+          "mean_predicted": 0.0171,
+          "observed_rate": 0.0155
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 39,
+          "mean_predicted": 0.1584,
+          "observed_rate": 0.1026
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 45,
+          "mean_predicted": 0.2478,
+          "observed_rate": 0.0444
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 4,
+          "mean_predicted": 0.3385,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 2,
+          "mean_predicted": 0.4264,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 6,
+          "mean_predicted": 0.5723,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 30,
+          "mean_predicted": 0.6717,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 1,
+          "mean_predicted": 0.701,
+          "observed_rate": 1.0
+        }
+      ],
+      "served": true,
+      "served_reason": "Held-out ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "brake_and_clutch_oil": {
+      "records": 321,
+      "positives": 91,
+      "threshold": 0.95,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "balanced_accuracy": 0.5,
+      "pr_auc": 0.4992,
+      "roc_auc": 0.8322,
+      "brier": 0.2582,
+      "ece": 0.282,
+      "prevalence": 0.2835,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 273,
+          "mean_predicted": 0.0212,
+          "observed_rate": 0.2747
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 24,
+          "mean_predicted": 0.1424,
+          "observed_rate": 0.6667
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 11,
+          "mean_predicted": 0.2503,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 5,
+          "mean_predicted": 0.3495,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 2,
+          "mean_predicted": 0.4603,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 5,
+          "mean_predicted": 0.5117,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 1,
+          "mean_predicted": 0.7497,
+          "observed_rate": 0.0
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "transmission_fluid": {
+      "records": 321,
+      "positives": 53,
+      "threshold": 0.875,
+      "precision": 1.0,
+      "recall": 0.6792,
+      "f1": 0.809,
+      "balanced_accuracy": 0.8396,
+      "pr_auc": 0.8636,
+      "roc_auc": 0.9225,
+      "brier": 0.0448,
+      "ece": 0.0351,
+      "prevalence": 0.1651,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 275,
+          "mean_predicted": 0.0157,
+          "observed_rate": 0.0436
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 7,
+          "mean_predicted": 0.1255,
+          "observed_rate": 0.2857
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 1,
+          "mean_predicted": 0.2392,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 1,
+          "mean_predicted": 0.3227,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 2,
+          "mean_predicted": 0.8704,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 35,
+          "mean_predicted": 0.978,
+          "observed_rate": 1.0
+        }
+      ],
+      "served": true,
+      "served_reason": "Held-out ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "brake_pads": {
+      "records": 321,
+      "positives": 61,
+      "threshold": 0.325,
+      "precision": 0.3571,
+      "recall": 0.2459,
+      "f1": 0.2913,
+      "balanced_accuracy": 0.571,
+      "pr_auc": 0.3519,
+      "roc_auc": 0.7906,
+      "brier": 0.1445,
+      "ece": 0.0874,
+      "prevalence": 0.19,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 199,
+          "mean_predicted": 0.028,
+          "observed_rate": 0.1005
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 31,
+          "mean_predicted": 0.186,
+          "observed_rate": 0.2903
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 43,
+          "mean_predicted": 0.2415,
+          "observed_rate": 0.3023
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 14,
+          "mean_predicted": 0.3355,
+          "observed_rate": 0.5714
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 28,
+          "mean_predicted": 0.4412,
+          "observed_rate": 0.3929
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 6,
+          "mean_predicted": 0.5176,
+          "observed_rate": 0.0
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "clutch": {
+      "records": 321,
+      "positives": 46,
+      "threshold": 0.375,
+      "precision": 0.5556,
+      "recall": 0.4348,
+      "f1": 0.4878,
+      "balanced_accuracy": 0.6883,
+      "pr_auc": 0.5153,
+      "roc_auc": 0.6781,
+      "brier": 0.1036,
+      "ece": 0.1126,
+      "prevalence": 0.1433,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 194,
+          "mean_predicted": 0.0365,
+          "observed_rate": 0.1134
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 85,
+          "mean_predicted": 0.1411,
+          "observed_rate": 0.0471
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 4,
+          "mean_predicted": 0.2417,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 4,
+          "mean_predicted": 0.373,
+          "observed_rate": 0.25
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 4,
+          "mean_predicted": 0.4469,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 15,
+          "mean_predicted": 0.5543,
+          "observed_rate": 0.2667
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 15,
+          "mean_predicted": 0.6224,
+          "observed_rate": 1.0
+        }
+      ],
+      "served": true,
+      "served_reason": "Held-out ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "coolant": {
+      "records": 321,
+      "positives": 8,
+      "threshold": 0.05,
+      "precision": 0.0268,
+      "recall": 1.0,
+      "f1": 0.0521,
+      "balanced_accuracy": 0.5351,
+      "pr_auc": 0.1419,
+      "roc_auc": 0.8023,
+      "brier": 0.0257,
+      "ece": 0.0491,
+      "prevalence": 0.0249,
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 308,
+          "mean_predicted": 0.0687,
+          "observed_rate": 0.0195
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 13,
+          "mean_predicted": 0.1076,
+          "observed_rate": 0.1538
+        }
+      ],
+      "served": false,
+      "served_reason": "Held-out evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    }
+  },
+  "baselines": {
+    "washer_plug_drain": {
+      "prevalence": {
+        "records": 321,
+        "positives": 291,
+        "threshold": 0.5,
+        "precision": 0.9065,
+        "recall": 1.0,
+        "f1": 0.951,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.9065,
+        "roc_auc": 0.5,
+        "brier": 0.0859,
+        "ece": 0.0349,
+        "prevalence": 0.9065
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 291,
+        "threshold": 0.6,
+        "precision": 0.9065,
+        "recall": 1.0,
+        "f1": 0.951,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.9965,
+        "roc_auc": 0.9811,
+        "brier": 0.0631,
+        "ece": 0.1431,
+        "prevalence": 0.9065
+      }
+    },
+    "dust_and_pollen_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 0,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": null,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.1511,
+        "ece": 0.3888,
+        "prevalence": 0.0
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 0,
+        "threshold": 0.725,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": null,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3016,
+        "ece": 0.3898,
+        "prevalence": 0.0
+      }
+    },
+    "whell_alignment_and_balancing": {
+      "prevalence": {
+        "records": 321,
+        "positives": 88,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.2741,
+        "roc_auc": 0.5,
+        "brier": 0.1994,
+        "ece": 0.0211,
+        "prevalence": 0.2741
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 88,
+        "threshold": 0.175,
+        "precision": 0.2897,
+        "recall": 0.7045,
+        "f1": 0.4106,
+        "balanced_accuracy": 0.5261,
+        "pr_auc": 0.4797,
+        "roc_auc": 0.6497,
+        "brier": 0.1876,
+        "ece": 0.0484,
+        "prevalence": 0.2741
+      }
+    },
+    "air_clean_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 142,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.4424,
+        "roc_auc": 0.5,
+        "brier": 0.2536,
+        "ece": 0.083,
+        "prevalence": 0.4424
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 142,
+        "threshold": 0.35,
+        "precision": 0.9324,
+        "recall": 0.9718,
+        "f1": 0.9517,
+        "balanced_accuracy": 0.958,
+        "pr_auc": 0.9784,
+        "roc_auc": 0.9817,
+        "brier": 0.075,
+        "ece": 0.1382,
+        "prevalence": 0.4424
+      }
+    },
+    "fuel_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 105,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.3271,
+        "roc_auc": 0.5,
+        "brier": 0.2232,
+        "ece": 0.0557,
+        "prevalence": 0.3271
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 105,
+        "threshold": 0.05,
+        "precision": 0.529,
+        "recall": 0.781,
+        "f1": 0.6308,
+        "balanced_accuracy": 0.7215,
+        "pr_auc": 0.5378,
+        "roc_auc": 0.7021,
+        "brier": 0.1872,
+        "ece": 0.1297,
+        "prevalence": 0.3271
+      }
+    },
+    "spark_plug": {
+      "prevalence": {
+        "records": 321,
+        "positives": 35,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.109,
+        "roc_auc": 0.5,
+        "brier": 0.1012,
+        "ece": 0.0638,
+        "prevalence": 0.109
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 35,
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.5,
+        "roc_auc": 0.9337,
+        "brier": 0.0792,
+        "ece": 0.0636,
+        "prevalence": 0.109
+      }
+    },
+    "brake_fluid": {
+      "prevalence": {
+        "records": 321,
+        "positives": 52,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.162,
+        "roc_auc": 0.5,
+        "brier": 0.1359,
+        "ece": 0.0141,
+        "prevalence": 0.162
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 52,
+        "threshold": 0.725,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571,
+        "balanced_accuracy": 0.875,
+        "pr_auc": 0.8761,
+        "roc_auc": 0.9536,
+        "brier": 0.0447,
+        "ece": 0.0666,
+        "prevalence": 0.162
+      }
+    },
+    "brake_and_clutch_oil": {
+      "prevalence": {
+        "records": 321,
+        "positives": 91,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.2835,
+        "roc_auc": 0.5,
+        "brier": 0.2463,
+        "ece": 0.2077,
+        "prevalence": 0.2835
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 91,
+        "threshold": 0.225,
+        "precision": 0.4286,
+        "recall": 0.2308,
+        "f1": 0.3,
+        "balanced_accuracy": 0.5545,
+        "pr_auc": 0.4146,
+        "roc_auc": 0.7113,
+        "brier": 0.2488,
+        "ece": 0.2271,
+        "prevalence": 0.2835
+      }
+    },
+    "transmission_fluid": {
+      "prevalence": {
+        "records": 321,
+        "positives": 53,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.1651,
+        "roc_auc": 0.5,
+        "brier": 0.1389,
+        "ece": 0.0319,
+        "prevalence": 0.1651
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 53,
+        "threshold": 0.95,
+        "precision": 1.0,
+        "recall": 0.7358,
+        "f1": 0.8478,
+        "balanced_accuracy": 0.8679,
+        "pr_auc": 0.8528,
+        "roc_auc": 0.9453,
+        "brier": 0.0416,
+        "ece": 0.0312,
+        "prevalence": 0.1651
+      }
+    },
+    "brake_pads": {
+      "prevalence": {
+        "records": 321,
+        "positives": 61,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.19,
+        "roc_auc": 0.5,
+        "brier": 0.1585,
+        "ece": 0.0678,
+        "prevalence": 0.19
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 61,
+        "threshold": 0.525,
+        "precision": 0.2857,
+        "recall": 0.1967,
+        "f1": 0.233,
+        "balanced_accuracy": 0.5407,
+        "pr_auc": 0.3382,
+        "roc_auc": 0.7438,
+        "brier": 0.1695,
+        "ece": 0.1525,
+        "prevalence": 0.19
+      }
+    },
+    "clutch": {
+      "prevalence": {
+        "records": 321,
+        "positives": 46,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.1433,
+        "roc_auc": 0.5,
+        "brier": 0.123,
+        "ece": 0.0149,
+        "prevalence": 0.1433
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 46,
+        "threshold": 0.725,
+        "precision": 0.5128,
+        "recall": 0.4348,
+        "f1": 0.4706,
+        "balanced_accuracy": 0.6828,
+        "pr_auc": 0.4205,
+        "roc_auc": 0.85,
+        "brier": 0.1161,
+        "ece": 0.1104,
+        "prevalence": 0.1433
+      }
+    },
+    "coolant": {
+      "prevalence": {
+        "records": 321,
+        "positives": 8,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.0249,
+        "roc_auc": 0.5,
+        "brier": 0.0261,
+        "ece": 0.0423,
+        "prevalence": 0.0249
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 8,
+        "threshold": 0.075,
+        "precision": 0.08,
+        "recall": 0.75,
+        "f1": 0.1446,
+        "balanced_accuracy": 0.7648,
+        "pr_auc": 0.2354,
+        "roc_auc": 0.8323,
+        "brier": 0.0288,
+        "ece": 0.0423,
+        "prevalence": 0.0249
+      }
+    }
+  },
+  "algorithm_comparison_uncalibrated": {
+    "washer_plug_drain": {
+      "logistic_regression": {
+        "f1": 0.9828,
+        "pr_auc": 0.999,
+        "roc_auc": 0.9895,
+        "brier": 0.0331
+      },
+      "random_forest": {
+        "f1": 0.9599,
+        "pr_auc": 0.9982,
+        "roc_auc": 0.9818,
+        "brier": 0.0533
+      },
+      "gradient_boosting": {
+        "f1": 0.9583,
+        "pr_auc": 0.9843,
+        "roc_auc": 0.8725,
+        "brier": 0.0627
+      }
+    },
+    "dust_and_pollen_filter": {
+      "logistic_regression": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3071
+      },
+      "random_forest": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3396
+      },
+      "gradient_boosting": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3637
+      }
+    },
+    "whell_alignment_and_balancing": {
+      "logistic_regression": {
+        "f1": 0.4583,
+        "pr_auc": 0.4445,
+        "roc_auc": 0.7174,
+        "brier": 0.2037
+      },
+      "random_forest": {
+        "f1": 0.433,
+        "pr_auc": 0.5194,
+        "roc_auc": 0.7401,
+        "brier": 0.1828
+      },
+      "gradient_boosting": {
+        "f1": 0.4479,
+        "pr_auc": 0.4912,
+        "roc_auc": 0.7318,
+        "brier": 0.1907
+      }
+    },
+    "air_clean_filter": {
+      "logistic_regression": {
+        "f1": 0.8456,
+        "pr_auc": 0.9276,
+        "roc_auc": 0.9514,
+        "brier": 0.1001
+      },
+      "random_forest": {
+        "f1": 0.719,
+        "pr_auc": 0.8754,
+        "roc_auc": 0.8838,
+        "brier": 0.1427
+      },
+      "gradient_boosting": {
+        "f1": 0.7692,
+        "pr_auc": 0.8674,
+        "roc_auc": 0.8691,
+        "brier": 0.1417
+      }
+    },
+    "fuel_filter": {
+      "logistic_regression": {
+        "f1": 0.6995,
+        "pr_auc": 0.7375,
+        "roc_auc": 0.8011,
+        "brier": 0.1585
+      },
+      "random_forest": {
+        "f1": 0.7317,
+        "pr_auc": 0.8316,
+        "roc_auc": 0.8541,
+        "brier": 0.1237
+      },
+      "gradient_boosting": {
+        "f1": 0.7349,
+        "pr_auc": 0.8115,
+        "roc_auc": 0.8241,
+        "brier": 0.128
+      }
+    },
+    "spark_plug": {
+      "logistic_regression": {
+        "f1": 0.7447,
+        "pr_auc": 0.9537,
+        "roc_auc": 0.993,
+        "brier": 0.0596
+      },
+      "random_forest": {
+        "f1": 0.8986,
+        "pr_auc": 0.9571,
+        "roc_auc": 0.9915,
+        "brier": 0.0244
+      },
+      "gradient_boosting": {
+        "f1": 0.775,
+        "pr_auc": 0.9446,
+        "roc_auc": 0.9857,
+        "brier": 0.0369
+      }
+    },
+    "brake_fluid": {
+      "logistic_regression": {
+        "f1": 0.6471,
+        "pr_auc": 0.9143,
+        "roc_auc": 0.965,
+        "brier": 0.0759
+      },
+      "random_forest": {
+        "f1": 0.8421,
+        "pr_auc": 0.9033,
+        "roc_auc": 0.9651,
+        "brier": 0.0507
+      },
+      "gradient_boosting": {
+        "f1": 0.735,
+        "pr_auc": 0.8929,
+        "roc_auc": 0.9533,
+        "brier": 0.0659
+      }
+    },
+    "brake_and_clutch_oil": {
+      "logistic_regression": {
+        "f1": 0.0806,
+        "pr_auc": 0.4992,
+        "roc_auc": 0.8322,
+        "brier": 0.2289
+      },
+      "random_forest": {
+        "f1": 0.0,
+        "pr_auc": 0.3947,
+        "roc_auc": 0.7322,
+        "brier": 0.2896
+      },
+      "gradient_boosting": {
+        "f1": 0.1417,
+        "pr_auc": 0.4427,
+        "roc_auc": 0.7379,
+        "brier": 0.3007
+      }
+    },
+    "transmission_fluid": {
+      "logistic_regression": {
+        "f1": 0.8478,
+        "pr_auc": 0.8636,
+        "roc_auc": 0.9225,
+        "brier": 0.0494
+      },
+      "random_forest": {
+        "f1": 0.7816,
+        "pr_auc": 0.8298,
+        "roc_auc": 0.9329,
+        "brier": 0.0557
+      },
+      "gradient_boosting": {
+        "f1": 0.7865,
+        "pr_auc": 0.8507,
+        "roc_auc": 0.9243,
+        "brier": 0.0503
+      }
+    },
+    "brake_pads": {
+      "logistic_regression": {
+        "f1": 0.4581,
+        "pr_auc": 0.3519,
+        "roc_auc": 0.7906,
+        "brier": 0.192
+      },
+      "random_forest": {
+        "f1": 0.5139,
+        "pr_auc": 0.4815,
+        "roc_auc": 0.713,
+        "brier": 0.1627
+      },
+      "gradient_boosting": {
+        "f1": 0.4198,
+        "pr_auc": 0.3682,
+        "roc_auc": 0.7421,
+        "brier": 0.2046
+      }
+    },
+    "clutch": {
+      "logistic_regression": {
+        "f1": 0.3883,
+        "pr_auc": 0.5153,
+        "roc_auc": 0.6781,
+        "brier": 0.161
+      },
+      "random_forest": {
+        "f1": 0.4082,
+        "pr_auc": 0.3577,
+        "roc_auc": 0.8317,
+        "brier": 0.1372
+      },
+      "gradient_boosting": {
+        "f1": 0.396,
+        "pr_auc": 0.355,
+        "roc_auc": 0.8046,
+        "brier": 0.1568
+      }
+    },
+    "coolant": {
+      "logistic_regression": {
+        "f1": 0.1013,
+        "pr_auc": 0.1419,
+        "roc_auc": 0.8023,
+        "brier": 0.1485
+      },
+      "random_forest": {
+        "f1": 0.2667,
+        "pr_auc": 0.3321,
+        "roc_auc": 0.738,
+        "brier": 0.0801
+      },
+      "gradient_boosting": {
+        "f1": 0.2182,
+        "pr_auc": 0.4406,
+        "roc_auc": 0.8506,
+        "brier": 0.099
+      }
+    }
+  },
+  "leave_one_group_out": {
+    "washer_plug_drain": {
+      "folds": 7,
+      "mean_pr_auc": 0.9211,
+      "mean_roc_auc": 0.8642
+    },
+    "dust_and_pollen_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.8033,
+      "mean_roc_auc": 0.901
+    },
+    "whell_alignment_and_balancing": {
+      "folds": 7,
+      "mean_pr_auc": 0.3287,
+      "mean_roc_auc": 0.5994
+    },
+    "air_clean_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.879,
+      "mean_roc_auc": 0.9085
+    },
+    "fuel_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.6133,
+      "mean_roc_auc": 0.8375
+    },
+    "spark_plug": {
+      "folds": 7,
+      "mean_pr_auc": 0.921,
+      "mean_roc_auc": 0.9736
+    },
+    "brake_fluid": {
+      "folds": 7,
+      "mean_pr_auc": 0.8107,
+      "mean_roc_auc": 0.935
+    },
+    "brake_and_clutch_oil": {
+      "folds": 7,
+      "mean_pr_auc": 0.7337,
+      "mean_roc_auc": 0.8829
+    },
+    "transmission_fluid": {
+      "folds": 7,
+      "mean_pr_auc": 0.9556,
+      "mean_roc_auc": 0.9835
+    },
+    "brake_pads": {
+      "folds": 7,
+      "mean_pr_auc": 0.6187,
+      "mean_roc_auc": 0.8641
+    },
+    "clutch": {
+      "folds": 7,
+      "mean_pr_auc": 0.6853,
+      "mean_roc_auc": 0.8167
+    },
+    "coolant": {
+      "folds": 7,
+      "mean_pr_auc": 0.4423,
+      "mean_roc_auc": 0.8517
+    }
+  },
+  "feature_importance": {
+    "air_clean_filter": {
+      "vehicle_type": 0.0,
+      "fuel_type": -0.0071,
+      "mileage": 0.4807
+    },
+    "fuel_filter": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.2119,
+      "mileage": 0.359
+    },
+    "brake_fluid": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.002,
+      "mileage": 0.743
+    },
+    "transmission_fluid": {
+      "vehicle_type": 0.0,
+      "fuel_type": -0.0144,
+      "mileage": 0.6935
+    },
+    "clutch": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.1193,
+      "mileage": 0.3658
+    }
+  },
+  "cost_experiment": {
+    "target": "visit cost (INR, 2016-2018 workshop invoices)",
+    "test_records": 321,
+    "mae_gradient_boosting": 1546.7,
+    "mae_milestone_median_baseline": 2020.2,
+    "mae_global_median_baseline": 2295.6,
+    "served": false,
+    "reason": "Costs are Indian-rupee workshop prices from 2016-2018 for four models; they are not valid estimates for the fleet's currency, region or year. Fleet cost answers use the fleet's own recorded maintenance costs instead."
+  },
+  "probability_validation": {
+    "status": "calibrated",
+    "method": "sigmoid (Platt) on out-of-fold predictions from leave-one-group-out training folds",
+    "validation_records": 321,
+    "independent_groups": 2,
+    "brier_score": 0.0973,
+    "prevalence_baseline_brier": 0.1749,
+    "expected_calibration_error": 0.0973
+  },
+  "acceptance_criteria": {
+    "acceptance_criteria_passed": false,
+    "rules": "macro balanced accuracy and macro F1 over served targets >= 0.60 and >= the milestone-lookup baseline; calibrated macro Brier below the prevalence baseline and ECE <= 0.15; >= 2 groups per split with zero overlap.",
+    "discrimination_passed": false,
+    "calibration_passed": true
+  },
+  "feature_domain": {
+    "vehicle_type": [
+      "sedan",
+      "suv"
+    ],
+    "fuel_type": [
+      "diesel",
+      "petrol"
+    ],
+    "mileage": [
+      9021,
+      137822
+    ]
+  },
+  "training_config": {
+    "random_state": 42,
+    "algorithm": "logistic_regression",
+    "params": {
+      "C": 0.1
+    },
+    "feature_columns": [
+      "vehicle_type",
+      "fuel_type",
+      "mileage"
+    ],
+    "schedule_cycles_km": [
+      10000,
+      20000,
+      30000,
+      40000,
+      60000,
+      80000,
+      100000
+    ],
+    "calibration": "Platt scaling (GroupPlattCalibratedClassifier) on out-of-fold scores from leave-one-group-out training folds",
+    "threshold_rule": "maximise F1 on out-of-fold calibrated probabilities from training groups",
+    "per_target_acceptance": {
+      "min_roc_auc": 0.65,
+      "min_f1": 0.4
+    },
+    "sklearn": "1.9.1"
+  },
+  "limitations": [
+    "Four car models from two Indian cities, 2016-2018; no motorcycles, pickups, vans or minivans.",
+    "Targets are workshop service decisions, which largely follow manufacturer schedules; they are not wear measurements or failures.",
+    "No visit dates or vehicle IDs, so no service-window or failure-date estimate can be validated.",
+    "Vehicles outside the training domain (body type, fuel type, odometer range) are refused rather than extrapolated."
+  ]
+}
