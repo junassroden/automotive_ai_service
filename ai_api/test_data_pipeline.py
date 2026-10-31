@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import joblib
 import pandas as pd
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
 from data_pipeline.cli import (
     build_inventory,
@@ -91,6 +91,7 @@ class DatasetInventoryTests(SimpleTestCase):
         self.assertIn("BadZipFile", inventory["files"][0]["issue"])
 
 
+@override_settings(AI_SERVICE_API_KEY="")
 class CapabilitiesEndpointTests(SimpleTestCase):
     def test_capabilities_does_not_claim_unverified_predictive_models(self):
         response = self.client.get("/api/capabilities/")
