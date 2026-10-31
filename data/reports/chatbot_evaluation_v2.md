@@ -1,14 +1,14 @@
 # Chatbot evaluation (v2)
 
-Generated 2026-10-31T22:50:27+0800 with `python scripts/evaluate_chatbot.py`. Evaluation set: `data\evaluation\chatbot_eval_v2.json` (221 author-written cases + 15 DTC questions from the held-out chat validation split). Cases are evaluation-only; the training-overlap check is below.
+Generated 2026-11-01T07:01:18+0800 with `python scripts/evaluate_chatbot.py`. Evaluation set: `data\evaluation\chatbot_eval_v2.json` (221 author-written cases + 15 DTC questions from the held-out chat validation split). Cases are evaluation-only; the training-overlap check is below.
 
 | Metric | Current router | Previous core (baseline) |
 |---|---:|---:|
 | Pass rate (all checks) | 1.0 | 0.1525 (content checks only) |
 | Critical-case pass rate | 1.0 | 0.2 |
 | Permission leaks | 0 of 27 | 1 of 27 |
-| Latency p50 / p95 (ms) | 169.9 / 249.4 | 90.0 / 295.0 |
-| Mean lexical groundedness (reference answers) | 0.8953 over 51 | n/a |
+| Latency p50 / p95 (ms) | 167.9 / 251.8 | 93.1 / 313.7 |
+| Mean lexical groundedness (reference answers) | 0.8947 over 50 | n/a |
 
 Baseline rows apply the same content checks (required/forbidden text, abstention, intent) but not the evidence-type or citation checks, which the old core cannot produce.
 
