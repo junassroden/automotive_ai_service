@@ -262,6 +262,12 @@ class ChatEndpointTests(TestCase):
             vehicles=None,
             rental_context=rental_context,
             diagnostic_context=None,
+            viewer_role=None,
+            conversation_id=None,
+            conversation_scope=None,
+            retrieval_protocol=None,
+            vocabulary=None,
+            retrieval=None,
         )
 
     def test_chat_endpoint_rejects_non_object_rental_context(self):
@@ -301,6 +307,12 @@ class ChatEndpointTests(TestCase):
             vehicles=None,
             rental_context={"diagnostic_context": diagnostic_context},
             diagnostic_context=diagnostic_context,
+            viewer_role=None,
+            conversation_id=None,
+            conversation_scope=None,
+            retrieval_protocol=None,
+            vocabulary=None,
+            retrieval=None,
         )
 
     def test_chat_endpoint_rejects_non_object_diagnostic_context(self):
