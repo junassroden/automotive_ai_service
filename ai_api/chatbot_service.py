@@ -11,6 +11,7 @@ from .automotive_knowledge import (
     retrieve_knowledge,
 )
 from .prediction_service import (
+    MaintenancePredictionsUnavailableError,
     load_maintenance_artifact,
     predict_vehicle,
     validate_vehicle,
@@ -52,8 +53,26 @@ SAFETY_CRITICAL_PHRASES = (
     "tyre bulge",
     "exposed cords",
     "smoke from",
+    "flashing",
+    "blinking",
+    "grinding",
+    "pulls to",
+    "when braking",
+    "when i brake",
     "steam from",
 )
+SELECTED_VEHICLE = re.compile(
+    r"\b(?:i\s+(?:selected|chose|picked|clicked)|selected\s+(?:vehicle|car)|this\s+(?:vehicle|car)|that\s+(?:vehicle|car)|the\s+one\s+i)\b",
+    re.IGNORECASE,
+)
+DISCOUNT_TERMS = re.compile(r"\b(?:discounts?|promos?|promotions?|free\s+days?|vouchers?|coupons?)\b", re.IGNORECASE)
+# Words that may follow a make without naming a model ("Toyota per day", "Toyota cars").
+MAKE_FOLLOWERS = {
+    "per", "day", "daily", "for", "car", "cars", "vehicle", "vehicles", "model", "models", "is", "are", "price",
+    "prices", "rate", "rates", "cost", "rental", "rent", "deposit", "available", "the", "a", "an", "and", "or",
+    "with", "that", "this", "suv", "suvs", "sedan", "sedans", "van", "vans", "pickup", "truck", "have", "has",
+    "do", "does", "you", "brand", "units", "unit", "na", "po", "ang", "ng",
+}
 MINIMUM_INTENT_CONFIDENCE = 0.40
 AUTOMOTIVE_TERMS = {
     "automotive", "auto", "car", "cars", "vehicle", "vehicles", "rental",
@@ -104,7 +123,7 @@ def build_response(intent, confidence, answer, data=None):
     }
 
 
-def answer_chat(
+def _answer_chat_core(
     message,
     vehicle=None,
     vehicles=None,
@@ -182,6 +201,10 @@ def answer_chat(
                 "fleet priorities, or service schedules."
             )
         )
+
+    if intent in RENTAL_INTENTS and confidence < MINIMUM_INTENT_CONFIDENCE and knowledge is not None:
+        # An unsure rental guess does not override a strong match in the automotive knowledge base.
+        return _knowledge_response(knowledge, confidence, diagnostic_context, message)
 
     if intent in LIVE_RENTAL_INTENTS:
         answer = answer_rental_question(intent, message, rental_context)
@@ -406,13 +429,14 @@ def _model_features_from_context(context_vehicle):
         for key, value in context_vehicle.items()
         if key in {
             "vehicle_type", "brand", "model", "engine_type", "make_year",
-            "region", "mileage_range", "mileage",
+            "region", "mileage_range", "mileage", "fuel_type",
         }
     }
     for model_key, aliases in (
         ("brand", ("make",)),
         ("make_year", ("year",)),
         ("mileage", ("current_mileage_km",)),
+        ("vehicle_type", ("body_type",)),
     ):
         if model_key not in features:
             for alias in aliases:
@@ -455,6 +479,7 @@ def _knowledge_response(knowledge, confidence, diagnostic_context, message):
         knowledge,
         diagnostic_context=diagnostic_context,
         query=message,
+        concise=True,
     )
     return build_response(
         document["category"],
@@ -593,6 +618,12 @@ def answer_rental_question(intent, message, rental_context):
 
     if intent == "rental_pricing":
         candidates = select_vehicle_candidates(vehicles, message)
+        listed = [item for item in vehicles if isinstance(item, dict)]
+        if SELECTED_VEHICLE.search(message) and len(listed) > 1 and len(candidates) == len(listed):
+            return (
+                "Which vehicle do you mean? I can't see which vehicle is selected on the page. "
+                "Please tell me its make and model (for example, Toyota Vios)."
+            )
         limit = requested_price_limit(message)
         if limit is not None:
             candidates = [
@@ -607,6 +638,28 @@ def answer_rental_question(intent, message, rental_context):
                 if valid_price(item.get("daily_rental_price")) is not None
                 else float("inf"),
             )
+        currency = rental_context.get("currency", "PHP")
+        period = rental_context.get("availability_period")
+        checked_period = isinstance(period, dict) and period.get("status") == "checked"
+        if re.search(r"\bdeposits?\b", message, re.IGNORECASE):
+            deposits = []
+            for item in candidates:
+                name = vehicle_name(item)
+                if not name:
+                    continue
+                deposit = valid_price(item.get("security_deposit"))
+                price = valid_price(item.get("daily_rental_price"))
+                rate = f" (daily rate {currency} {price:,.2f})" if price is not None else ""
+                deposits.append(
+                    f"{name}: listed security deposit {currency} {deposit:,.2f}{rate}" if deposit is not None and deposit > 0
+                    else f"{name}: no security deposit is listed{rate}"
+                )
+            if deposits:
+                answer = "Security deposits in the supplied vehicle records: " + "; ".join(deposits) + "."
+                if rental_context.get("vehicle_list_truncated") is True:
+                    answer += " The list may be incomplete."
+                return answer + (" The deposit is listed separately and is not added to the rental total; "
+                                 "the rental team handles how it is collected and refunded.")
         prices = []
         for item in candidates:
             price = valid_price(item.get("daily_rental_price"))
@@ -615,7 +668,6 @@ def answer_rental_question(intent, message, rental_context):
             name = vehicle_name(item)
             if not name:
                 continue
-            currency = rental_context.get("currency", "PHP")
             amount = f"{price:,.2f}".rstrip("0").rstrip(".")
             duration = rental_context.get("rental_duration_days")
             minimum = item.get("minimum_rental_duration")
@@ -628,7 +680,8 @@ def answer_rental_question(intent, message, rental_context):
                 total = ""
             deposit = valid_price(item.get("security_deposit"))
             deposit_text = f"; listed security deposit {currency} {deposit:,.2f}" if deposit is not None and deposit > 0 else ""
-            prices.append(f"{name}: {currency} {amount} per day{total}{deposit_text}")
+            booked = "; not available for the requested dates" if checked_period and item.get("is_available") is False else ""
+            prices.append(f"{name}: {currency} {amount} per day{total}{deposit_text}{booked}")
         if not prices:
             if limit is not None:
                 return (
@@ -648,11 +701,23 @@ def answer_rental_question(intent, message, rental_context):
             answer += " The total is an estimate based only on the listed daily rate; confirm fees, deposits, and final pricing with the rental team."
         else:
             answer += " Confirm the final quote and any fees with the rental team."
+        if DISCOUNT_TERMS.search(message):
+            answer += " The system stores no discounts, promotions or free days: a reservation total is the daily rate times the number of days."
         return answer
 
     candidates = select_vehicle_candidates(vehicles, message)
     if not candidates and rental_context.get("requested_vehicle_id") is not None:
         return "No matching vehicle is present in the listings this account is authorized to view."
+    seats_needed = re.search(r"\b(\d{1,2})\s*(?:-\s*)?(?:people|persons|passengers|pax|seats?|seater)\b", message, re.IGNORECASE)
+    if seats_needed:
+        needed = int(seats_needed.group(1))
+        candidates = [item for item in candidates
+                      if isinstance(item.get("seating_capacity"), int) and item["seating_capacity"] >= needed]
+        if not candidates:
+            return f"No vehicle in the supplied listings seats {needed} or more people."
+        message_prefix = f"Vehicles that seat at least {needed} people: "
+    else:
+        message_prefix = "Vehicle details in the supplied records: "
     details = []
     for item in candidates:
         name = vehicle_name(item)
@@ -685,7 +750,7 @@ def answer_rental_question(intent, message, rental_context):
             "The supplied vehicle records do not include verified feature "
             "details. Please check the vehicle listing for its specifications."
         )
-    answer = "Vehicle details in the supplied records: " + "; ".join(details) + "."
+    answer = message_prefix + "; ".join(details) + "."
     if rental_context.get("vehicle_list_truncated") is True:
         answer += " The list may be incomplete."
     return answer
@@ -725,16 +790,19 @@ def answer_database_context(database_context, message, rental_context):
                 if not isinstance(record, dict):
                     continue
                 name = vehicle_name(record) or "Vehicle"
+                total = _amount(record.get("total_amount"))
                 line = (
                     f"Reservation #{record.get('id')}: {name}, "
                     f"{record.get('start_date')} to {record.get('end_date')}, "
                     f"status: {record.get('status')}, "
                     f"{record.get('rental_days')} day(s), "
-                    f"{rental_context.get('currency', 'PHP')} {float(record.get('total_amount') or 0):,.2f} stored total."
+                    + (f"{rental_context.get('currency', 'PHP')} {total:,.2f} stored total."
+                       if total is not None else "no stored total.")
                 )
                 lines.append(line)
             answer = "Your reservation records: " + " ".join(lines)
-            if booking_data.get("total_count", len(records)) > len(records):
+            total_count = booking_data.get("total_count", len(records))
+            if isinstance(total_count, int) and total_count > len(records):
                 answer += f" Showing the latest {len(records)} of {booking_data['total_count']} records."
         return answer, {
             "data_source": "reservations belonging to the authenticated account",
@@ -888,6 +956,13 @@ def select_vehicle_candidates(vehicles, message):
         and str(item.get("make") or "").casefold() in query
     ]
     if make_matches:
+        # "Honda Civic" when only a Honda City is listed names a model that is not listed.
+        for make in {str(item.get("make")).casefold() for item in make_matches}:
+            following = re.search(rf"\b{re.escape(make)}\s+([a-z][a-z0-9-]*)", query)
+            models = {str(item.get("model") or "").casefold().split(" ")[0] for item in make_matches
+                      if str(item.get("make")).casefold() == make}
+            if following and following.group(1) not in models and following.group(1) not in MAKE_FOLLOWERS:
+                return []
         return make_matches
 
     model_matches = [
@@ -910,6 +985,15 @@ def select_vehicle_candidates(vehicles, message):
         return []
 
     return candidates
+
+
+def _amount(value):
+    """A stored money value (the Back-End sends decimals as strings), or None if it is not a number."""
+    try:
+        amount = float(value)
+    except (TypeError, ValueError):
+        return None
+    return amount if amount == amount and amount not in (float("inf"), float("-inf")) else None
 
 
 def valid_price(value):
@@ -944,3 +1028,10 @@ def vehicle_name(vehicle):
 def vehicle_matches(vehicle, message):
     name = vehicle_name(vehicle)
     return bool(name and name.casefold() in message.casefold())
+
+
+def answer_chat(*args, **kwargs):
+    """Public entry point: routing, permissions and evidence labelling live in assistant.py."""
+    from .assistant import answer_chat as routed_answer_chat
+
+    return routed_answer_chat(*args, **kwargs)
