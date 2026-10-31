@@ -1,0 +1,2289 @@
+{
+  "status": "evaluated_rejected",
+  "model_version": "service_need_v3_3a435be143",
+  "design_history": "v1 (one calibrated ML estimator for all targets) and v2 (per-target ML vs milestone-frequency choice plus feature-set ablation on inner folds) were both rejected: on the held-out Honda Amaze groups the ML models did not beat the milestone-frequency baseline (v1 macro F1 0.730 vs 0.752; v2 0.724 vs 0.752; see data/reports/service_need_v1_rejected_evaluation.json and service_need_v2_rejected_evaluation.json). Both also chose served targets from held-out metrics, which biases their aggregates upward. v3 serves the milestone-frequency estimator, declared as the baseline before any held-out result was seen, and chooses served targets from inner training-group folds only. The decision to deploy it instead of an ML model was made after seeing v1 and v2, so a fresh validation on new fleet service records is still required.",
+  "task": "service_need_at_visit",
+  "target_meaning": "1 = the service item was performed at the recorded workshop visit. Scheduled-service need, not an observed or predicted failure.",
+  "dataset": {
+    "file": "Vehicle Maintenance- Service Records.csv",
+    "sha256": "7b785211082064748502e7fc41d6ac5393e8ca160ba1381042daecfac6840847",
+    "rows_read": 1139,
+    "rejected": {},
+    "conflicting_label_rows_kept": 91,
+    "rows_used": 1139,
+    "groups": [
+      "amaze|chennai",
+      "amaze|mumbai",
+      "city|chennai",
+      "city|mumbai",
+      "fortuner|mumbai",
+      "jazz|chennai",
+      "jazz|mumbai"
+    ]
+  },
+  "group_split": {
+    "method": "GroupShuffleSplit(test_size=2 groups, seed 42); group = model|region",
+    "train_groups": [
+      "city|chennai",
+      "city|mumbai",
+      "fortuner|mumbai",
+      "jazz|chennai",
+      "jazz|mumbai"
+    ],
+    "test_groups": [
+      "amaze|chennai",
+      "amaze|mumbai"
+    ],
+    "train_group_count": 5,
+    "test_group_count": 2,
+    "group_overlap": 0,
+    "train_records": 818,
+    "test_records": 321,
+    "time_aware_split": "Not possible: the records have no visit dates or vehicle identifiers."
+  },
+  "class_distribution": {
+    "oil_filter": {
+      "train_positive_rate": 1.0,
+      "test_positive_rate": 1.0
+    },
+    "engine_oil": {
+      "train_positive_rate": 1.0,
+      "test_positive_rate": 1.0
+    },
+    "washer_plug_drain": {
+      "train_positive_rate": 0.8716,
+      "test_positive_rate": 0.9065
+    },
+    "dust_and_pollen_filter": {
+      "train_positive_rate": 0.3888,
+      "test_positive_rate": 0.0
+    },
+    "whell_alignment_and_balancing": {
+      "train_positive_rate": 0.2531,
+      "test_positive_rate": 0.2741
+    },
+    "air_clean_filter": {
+      "train_positive_rate": 0.3594,
+      "test_positive_rate": 0.4424
+    },
+    "fuel_filter": {
+      "train_positive_rate": 0.2714,
+      "test_positive_rate": 0.3271
+    },
+    "spark_plug": {
+      "train_positive_rate": 0.0452,
+      "test_positive_rate": 0.109
+    },
+    "brake_fluid": {
+      "train_positive_rate": 0.1479,
+      "test_positive_rate": 0.162
+    },
+    "brake_and_clutch_oil": {
+      "train_positive_rate": 0.0758,
+      "test_positive_rate": 0.2835
+    },
+    "transmission_fluid": {
+      "train_positive_rate": 0.1333,
+      "test_positive_rate": 0.1651
+    },
+    "brake_pads": {
+      "train_positive_rate": 0.1222,
+      "test_positive_rate": 0.19
+    },
+    "clutch": {
+      "train_positive_rate": 0.1284,
+      "test_positive_rate": 0.1433
+    },
+    "coolant": {
+      "train_positive_rate": 0.0672,
+      "test_positive_rate": 0.0249
+    }
+  },
+  "hyperparameter_search": {
+    "selected": {
+      "algorithm": "logistic_regression",
+      "params": {
+        "C": 0.1,
+        "feature_set": "full"
+      },
+      "per_target_inner_pr_auc": {
+        "washer_plug_drain": 0.7594,
+        "dust_and_pollen_filter": 0.7701,
+        "whell_alignment_and_balancing": 0.254,
+        "air_clean_filter": 0.8484,
+        "fuel_filter": 0.6394,
+        "spark_plug": 0.0452,
+        "brake_fluid": 0.5289,
+        "brake_and_clutch_oil": 0.404,
+        "transmission_fluid": 0.9459,
+        "brake_pads": 0.5185,
+        "clutch": 0.5245,
+        "coolant": 0.1186
+      },
+      "mean_inner_pr_auc": 0.5297
+    },
+    "best_by_algorithm": {
+      "logistic_regression": {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 0.1,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7594,
+          "dust_and_pollen_filter": 0.7701,
+          "whell_alignment_and_balancing": 0.254,
+          "air_clean_filter": 0.8484,
+          "fuel_filter": 0.6394,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5289,
+          "brake_and_clutch_oil": 0.404,
+          "transmission_fluid": 0.9459,
+          "brake_pads": 0.5185,
+          "clutch": 0.5245,
+          "coolant": 0.1186
+        },
+        "mean_inner_pr_auc": 0.5297
+      },
+      "random_forest": {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": 6,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.8067,
+          "dust_and_pollen_filter": 0.8118,
+          "whell_alignment_and_balancing": 0.2593,
+          "air_clean_filter": 0.9128,
+          "fuel_filter": 0.7708,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5241,
+          "brake_and_clutch_oil": 0.2645,
+          "transmission_fluid": 0.9399,
+          "brake_pads": 0.3291,
+          "clutch": 0.471,
+          "coolant": 0.1577
+        },
+        "mean_inner_pr_auc": 0.5244
+      },
+      "gradient_boosting": {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 3,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.8338,
+          "dust_and_pollen_filter": 0.8173,
+          "whell_alignment_and_balancing": 0.2587,
+          "air_clean_filter": 0.8934,
+          "fuel_filter": 0.6754,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5654,
+          "brake_and_clutch_oil": 0.197,
+          "transmission_fluid": 0.9458,
+          "brake_pads": 0.3583,
+          "clutch": 0.4249,
+          "coolant": 0.1606
+        },
+        "mean_inner_pr_auc": 0.5146
+      },
+      "milestone_frequency": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.758,
+          "dust_and_pollen_filter": 0.8349,
+          "whell_alignment_and_balancing": 0.2406,
+          "air_clean_filter": 0.7488,
+          "fuel_filter": 0.4798,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5772,
+          "brake_and_clutch_oil": 0.2805,
+          "transmission_fluid": 0.9443,
+          "brake_pads": 0.3953,
+          "clutch": 0.5725,
+          "coolant": 0.1403
+        },
+        "mean_inner_pr_auc": 0.5014
+      }
+    },
+    "trials": [
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 0.1,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7594,
+          "dust_and_pollen_filter": 0.7701,
+          "whell_alignment_and_balancing": 0.254,
+          "air_clean_filter": 0.8484,
+          "fuel_filter": 0.6394,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5289,
+          "brake_and_clutch_oil": 0.404,
+          "transmission_fluid": 0.9459,
+          "brake_pads": 0.5185,
+          "clutch": 0.5245,
+          "coolant": 0.1186
+        },
+        "mean_inner_pr_auc": 0.5297
+      },
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 0.1,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7663,
+          "dust_and_pollen_filter": 0.7728,
+          "whell_alignment_and_balancing": 0.2275,
+          "air_clean_filter": 0.7363,
+          "fuel_filter": 0.478,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5237,
+          "brake_and_clutch_oil": 0.3416,
+          "transmission_fluid": 0.9476,
+          "brake_pads": 0.3946,
+          "clutch": 0.4866,
+          "coolant": 0.1811
+        },
+        "mean_inner_pr_auc": 0.4918
+      },
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 1.0,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7715,
+          "dust_and_pollen_filter": 0.7604,
+          "whell_alignment_and_balancing": 0.2544,
+          "air_clean_filter": 0.8551,
+          "fuel_filter": 0.6602,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.525,
+          "brake_and_clutch_oil": 0.333,
+          "transmission_fluid": 0.9467,
+          "brake_pads": 0.5207,
+          "clutch": 0.4871,
+          "coolant": 0.1459
+        },
+        "mean_inner_pr_auc": 0.5254
+      },
+      {
+        "algorithm": "logistic_regression",
+        "params": {
+          "C": 1.0,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.762,
+          "dust_and_pollen_filter": 0.7685,
+          "whell_alignment_and_balancing": 0.2303,
+          "air_clean_filter": 0.7289,
+          "fuel_filter": 0.4707,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5146,
+          "brake_and_clutch_oil": 0.3376,
+          "transmission_fluid": 0.9488,
+          "brake_pads": 0.3807,
+          "clutch": 0.4581,
+          "coolant": 0.1839
+        },
+        "mean_inner_pr_auc": 0.4858
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": 6,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.8067,
+          "dust_and_pollen_filter": 0.8118,
+          "whell_alignment_and_balancing": 0.2593,
+          "air_clean_filter": 0.9128,
+          "fuel_filter": 0.7708,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5241,
+          "brake_and_clutch_oil": 0.2645,
+          "transmission_fluid": 0.9399,
+          "brake_pads": 0.3291,
+          "clutch": 0.471,
+          "coolant": 0.1577
+        },
+        "mean_inner_pr_auc": 0.5244
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 8,
+          "max_depth": 6,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7691,
+          "dust_and_pollen_filter": 0.8129,
+          "whell_alignment_and_balancing": 0.2363,
+          "air_clean_filter": 0.7319,
+          "fuel_filter": 0.4825,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5311,
+          "brake_and_clutch_oil": 0.2325,
+          "transmission_fluid": 0.9403,
+          "brake_pads": 0.3879,
+          "clutch": 0.5108,
+          "coolant": 0.0983
+        },
+        "mean_inner_pr_auc": 0.4816
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 2,
+          "max_depth": null,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.851,
+          "dust_and_pollen_filter": 0.7613,
+          "whell_alignment_and_balancing": 0.254,
+          "air_clean_filter": 0.9091,
+          "fuel_filter": 0.7449,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5301,
+          "brake_and_clutch_oil": 0.2215,
+          "transmission_fluid": 0.9356,
+          "brake_pads": 0.2298,
+          "clutch": 0.4268,
+          "coolant": 0.155
+        },
+        "mean_inner_pr_auc": 0.5054
+      },
+      {
+        "algorithm": "random_forest",
+        "params": {
+          "min_samples_leaf": 2,
+          "max_depth": null,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.8095,
+          "dust_and_pollen_filter": 0.7397,
+          "whell_alignment_and_balancing": 0.2269,
+          "air_clean_filter": 0.7336,
+          "fuel_filter": 0.4762,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.4871,
+          "brake_and_clutch_oil": 0.1951,
+          "transmission_fluid": 0.9363,
+          "brake_pads": 0.3326,
+          "clutch": 0.4835,
+          "coolant": 0.1024
+        },
+        "mean_inner_pr_auc": 0.464
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 3,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.8338,
+          "dust_and_pollen_filter": 0.8173,
+          "whell_alignment_and_balancing": 0.2587,
+          "air_clean_filter": 0.8934,
+          "fuel_filter": 0.6754,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5654,
+          "brake_and_clutch_oil": 0.197,
+          "transmission_fluid": 0.9458,
+          "brake_pads": 0.3583,
+          "clutch": 0.4249,
+          "coolant": 0.1606
+        },
+        "mean_inner_pr_auc": 0.5146
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.05,
+          "max_depth": 3,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7718,
+          "dust_and_pollen_filter": 0.7932,
+          "whell_alignment_and_balancing": 0.2335,
+          "air_clean_filter": 0.7271,
+          "fuel_filter": 0.4967,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5466,
+          "brake_and_clutch_oil": 0.2768,
+          "transmission_fluid": 0.9482,
+          "brake_pads": 0.3733,
+          "clutch": 0.5162,
+          "coolant": 0.1035
+        },
+        "mean_inner_pr_auc": 0.486
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.15,
+          "max_depth": 3,
+          "feature_set": "full"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.787,
+          "dust_and_pollen_filter": 0.8294,
+          "whell_alignment_and_balancing": 0.2546,
+          "air_clean_filter": 0.868,
+          "fuel_filter": 0.6653,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5403,
+          "brake_and_clutch_oil": 0.1822,
+          "transmission_fluid": 0.9441,
+          "brake_pads": 0.3059,
+          "clutch": 0.419,
+          "coolant": 0.1612
+        },
+        "mean_inner_pr_auc": 0.5002
+      },
+      {
+        "algorithm": "gradient_boosting",
+        "params": {
+          "learning_rate": 0.15,
+          "max_depth": 3,
+          "feature_set": "mileage_only"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.7633,
+          "dust_and_pollen_filter": 0.7994,
+          "whell_alignment_and_balancing": 0.2323,
+          "air_clean_filter": 0.7394,
+          "fuel_filter": 0.4788,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5096,
+          "brake_and_clutch_oil": 0.2934,
+          "transmission_fluid": 0.9431,
+          "brake_pads": 0.362,
+          "clutch": 0.4918,
+          "coolant": 0.0942
+        },
+        "mean_inner_pr_auc": 0.4794
+      },
+      {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        },
+        "per_target_inner_pr_auc": {
+          "washer_plug_drain": 0.758,
+          "dust_and_pollen_filter": 0.8349,
+          "whell_alignment_and_balancing": 0.2406,
+          "air_clean_filter": 0.7488,
+          "fuel_filter": 0.4798,
+          "spark_plug": 0.0452,
+          "brake_fluid": 0.5772,
+          "brake_and_clutch_oil": 0.2805,
+          "transmission_fluid": 0.9443,
+          "brake_pads": 0.3953,
+          "clutch": 0.5725,
+          "coolant": 0.1403
+        },
+        "mean_inner_pr_auc": 0.5014
+      }
+    ]
+  },
+  "metrics": {
+    "balanced_accuracy": 0.7429,
+    "macro_f1": 0.5364,
+    "macro_pr_auc": 0.6312,
+    "macro_roc_auc": 0.8411,
+    "macro_brier": 0.1481,
+    "macro_ece": 0.1557,
+    "served_estimator": "milestone_frequency (training-group service frequency at the nearest 10,000 km milestone, smoothed towards prevalence)",
+    "baseline": "prevalence (training positive rate for every visit)",
+    "baseline_balanced_accuracy": 0.5,
+    "baseline_macro_f1": 0.0,
+    "baseline_macro_pr_auc": 0.2448,
+    "prevalence_baseline_macro_brier": 0.1788,
+    "best_ml_candidate": "logistic_regression {'C': 0.1, 'feature_set': 'full'} (calibrated)",
+    "best_ml_candidate_balanced_accuracy": 0.7251,
+    "best_ml_candidate_macro_f1": 0.4927,
+    "best_ml_candidate_macro_pr_auc": 0.6871,
+    "best_ml_candidate_macro_brier": 0.1392,
+    "served_targets": [
+      "air_clean_filter",
+      "brake_and_clutch_oil",
+      "brake_fluid",
+      "brake_pads",
+      "clutch",
+      "dust_and_pollen_filter",
+      "fuel_filter",
+      "transmission_fluid"
+    ],
+    "all_modeled_targets_macro_f1": 0.4831,
+    "all_modeled_targets_best_ml_macro_f1": 0.4481
+  },
+  "per_target": {
+    "washer_plug_drain": {
+      "records": 321,
+      "positives": 291,
+      "threshold": 0.6,
+      "precision": 0.9065,
+      "recall": 1.0,
+      "f1": 0.951,
+      "balanced_accuracy": 0.5,
+      "pr_auc": 0.9965,
+      "roc_auc": 0.9811,
+      "brier": 0.0631,
+      "ece": 0.1431,
+      "prevalence": 0.9065,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.6-0.7",
+          "count": 41,
+          "mean_predicted": 0.6881,
+          "observed_rate": 0.2683
+        },
+        {
+          "bin": "0.8-0.9",
+          "count": 163,
+          "mean_predicted": 0.8259,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 117,
+          "mean_predicted": 0.9972,
+          "observed_rate": 1.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.1798,
+        "f1": 0.9314,
+        "pr_auc": 0.758,
+        "prevalence": 0.8716
+      },
+      "served": false,
+      "served_reason": "Inner cross-validation evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "dust_and_pollen_filter": {
+      "records": 321,
+      "positives": 0,
+      "threshold": 0.725,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "balanced_accuracy": null,
+      "pr_auc": null,
+      "roc_auc": null,
+      "brier": 0.3016,
+      "ece": 0.3898,
+      "prevalence": 0.0,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 125,
+          "mean_predicted": 0.0039,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 41,
+          "mean_predicted": 0.1699,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 2,
+          "mean_predicted": 0.2546,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 8,
+          "mean_predicted": 0.313,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 24,
+          "mean_predicted": 0.4735,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 82,
+          "mean_predicted": 0.7871,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 39,
+          "mean_predicted": 0.9939,
+          "observed_rate": 0.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8694,
+        "f1": 0.8368,
+        "pr_auc": 0.8349,
+        "prevalence": 0.3888
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "whell_alignment_and_balancing": {
+      "records": 321,
+      "positives": 88,
+      "threshold": 0.175,
+      "precision": 0.2897,
+      "recall": 0.7045,
+      "f1": 0.4106,
+      "balanced_accuracy": 0.5261,
+      "pr_auc": 0.4797,
+      "roc_auc": 0.6497,
+      "brier": 0.1876,
+      "ece": 0.0484,
+      "prevalence": 0.2741,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 8,
+          "mean_predicted": 0.0418,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 140,
+          "mean_predicted": 0.1517,
+          "observed_rate": 0.1857
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 42,
+          "mean_predicted": 0.2169,
+          "observed_rate": 0.1667
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 86,
+          "mean_predicted": 0.3536,
+          "observed_rate": 0.3372
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 44,
+          "mean_predicted": 0.4497,
+          "observed_rate": 0.5909
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 1,
+          "mean_predicted": 0.7088,
+          "observed_rate": 0.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.4415,
+        "f1": 0.3687,
+        "pr_auc": 0.2406,
+        "prevalence": 0.2531
+      },
+      "served": false,
+      "served_reason": "Inner cross-validation evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "air_clean_filter": {
+      "records": 321,
+      "positives": 142,
+      "threshold": 0.35,
+      "precision": 0.9324,
+      "recall": 0.9718,
+      "f1": 0.9517,
+      "balanced_accuracy": 0.958,
+      "pr_auc": 0.9784,
+      "roc_auc": 0.9817,
+      "brier": 0.075,
+      "ece": 0.1382,
+      "prevalence": 0.4424,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 125,
+          "mean_predicted": 0.027,
+          "observed_rate": 0.024
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 41,
+          "mean_predicted": 0.1697,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 2,
+          "mean_predicted": 0.2492,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 5,
+          "mean_predicted": 0.3153,
+          "observed_rate": 0.2
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 19,
+          "mean_predicted": 0.4358,
+          "observed_rate": 0.5263
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 49,
+          "mean_predicted": 0.5896,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 41,
+          "mean_predicted": 0.6372,
+          "observed_rate": 0.9756
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 39,
+          "mean_predicted": 0.9937,
+          "observed_rate": 1.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8235,
+        "f1": 0.7615,
+        "pr_auc": 0.7488,
+        "prevalence": 0.3594
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "fuel_filter": {
+      "records": 321,
+      "positives": 105,
+      "threshold": 0.05,
+      "precision": 0.529,
+      "recall": 0.781,
+      "f1": 0.6308,
+      "balanced_accuracy": 0.7215,
+      "pr_auc": 0.5378,
+      "roc_auc": 0.7021,
+      "brier": 0.1872,
+      "ece": 0.1297,
+      "prevalence": 0.3271,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 166,
+          "mean_predicted": 0.0026,
+          "observed_rate": 0.1386
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 5,
+          "mean_predicted": 0.1924,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 2,
+          "mean_predicted": 0.2331,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 41,
+          "mean_predicted": 0.3948,
+          "observed_rate": 0.5122
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 3,
+          "mean_predicted": 0.4746,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.5-0.6",
+          "count": 57,
+          "mean_predicted": 0.588,
+          "observed_rate": 0.5263
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 8,
+          "mean_predicted": 0.6757,
+          "observed_rate": 1.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 39,
+          "mean_predicted": 0.7255,
+          "observed_rate": 0.5897
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8088,
+        "f1": 0.7129,
+        "pr_auc": 0.4798,
+        "prevalence": 0.2714
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "spark_plug": {
+      "records": 321,
+      "positives": 35,
+      "threshold": 0.95,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "balanced_accuracy": 0.5,
+      "pr_auc": 0.5,
+      "roc_auc": 0.9337,
+      "brier": 0.0792,
+      "ece": 0.0636,
+      "prevalence": 0.109,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 256,
+          "mean_predicted": 0.0105,
+          "observed_rate": 0.0156
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 57,
+          "mean_predicted": 0.1807,
+          "observed_rate": 0.4561
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 8,
+          "mean_predicted": 0.2015,
+          "observed_rate": 0.625
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.0794,
+        "f1": 0.0,
+        "pr_auc": 0.0452,
+        "prevalence": 0.0452
+      },
+      "served": false,
+      "served_reason": "Inner cross-validation evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    },
+    "brake_fluid": {
+      "records": 321,
+      "positives": 52,
+      "threshold": 0.725,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "balanced_accuracy": 0.875,
+      "pr_auc": 0.8761,
+      "roc_auc": 0.9536,
+      "brier": 0.0447,
+      "ece": 0.0666,
+      "prevalence": 0.162,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 193,
+          "mean_predicted": 0.002,
+          "observed_rate": 0.0155
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 43,
+          "mean_predicted": 0.1144,
+          "observed_rate": 0.1395
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 43,
+          "mean_predicted": 0.2485,
+          "observed_rate": 0.0465
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 3,
+          "mean_predicted": 0.3498,
+          "observed_rate": 0.6667
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 39,
+          "mean_predicted": 0.7935,
+          "observed_rate": 1.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8962,
+        "f1": 0.724,
+        "pr_auc": 0.5772,
+        "prevalence": 0.1479
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "brake_and_clutch_oil": {
+      "records": 321,
+      "positives": 91,
+      "threshold": 0.225,
+      "precision": 0.4286,
+      "recall": 0.2308,
+      "f1": 0.3,
+      "balanced_accuracy": 0.5545,
+      "pr_auc": 0.4146,
+      "roc_auc": 0.7113,
+      "brier": 0.2488,
+      "ece": 0.2271,
+      "prevalence": 0.2835,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 255,
+          "mean_predicted": 0.0056,
+          "observed_rate": 0.2549
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 16,
+          "mean_predicted": 0.141,
+          "observed_rate": 0.3125
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 1,
+          "mean_predicted": 0.2152,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "count": 41,
+          "mean_predicted": 0.3929,
+          "observed_rate": 0.4878
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 8,
+          "mean_predicted": 0.4359,
+          "observed_rate": 0.125
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8502,
+        "f1": 0.5436,
+        "pr_auc": 0.2805,
+        "prevalence": 0.0758
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "transmission_fluid": {
+      "records": 321,
+      "positives": 53,
+      "threshold": 0.95,
+      "precision": 1.0,
+      "recall": 0.7358,
+      "f1": 0.8478,
+      "balanced_accuracy": 0.8679,
+      "pr_auc": 0.8528,
+      "roc_auc": 0.9453,
+      "brier": 0.0416,
+      "ece": 0.0312,
+      "prevalence": 0.1651,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 282,
+          "mean_predicted": 0.0154,
+          "observed_rate": 0.0496
+        },
+        {
+          "bin": "0.9-1.0",
+          "count": 39,
+          "mean_predicted": 0.9914,
+          "observed_rate": 1.0
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.9622,
+        "f1": 0.9569,
+        "pr_auc": 0.9443,
+        "prevalence": 0.1333
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "brake_pads": {
+      "records": 321,
+      "positives": 61,
+      "threshold": 0.525,
+      "precision": 0.2857,
+      "recall": 0.1967,
+      "f1": 0.233,
+      "balanced_accuracy": 0.5407,
+      "pr_auc": 0.3382,
+      "roc_auc": 0.7438,
+      "brier": 0.1695,
+      "ece": 0.1525,
+      "prevalence": 0.19,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 199,
+          "mean_predicted": 0.002,
+          "observed_rate": 0.1005
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 80,
+          "mean_predicted": 0.1789,
+          "observed_rate": 0.3625
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 42,
+          "mean_predicted": 0.6349,
+          "observed_rate": 0.2857
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.7535,
+        "f1": 0.64,
+        "pr_auc": 0.3953,
+        "prevalence": 0.1222
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "clutch": {
+      "records": 321,
+      "positives": 46,
+      "threshold": 0.725,
+      "precision": 0.5128,
+      "recall": 0.4348,
+      "f1": 0.4706,
+      "balanced_accuracy": 0.6828,
+      "pr_auc": 0.4205,
+      "roc_auc": 0.85,
+      "brier": 0.1161,
+      "ece": 0.1104,
+      "prevalence": 0.1433,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 238,
+          "mean_predicted": 0.0085,
+          "observed_rate": 0.0924
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 43,
+          "mean_predicted": 0.1931,
+          "observed_rate": 0.093
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 1,
+          "mean_predicted": 0.2257,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.7-0.8",
+          "count": 39,
+          "mean_predicted": 0.7934,
+          "observed_rate": 0.5128
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.8607,
+        "f1": 0.7805,
+        "pr_auc": 0.5725,
+        "prevalence": 0.1284
+      },
+      "served": true,
+      "served_reason": "Inner training-group cross-validation ROC-AUC, F1 and PR-AUC above prevalence meet the per-target criteria."
+    },
+    "coolant": {
+      "records": 321,
+      "positives": 8,
+      "threshold": 0.075,
+      "precision": 0.08,
+      "recall": 0.75,
+      "f1": 0.1446,
+      "balanced_accuracy": 0.7648,
+      "pr_auc": 0.2354,
+      "roc_auc": 0.8323,
+      "brier": 0.0288,
+      "ece": 0.0423,
+      "prevalence": 0.0249,
+      "estimator": {
+        "algorithm": "milestone_frequency",
+        "params": {
+          "feature_set": "milestone"
+        }
+      },
+      "reliability": [
+        {
+          "bin": "0.0-0.1",
+          "count": 246,
+          "mean_predicted": 0.0074,
+          "observed_rate": 0.0081
+        },
+        {
+          "bin": "0.1-0.2",
+          "count": 57,
+          "mean_predicted": 0.1888,
+          "observed_rate": 0.0351
+        },
+        {
+          "bin": "0.2-0.3",
+          "count": 8,
+          "mean_predicted": 0.2357,
+          "observed_rate": 0.375
+        },
+        {
+          "bin": "0.4-0.5",
+          "count": 8,
+          "mean_predicted": 0.4022,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.6-0.7",
+          "count": 2,
+          "mean_predicted": 0.6457,
+          "observed_rate": 0.5
+        }
+      ],
+      "inner_cv": {
+        "roc_auc": 0.5153,
+        "f1": 0.2389,
+        "pr_auc": 0.1403,
+        "prevalence": 0.0672
+      },
+      "served": false,
+      "served_reason": "Inner cross-validation evidence is insufficient (needs ROC-AUC >= 0.65, F1 >= 0.4, PR-AUC above prevalence)."
+    }
+  },
+  "baselines": {
+    "washer_plug_drain": {
+      "prevalence": {
+        "records": 321,
+        "positives": 291,
+        "threshold": 0.5,
+        "precision": 0.9065,
+        "recall": 1.0,
+        "f1": 0.951,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.9065,
+        "roc_auc": 0.5,
+        "brier": 0.0859,
+        "ece": 0.0349,
+        "prevalence": 0.9065
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 291,
+        "threshold": 0.6,
+        "precision": 0.9065,
+        "recall": 1.0,
+        "f1": 0.951,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.9965,
+        "roc_auc": 0.9811,
+        "brier": 0.0631,
+        "ece": 0.1431,
+        "prevalence": 0.9065
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 291,
+        "threshold": 0.4,
+        "precision": 0.9065,
+        "recall": 1.0,
+        "f1": 0.951,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.7592,
+        "roc_auc": 0.0105,
+        "brier": 0.0996,
+        "ece": 0.0884,
+        "prevalence": 0.9065
+      }
+    },
+    "dust_and_pollen_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 0,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": null,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.1511,
+        "ece": 0.3888,
+        "prevalence": 0.0
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 0,
+        "threshold": 0.725,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": null,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3016,
+        "ece": 0.3898,
+        "prevalence": 0.0
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 0,
+        "threshold": 0.45,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": null,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.2244,
+        "ece": 0.3646,
+        "prevalence": 0.0
+      }
+    },
+    "whell_alignment_and_balancing": {
+      "prevalence": {
+        "records": 321,
+        "positives": 88,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.2741,
+        "roc_auc": 0.5,
+        "brier": 0.1994,
+        "ece": 0.0211,
+        "prevalence": 0.2741
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 88,
+        "threshold": 0.175,
+        "precision": 0.2897,
+        "recall": 0.7045,
+        "f1": 0.4106,
+        "balanced_accuracy": 0.5261,
+        "pr_auc": 0.4797,
+        "roc_auc": 0.6497,
+        "brier": 0.1876,
+        "ece": 0.0484,
+        "prevalence": 0.2741
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 88,
+        "threshold": 0.15,
+        "precision": 0.2759,
+        "recall": 1.0,
+        "f1": 0.4324,
+        "balanced_accuracy": 0.5043,
+        "pr_auc": 0.1889,
+        "roc_auc": 0.2826,
+        "brier": 0.2173,
+        "ece": 0.1441,
+        "prevalence": 0.2741
+      }
+    },
+    "air_clean_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 142,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.4424,
+        "roc_auc": 0.5,
+        "brier": 0.2536,
+        "ece": 0.083,
+        "prevalence": 0.4424
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 142,
+        "threshold": 0.35,
+        "precision": 0.9324,
+        "recall": 0.9718,
+        "f1": 0.9517,
+        "balanced_accuracy": 0.958,
+        "pr_auc": 0.9784,
+        "roc_auc": 0.9817,
+        "brier": 0.075,
+        "ece": 0.1382,
+        "prevalence": 0.4424
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 142,
+        "threshold": 0.425,
+        "precision": 0.8929,
+        "recall": 0.7042,
+        "f1": 0.7874,
+        "balanced_accuracy": 0.8186,
+        "pr_auc": 0.9276,
+        "roc_auc": 0.9514,
+        "brier": 0.1236,
+        "ece": 0.1478,
+        "prevalence": 0.4424
+      }
+    },
+    "fuel_filter": {
+      "prevalence": {
+        "records": 321,
+        "positives": 105,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.3271,
+        "roc_auc": 0.5,
+        "brier": 0.2232,
+        "ece": 0.0557,
+        "prevalence": 0.3271
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 105,
+        "threshold": 0.05,
+        "precision": 0.529,
+        "recall": 0.781,
+        "f1": 0.6308,
+        "balanced_accuracy": 0.7215,
+        "pr_auc": 0.5378,
+        "roc_auc": 0.7021,
+        "brier": 0.1872,
+        "ece": 0.1297,
+        "prevalence": 0.3271
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 105,
+        "threshold": 0.275,
+        "precision": 0.7172,
+        "recall": 0.6762,
+        "f1": 0.6961,
+        "balanced_accuracy": 0.7733,
+        "pr_auc": 0.7375,
+        "roc_auc": 0.8011,
+        "brier": 0.1616,
+        "ece": 0.1034,
+        "prevalence": 0.3271
+      }
+    },
+    "spark_plug": {
+      "prevalence": {
+        "records": 321,
+        "positives": 35,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.109,
+        "roc_auc": 0.5,
+        "brier": 0.1012,
+        "ece": 0.0638,
+        "prevalence": 0.109
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 35,
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.5,
+        "roc_auc": 0.9337,
+        "brier": 0.0792,
+        "ece": 0.0636,
+        "prevalence": 0.109
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 35,
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.0583,
+        "roc_auc": 0.007,
+        "brier": 0.109,
+        "ece": 0.109,
+        "prevalence": 0.109
+      }
+    },
+    "brake_fluid": {
+      "prevalence": {
+        "records": 321,
+        "positives": 52,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.162,
+        "roc_auc": 0.5,
+        "brier": 0.1359,
+        "ece": 0.0141,
+        "prevalence": 0.162
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 52,
+        "threshold": 0.725,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571,
+        "balanced_accuracy": 0.875,
+        "pr_auc": 0.8761,
+        "roc_auc": 0.9536,
+        "brier": 0.0447,
+        "ece": 0.0666,
+        "prevalence": 0.162
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 52,
+        "threshold": 0.375,
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1": 0.8696,
+        "balanced_accuracy": 0.8846,
+        "pr_auc": 0.9143,
+        "roc_auc": 0.965,
+        "brier": 0.053,
+        "ece": 0.0877,
+        "prevalence": 0.162
+      }
+    },
+    "brake_and_clutch_oil": {
+      "prevalence": {
+        "records": 321,
+        "positives": 91,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.2835,
+        "roc_auc": 0.5,
+        "brier": 0.2463,
+        "ece": 0.2077,
+        "prevalence": 0.2835
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 91,
+        "threshold": 0.225,
+        "precision": 0.4286,
+        "recall": 0.2308,
+        "f1": 0.3,
+        "balanced_accuracy": 0.5545,
+        "pr_auc": 0.4146,
+        "roc_auc": 0.7113,
+        "brier": 0.2488,
+        "ece": 0.2271,
+        "prevalence": 0.2835
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 91,
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.4992,
+        "roc_auc": 0.8322,
+        "brier": 0.2582,
+        "ece": 0.282,
+        "prevalence": 0.2835
+      }
+    },
+    "transmission_fluid": {
+      "prevalence": {
+        "records": 321,
+        "positives": 53,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.1651,
+        "roc_auc": 0.5,
+        "brier": 0.1389,
+        "ece": 0.0319,
+        "prevalence": 0.1651
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 53,
+        "threshold": 0.95,
+        "precision": 1.0,
+        "recall": 0.7358,
+        "f1": 0.8478,
+        "balanced_accuracy": 0.8679,
+        "pr_auc": 0.8528,
+        "roc_auc": 0.9453,
+        "brier": 0.0416,
+        "ece": 0.0312,
+        "prevalence": 0.1651
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 53,
+        "threshold": 0.875,
+        "precision": 1.0,
+        "recall": 0.6792,
+        "f1": 0.809,
+        "balanced_accuracy": 0.8396,
+        "pr_auc": 0.8636,
+        "roc_auc": 0.9225,
+        "brier": 0.0448,
+        "ece": 0.0351,
+        "prevalence": 0.1651
+      }
+    },
+    "brake_pads": {
+      "prevalence": {
+        "records": 321,
+        "positives": 61,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.19,
+        "roc_auc": 0.5,
+        "brier": 0.1585,
+        "ece": 0.0678,
+        "prevalence": 0.19
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 61,
+        "threshold": 0.525,
+        "precision": 0.2857,
+        "recall": 0.1967,
+        "f1": 0.233,
+        "balanced_accuracy": 0.5407,
+        "pr_auc": 0.3382,
+        "roc_auc": 0.7438,
+        "brier": 0.1695,
+        "ece": 0.1525,
+        "prevalence": 0.19
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 61,
+        "threshold": 0.325,
+        "precision": 0.3571,
+        "recall": 0.2459,
+        "f1": 0.2913,
+        "balanced_accuracy": 0.571,
+        "pr_auc": 0.3519,
+        "roc_auc": 0.7906,
+        "brier": 0.1445,
+        "ece": 0.0874,
+        "prevalence": 0.19
+      }
+    },
+    "clutch": {
+      "prevalence": {
+        "records": 321,
+        "positives": 46,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.1433,
+        "roc_auc": 0.5,
+        "brier": 0.123,
+        "ece": 0.0149,
+        "prevalence": 0.1433
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 46,
+        "threshold": 0.725,
+        "precision": 0.5128,
+        "recall": 0.4348,
+        "f1": 0.4706,
+        "balanced_accuracy": 0.6828,
+        "pr_auc": 0.4205,
+        "roc_auc": 0.85,
+        "brier": 0.1161,
+        "ece": 0.1104,
+        "prevalence": 0.1433
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 46,
+        "threshold": 0.375,
+        "precision": 0.5556,
+        "recall": 0.4348,
+        "f1": 0.4878,
+        "balanced_accuracy": 0.6883,
+        "pr_auc": 0.5153,
+        "roc_auc": 0.6781,
+        "brier": 0.1036,
+        "ece": 0.1126,
+        "prevalence": 0.1433
+      }
+    },
+    "coolant": {
+      "prevalence": {
+        "records": 321,
+        "positives": 8,
+        "threshold": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "balanced_accuracy": 0.5,
+        "pr_auc": 0.0249,
+        "roc_auc": 0.5,
+        "brier": 0.0261,
+        "ece": 0.0423,
+        "prevalence": 0.0249
+      },
+      "milestone_lookup": {
+        "records": 321,
+        "positives": 8,
+        "threshold": 0.075,
+        "precision": 0.08,
+        "recall": 0.75,
+        "f1": 0.1446,
+        "balanced_accuracy": 0.7648,
+        "pr_auc": 0.2354,
+        "roc_auc": 0.8323,
+        "brier": 0.0288,
+        "ece": 0.0423,
+        "prevalence": 0.0249
+      },
+      "best_ml_candidate": {
+        "records": 321,
+        "positives": 8,
+        "threshold": 0.05,
+        "precision": 0.0268,
+        "recall": 1.0,
+        "f1": 0.0521,
+        "balanced_accuracy": 0.5351,
+        "pr_auc": 0.1419,
+        "roc_auc": 0.8023,
+        "brier": 0.0257,
+        "ece": 0.0491,
+        "prevalence": 0.0249
+      }
+    }
+  },
+  "algorithm_comparison_uncalibrated": {
+    "washer_plug_drain": {
+      "logistic_regression": {
+        "f1": 0.9828,
+        "pr_auc": 0.999,
+        "roc_auc": 0.9895,
+        "brier": 0.0331
+      },
+      "random_forest": {
+        "f1": 0.9599,
+        "pr_auc": 0.9982,
+        "roc_auc": 0.9818,
+        "brier": 0.0533
+      },
+      "gradient_boosting": {
+        "f1": 0.9583,
+        "pr_auc": 0.9843,
+        "roc_auc": 0.8725,
+        "brier": 0.0627
+      },
+      "milestone_frequency": {
+        "f1": 0.951,
+        "pr_auc": 0.9965,
+        "roc_auc": 0.9811,
+        "brier": 0.0631
+      }
+    },
+    "dust_and_pollen_filter": {
+      "logistic_regression": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3071
+      },
+      "random_forest": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3396
+      },
+      "gradient_boosting": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3637
+      },
+      "milestone_frequency": {
+        "f1": 0.0,
+        "pr_auc": null,
+        "roc_auc": null,
+        "brier": 0.3016
+      }
+    },
+    "whell_alignment_and_balancing": {
+      "logistic_regression": {
+        "f1": 0.4583,
+        "pr_auc": 0.4445,
+        "roc_auc": 0.7174,
+        "brier": 0.2037
+      },
+      "random_forest": {
+        "f1": 0.433,
+        "pr_auc": 0.5194,
+        "roc_auc": 0.7401,
+        "brier": 0.1828
+      },
+      "gradient_boosting": {
+        "f1": 0.4479,
+        "pr_auc": 0.4912,
+        "roc_auc": 0.7318,
+        "brier": 0.1907
+      },
+      "milestone_frequency": {
+        "f1": 0.0,
+        "pr_auc": 0.4797,
+        "roc_auc": 0.6497,
+        "brier": 0.1876
+      }
+    },
+    "air_clean_filter": {
+      "logistic_regression": {
+        "f1": 0.8456,
+        "pr_auc": 0.9276,
+        "roc_auc": 0.9514,
+        "brier": 0.1001
+      },
+      "random_forest": {
+        "f1": 0.719,
+        "pr_auc": 0.8754,
+        "roc_auc": 0.8838,
+        "brier": 0.1427
+      },
+      "gradient_boosting": {
+        "f1": 0.7692,
+        "pr_auc": 0.8674,
+        "roc_auc": 0.8691,
+        "brier": 0.1417
+      },
+      "milestone_frequency": {
+        "f1": 0.9446,
+        "pr_auc": 0.9784,
+        "roc_auc": 0.9817,
+        "brier": 0.075
+      }
+    },
+    "fuel_filter": {
+      "logistic_regression": {
+        "f1": 0.6995,
+        "pr_auc": 0.7375,
+        "roc_auc": 0.8011,
+        "brier": 0.1585
+      },
+      "random_forest": {
+        "f1": 0.7317,
+        "pr_auc": 0.8316,
+        "roc_auc": 0.8541,
+        "brier": 0.1237
+      },
+      "gradient_boosting": {
+        "f1": 0.7349,
+        "pr_auc": 0.8115,
+        "roc_auc": 0.8241,
+        "brier": 0.128
+      },
+      "milestone_frequency": {
+        "f1": 0.5837,
+        "pr_auc": 0.5378,
+        "roc_auc": 0.7021,
+        "brier": 0.1872
+      }
+    },
+    "spark_plug": {
+      "logistic_regression": {
+        "f1": 0.7447,
+        "pr_auc": 0.9537,
+        "roc_auc": 0.993,
+        "brier": 0.0596
+      },
+      "random_forest": {
+        "f1": 0.8986,
+        "pr_auc": 0.9571,
+        "roc_auc": 0.9915,
+        "brier": 0.0244
+      },
+      "gradient_boosting": {
+        "f1": 0.775,
+        "pr_auc": 0.9446,
+        "roc_auc": 0.9857,
+        "brier": 0.0369
+      },
+      "milestone_frequency": {
+        "f1": 0.0,
+        "pr_auc": 0.5,
+        "roc_auc": 0.9337,
+        "brier": 0.0792
+      }
+    },
+    "brake_fluid": {
+      "logistic_regression": {
+        "f1": 0.6471,
+        "pr_auc": 0.9143,
+        "roc_auc": 0.965,
+        "brier": 0.0759
+      },
+      "random_forest": {
+        "f1": 0.8421,
+        "pr_auc": 0.9033,
+        "roc_auc": 0.9651,
+        "brier": 0.0507
+      },
+      "gradient_boosting": {
+        "f1": 0.735,
+        "pr_auc": 0.8929,
+        "roc_auc": 0.9533,
+        "brier": 0.0659
+      },
+      "milestone_frequency": {
+        "f1": 0.8571,
+        "pr_auc": 0.8761,
+        "roc_auc": 0.9536,
+        "brier": 0.0447
+      }
+    },
+    "brake_and_clutch_oil": {
+      "logistic_regression": {
+        "f1": 0.0806,
+        "pr_auc": 0.4992,
+        "roc_auc": 0.8322,
+        "brier": 0.2289
+      },
+      "random_forest": {
+        "f1": 0.0,
+        "pr_auc": 0.3947,
+        "roc_auc": 0.7322,
+        "brier": 0.2896
+      },
+      "gradient_boosting": {
+        "f1": 0.1417,
+        "pr_auc": 0.4427,
+        "roc_auc": 0.7379,
+        "brier": 0.3007
+      },
+      "milestone_frequency": {
+        "f1": 0.0,
+        "pr_auc": 0.4146,
+        "roc_auc": 0.7113,
+        "brier": 0.2488
+      }
+    },
+    "transmission_fluid": {
+      "logistic_regression": {
+        "f1": 0.8478,
+        "pr_auc": 0.8636,
+        "roc_auc": 0.9225,
+        "brier": 0.0494
+      },
+      "random_forest": {
+        "f1": 0.7816,
+        "pr_auc": 0.8298,
+        "roc_auc": 0.9329,
+        "brier": 0.0557
+      },
+      "gradient_boosting": {
+        "f1": 0.7865,
+        "pr_auc": 0.8507,
+        "roc_auc": 0.9243,
+        "brier": 0.0503
+      },
+      "milestone_frequency": {
+        "f1": 0.8478,
+        "pr_auc": 0.8528,
+        "roc_auc": 0.9453,
+        "brier": 0.0416
+      }
+    },
+    "brake_pads": {
+      "logistic_regression": {
+        "f1": 0.4581,
+        "pr_auc": 0.3519,
+        "roc_auc": 0.7906,
+        "brier": 0.192
+      },
+      "random_forest": {
+        "f1": 0.5139,
+        "pr_auc": 0.4815,
+        "roc_auc": 0.713,
+        "brier": 0.1627
+      },
+      "gradient_boosting": {
+        "f1": 0.4198,
+        "pr_auc": 0.3682,
+        "roc_auc": 0.7421,
+        "brier": 0.2046
+      },
+      "milestone_frequency": {
+        "f1": 0.233,
+        "pr_auc": 0.3382,
+        "roc_auc": 0.7438,
+        "brier": 0.1695
+      }
+    },
+    "clutch": {
+      "logistic_regression": {
+        "f1": 0.3883,
+        "pr_auc": 0.5153,
+        "roc_auc": 0.6781,
+        "brier": 0.161
+      },
+      "random_forest": {
+        "f1": 0.4082,
+        "pr_auc": 0.3577,
+        "roc_auc": 0.8317,
+        "brier": 0.1372
+      },
+      "gradient_boosting": {
+        "f1": 0.396,
+        "pr_auc": 0.355,
+        "roc_auc": 0.8046,
+        "brier": 0.1568
+      },
+      "milestone_frequency": {
+        "f1": 0.4706,
+        "pr_auc": 0.4205,
+        "roc_auc": 0.85,
+        "brier": 0.1161
+      }
+    },
+    "coolant": {
+      "logistic_regression": {
+        "f1": 0.1013,
+        "pr_auc": 0.1419,
+        "roc_auc": 0.8023,
+        "brier": 0.1485
+      },
+      "random_forest": {
+        "f1": 0.2667,
+        "pr_auc": 0.3321,
+        "roc_auc": 0.738,
+        "brier": 0.0801
+      },
+      "gradient_boosting": {
+        "f1": 0.2182,
+        "pr_auc": 0.4406,
+        "roc_auc": 0.8506,
+        "brier": 0.099
+      },
+      "milestone_frequency": {
+        "f1": 0.2,
+        "pr_auc": 0.2354,
+        "roc_auc": 0.8323,
+        "brier": 0.0288
+      }
+    }
+  },
+  "leave_one_group_out": {
+    "washer_plug_drain": {
+      "folds": 7,
+      "mean_pr_auc": 0.9169,
+      "mean_roc_auc": 0.8544
+    },
+    "dust_and_pollen_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.899,
+      "mean_roc_auc": 0.886
+    },
+    "whell_alignment_and_balancing": {
+      "folds": 7,
+      "mean_pr_auc": 0.3785,
+      "mean_roc_auc": 0.5824
+    },
+    "air_clean_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.8937,
+      "mean_roc_auc": 0.9035
+    },
+    "fuel_filter": {
+      "folds": 7,
+      "mean_pr_auc": 0.6637,
+      "mean_roc_auc": 0.8242
+    },
+    "spark_plug": {
+      "folds": 7,
+      "mean_pr_auc": 0.931,
+      "mean_roc_auc": 0.9724
+    },
+    "brake_fluid": {
+      "folds": 7,
+      "mean_pr_auc": 0.827,
+      "mean_roc_auc": 0.9322
+    },
+    "brake_and_clutch_oil": {
+      "folds": 7,
+      "mean_pr_auc": 0.7652,
+      "mean_roc_auc": 0.8674
+    },
+    "transmission_fluid": {
+      "folds": 7,
+      "mean_pr_auc": 0.9522,
+      "mean_roc_auc": 0.9856
+    },
+    "brake_pads": {
+      "folds": 7,
+      "mean_pr_auc": 0.6226,
+      "mean_roc_auc": 0.8614
+    },
+    "clutch": {
+      "folds": 7,
+      "mean_pr_auc": 0.7824,
+      "mean_roc_auc": 0.9073
+    },
+    "coolant": {
+      "folds": 7,
+      "mean_pr_auc": 0.441,
+      "mean_roc_auc": 0.7914
+    }
+  },
+  "feature_importance": {
+    "air_clean_filter": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.5289
+    },
+    "fuel_filter": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.2166
+    },
+    "brake_fluid": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.7143
+    },
+    "brake_and_clutch_oil": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.123
+    },
+    "transmission_fluid": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.6841
+    },
+    "brake_pads": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.1474
+    },
+    "clutch": {
+      "vehicle_type": 0.0,
+      "fuel_type": 0.0,
+      "mileage": 0.2762
+    }
+  },
+  "cost_experiment": {
+    "target": "visit cost (INR, 2016-2018 workshop invoices)",
+    "test_records": 321,
+    "mae_gradient_boosting": 1546.7,
+    "mae_milestone_median_baseline": 2020.2,
+    "mae_global_median_baseline": 2295.6,
+    "served": false,
+    "reason": "Costs are Indian-rupee workshop prices from 2016-2018 for four models; they are not valid estimates for the fleet's currency, region or year. Fleet cost answers use the fleet's own recorded maintenance costs instead."
+  },
+  "probability_validation": {
+    "status": "not_calibrated",
+    "method": "sigmoid (Platt) on out-of-fold predictions from leave-one-group-out training folds",
+    "validation_records": 321,
+    "independent_groups": 2,
+    "brier_score": 0.1481,
+    "prevalence_baseline_brier": 0.1788,
+    "expected_calibration_error": 0.1557
+  },
+  "acceptance_criteria": {
+    "acceptance_criteria_passed": false,
+    "rules": "macro balanced accuracy and macro F1 over served targets >= 0.60 and >= the milestone-lookup baseline; calibrated macro Brier below the prevalence baseline and ECE <= 0.15; >= 2 groups per split with zero overlap.",
+    "discrimination_passed": false,
+    "calibration_passed": false
+  },
+  "feature_domain": {
+    "vehicle_type": [
+      "sedan",
+      "suv"
+    ],
+    "fuel_type": [
+      "diesel",
+      "petrol"
+    ],
+    "mileage": [
+      9021,
+      137822
+    ]
+  },
+  "training_config": {
+    "random_state": 42,
+    "algorithm": "logistic_regression",
+    "params": {
+      "C": 0.1,
+      "feature_set": "full"
+    },
+    "per_target_estimator": {
+      "washer_plug_drain": "milestone_frequency",
+      "dust_and_pollen_filter": "milestone_frequency",
+      "whell_alignment_and_balancing": "milestone_frequency",
+      "air_clean_filter": "milestone_frequency",
+      "fuel_filter": "milestone_frequency",
+      "spark_plug": "milestone_frequency",
+      "brake_fluid": "milestone_frequency",
+      "brake_and_clutch_oil": "milestone_frequency",
+      "transmission_fluid": "milestone_frequency",
+      "brake_pads": "milestone_frequency",
+      "clutch": "milestone_frequency",
+      "coolant": "milestone_frequency"
+    },
+    "feature_columns": [
+      "vehicle_type",
+      "fuel_type",
+      "mileage"
+    ],
+    "schedule_cycles_km": [
+      10000,
+      20000,
+      30000,
+      40000,
+      60000,
+      80000,
+      100000
+    ],
+    "calibration": "Platt scaling (GroupPlattCalibratedClassifier) on out-of-fold scores from leave-one-group-out training folds",
+    "threshold_rule": "maximise F1 on out-of-fold calibrated probabilities from training groups",
+    "per_target_acceptance": {
+      "min_roc_auc": 0.65,
+      "min_f1": 0.4
+    },
+    "sklearn": "1.9.1"
+  },
+  "limitations": [
+    "Four car models from two Indian cities, 2016-2018; no motorcycles, pickups, vans or minivans.",
+    "Targets are workshop service decisions, which largely follow manufacturer schedules; they are not wear measurements or failures.",
+    "No visit dates or vehicle IDs, so no service-window or failure-date estimate can be validated.",
+    "Vehicles outside the training domain (body type, fuel type, odometer range) are refused rather than extrapolated."
+  ]
+}
