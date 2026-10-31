@@ -7,11 +7,13 @@ def analyze_fleet(vehicles):
 
     ranked = []
     rejected = []
+    model_version = None
 
     for index, vehicle in enumerate(vehicles):
         vehicle_id = vehicle.get("id", index + 1) if isinstance(vehicle, dict) else index + 1
         try:
             prediction = predict_vehicle(vehicle)
+            model_version = model_version or prediction.get("model_version")
             recommendations = prediction["recommendations"]
 
             priority_rank = {"high": 3, "medium": 2, "low": 1}
@@ -62,6 +64,7 @@ def analyze_fleet(vehicles):
                 item["priority"] == "medium" for item in ranked
             )
         },
+        "model_version": model_version,
         "prioritized_vehicles": ranked,
         "rejected_vehicles": rejected
     }
