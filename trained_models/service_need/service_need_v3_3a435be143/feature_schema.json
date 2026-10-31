@@ -1,0 +1,34 @@
+{
+  "inputs": [
+    "vehicle_type",
+    "fuel_type",
+    "mileage"
+  ],
+  "domain": {
+    "vehicle_type": [
+      "sedan",
+      "suv"
+    ],
+    "fuel_type": [
+      "diesel",
+      "petrol"
+    ],
+    "mileage": [
+      9021,
+      137822
+    ]
+  },
+  "engineered": [
+    "mileage_km",
+    "milestone_index",
+    "dist_to_10k_cycle",
+    "dist_to_20k_cycle",
+    "dist_to_30k_cycle",
+    "dist_to_40k_cycle",
+    "dist_to_60k_cycle",
+    "dist_to_80k_cycle",
+    "dist_to_100k_cycle",
+    "vehicle_type",
+    "fuel_type"
+  ]
+}
