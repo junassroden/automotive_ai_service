@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from functools import lru_cache
 import hashlib
 import json
@@ -33,6 +34,14 @@ HIGH_PRIORITY_COMPONENTS = {
     "brake_and_clutch_oil",
     "clutch"
 }
+
+SERVICE_NEED_TASK = "service_need_at_visit"
+ACTION_TEXT = {
+    "replacement": "Check the manufacturer schedule and inspect the {label} at the next service; replace it only if the schedule or the inspection confirms it is due.",
+    "inspection": "Inspect the {label} (wear, thickness, operation) at the next service and record the finding before deciding on repair.",
+    "routine_service": "Include {label} in the next scheduled service if the manufacturer schedule or an inspection supports it.",
+}
+
 
 class MaintenancePredictionsUnavailableError(RuntimeError):
     pass
@@ -260,6 +269,7 @@ def maintenance_model_status():
             "eligible_for_inference": False,
             "reason": "The registry has an invalid feature schema.",
         }
+    target_definitions = model.get("target_definitions")
     return {
         "status": "evaluated_accepted",
         "eligible_for_inference": True,
@@ -269,6 +279,20 @@ def maintenance_model_status():
         "evaluation_report_path": str(report_path),
         "evaluation_report_sha256": report_hash,
         "feature_columns": feature_columns,
+        "model_version": model.get("model_version"),
+        "task": model.get("task"),
+        "target_definitions": target_definitions if isinstance(target_definitions, dict) else {},
+        "metrics": {
+            key: metrics.get(key)
+            for key in ("balanced_accuracy", "baseline_balanced_accuracy", "macro_f1",
+                        "baseline_macro_f1", "macro_pr_auc", "macro_brier")
+            if key in metrics
+        },
+        "calibration": {
+            "status": probability_validation["status"],
+            "method": probability_validation["method"],
+            "brier_score": probability_validation["brier_score"],
+        },
     }
 
 
@@ -347,6 +371,8 @@ def load_maintenance_artifact():
 def validate_vehicle(vehicle, artifact):
     if not isinstance(vehicle, dict):
         raise ValueError("The vehicle field must be a JSON object.")
+    if artifact.get("task") == SERVICE_NEED_TASK:
+        return _validate_service_need_vehicle(vehicle, artifact)
 
     feature_columns = artifact.get("feature_columns", [])
     if not feature_columns:
@@ -365,10 +391,81 @@ def validate_vehicle(vehicle, artifact):
     return {column: vehicle[column] for column in feature_columns}
 
 
+def _validate_service_need_vehicle(vehicle, artifact):
+    from data_pipeline.service_need import normalize_vehicle_input
+
+    features = normalize_vehicle_input(vehicle)
+    domain = artifact.get("feature_domain", {})
+    if not features["vehicle_type"] or not features["fuel_type"] or features["mileage"] in (None, ""):
+        missing = [name for name in ("vehicle_type", "fuel_type", "mileage") if features[name] in (None, "")]
+        raise ValueError("Missing required vehicle fields: " + ", ".join(missing))
+    try:
+        mileage = float(features["mileage"])
+    except (TypeError, ValueError):
+        raise ValueError("mileage must be a number of kilometres.")
+    if not math.isfinite(mileage) or mileage < 0:
+        raise ValueError("mileage must be a non-negative number of kilometres.")
+    if features["vehicle_type"] not in domain.get("vehicle_type", []):
+        raise ValueError(
+            f"Vehicle type '{features['vehicle_type']}' is outside the model's training data "
+            f"({', '.join(domain.get('vehicle_type', []))}); no prediction is made for it."
+        )
+    if features["fuel_type"] not in domain.get("fuel_type", []):
+        raise ValueError(
+            f"Fuel type '{features['fuel_type']}' is outside the model's training data "
+            f"({', '.join(domain.get('fuel_type', []))}); no prediction is made for it."
+        )
+    low, high = domain.get("mileage", [0, float("inf")])
+    if not low <= mileage <= high:
+        raise ValueError(
+            f"Odometer {mileage:,.0f} km is outside the trained range ({low:,.0f}-{high:,.0f} km); "
+            "the model does not extrapolate."
+        )
+    features["mileage"] = mileage
+    return features
+
+
+def _enrich_service_need(results, artifact, features):
+    high_risk = float(getattr(settings, "AI_PREDICTION_HIGH_RISK_PROBABILITY", 0.70))
+    milestone = int(round(features["mileage"] / 10_000) * 10_000)
+    definitions = artifact.get("target_definitions", {})
+    for item in results:
+        target = item["component"]
+        definition = definitions.get(target, {})
+        evidence = artifact.get("evidence_tables", {}).get(target, {}).get(str(milestone))
+        item["prediction_type"] = "service_need_at_visit"
+        item["component_keys"] = definition.get("component_keys", [])
+        item["calibrated_probability"] = item["score"]
+        if item["score"] is None:
+            item["risk_category"] = "not_assessed"
+        elif item["recommendation"] and item["score"] >= max(item["threshold"], high_risk):
+            item["risk_category"] = "high"
+        elif item["recommendation"]:
+            item["risk_category"] = "medium"
+        else:
+            item["risk_category"] = "low"
+        item["recommended_action"] = (
+            ACTION_TEXT.get(definition.get("action"), ACTION_TEXT["inspection"]).format(label=item["label"].lower())
+            if item["recommendation"] else None
+        )
+        item["supporting_evidence"] = (
+            f"In the training service records this item was performed at {evidence['performed']} of "
+            f"{evidence['visits']} visits near {milestone:,} km."
+            if evidence else f"The training service records have no visits near {milestone:,} km."
+        )
+        item["contributing_factors"] = [
+            f"Odometer {features['mileage']:,.0f} km (nearest 10,000 km service milestone: {milestone:,} km)",
+            f"Body type: {features['vehicle_type']}",
+            f"Fuel type: {features['fuel_type']}",
+        ]
+    return results
+
+
 def predict_vehicle(vehicle):
     artifact = load_maintenance_artifact()
     features = validate_vehicle(vehicle, artifact)
     row = pd.DataFrame([features])
+    service_need = artifact.get("task") == SERVICE_NEED_TASK
 
     results = []
     models = artifact.get("models", {})
@@ -455,6 +552,9 @@ def predict_vehicle(vehicle):
                 "reason": "No trained model is available for this category."
             })
 
+    if service_need:
+        _enrich_service_need(results, artifact, features)
+
     recommended = [
         item for item in results if item["recommendation"] is True
     ]
@@ -470,7 +570,7 @@ def predict_vehicle(vehicle):
         "status": "success",
         "vehicle": {
             key: vehicle.get(key)
-            for key in ("id", "name", "brand", "model", "vehicle_type", "make_year", "mileage")
+            for key in ("id", "name", "brand", "model", "vehicle_type", "fuel_type", "make_year", "mileage")
             if key in vehicle
         },
         "summary": {
@@ -482,6 +582,17 @@ def predict_vehicle(vehicle):
         },
         "recommendations": recommended,
         "all_categories": results,
+        **({
+            "model_version": artifact.get("model_version"),
+            "prediction_type": "service_need_at_visit",
+            "prediction_type_meaning": (
+                "Probability that each service item would be performed at a workshop "
+                "service visit at this odometer reading. It is a scheduled-service need, "
+                "not an observed fault or a failure forecast; no failure date is estimated."
+            ),
+            "prediction_timestamp": datetime.now(timezone.utc).isoformat(),
+            "model_inputs": features,
+        } if service_need else {}),
         "disclaimer": (
             "These are model-based maintenance recommendations, not "
             "confirmed mechanical diagnoses. Inspect the vehicle and "
