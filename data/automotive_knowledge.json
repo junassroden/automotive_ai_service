@@ -1098,7 +1098,17 @@
         "air conditioning compressor",
         "blend door actuator",
         "cabin filter",
-        "heater core"
+        "heater core",
+        "aircon not cold",
+        "aircon is not cold",
+        "aircon not cooling",
+        "aircon blowing warm air",
+        "ac not cold",
+        "ac blowing warm air",
+        "air con not cold",
+        "hindi malamig ang aircon",
+        "walang lamig ang aircon",
+        "aircon not working"
       ],
       "overview": "Cabin heating and air-conditioning depend on airflow, heat exchangers, doors and controls, and\u2014in vehicles with conventional A/C\u2014a sealed refrigerant circuit. A warm vent or weak airflow does not by itself identify a failed compressor or refrigerant leak.",
       "component_functions": [
@@ -1746,7 +1756,11 @@
         "tire losing air",
         "nail in tire",
         "tire pressure warning light",
-        "low tire pressure light"
+        "low tire pressure light",
+        "tire pressure light",
+        "tire pressure light is on",
+        "tpms light",
+        "tpms warning"
       ],
       "overview": "If a tire is flat or losing air, slow down, move to a safe place away from traffic, switch on the hazard lights and stop. Driving on a flat tire quickly destroys it and can damage the wheel and make the car hard to control.",
       "possible_causes": [
@@ -1774,6 +1788,56 @@
         {
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Spare-tire and repair-kit instructions are vehicle-specific."
+        }
+      ]
+    },
+    {
+      "id": "steering_heavy",
+      "title": "Steering is heavy or hard to turn",
+      "category": "steering_suspension",
+      "keywords": [
+        "steering wheel is hard to turn",
+        "steering is hard to turn",
+        "hard to turn the steering wheel",
+        "hard to steer",
+        "heavy steering",
+        "steering is heavy",
+        "stiff steering",
+        "steering is stiff",
+        "power steering",
+        "power steering not working",
+        "power steering fluid",
+        "matigas ang manibela",
+        "mabigat ang manibela"
+      ],
+      "overview": "Steering that suddenly becomes heavy or hard to turn usually means the power-steering assistance is reduced or lost, or a tire problem is adding resistance. You can usually still steer, but it takes much more effort, which makes the car harder to control.",
+      "possible_causes": [
+        "Low or under-inflated front tires, or a flat tire.",
+        "Hydraulic power steering: low or leaking power-steering fluid, a worn or slipping drive belt, or a failing pump.",
+        "Electric power steering: a fault in the steering motor, sensor or wiring, often with a steering warning light.",
+        "Worn or binding steering or suspension joints."
+      ],
+      "symptoms": [
+        "Note whether the steering became heavy suddenly or gradually, whether it is worse at low speed, and any whining noise or warning light."
+      ],
+      "checks": [
+        "If the steering suddenly becomes hard to turn while driving, slow down and stop in a safe place.",
+        "Check the tire pressures and look for a flat or soft tire.",
+        "Look for a steering warning light on the dashboard.",
+        "Do not keep driving if steering is difficult or unpredictable."
+      ],
+      "professional_diagnostics": [
+        "A technician can check the power-steering system (fluid, belt and pump, or the electric steering system and its fault codes), the tires and the steering joints."
+      ],
+      "urgency": "Heavy or unpredictable steering affects control of the car: stop safely and arrange an inspection before driving further. If you are driving a rental vehicle, contact the rental team before arranging repairs.",
+      "needed_information": [
+        "Whether it happened suddenly, at what speed, tire pressures, any noise, and any warning lights."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Power-steering type, fluid and inspection procedures are vehicle-specific."
         }
       ]
     }
