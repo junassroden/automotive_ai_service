@@ -1,0 +1,280 @@
+{
+  "runs": [
+    {
+      "label": "parity_fix_only",
+      "examples": 60,
+      "accuracy": 0.7333,
+      "per_intent_recall": {
+        "booking_reservation": 1.0,
+        "brakes": 1.0,
+        "cancellation_rescheduling": 1.0,
+        "capabilities": 0.5,
+        "car_availability": 0.5,
+        "cooling": 1.0,
+        "deposits_payments": 0.75,
+        "explain_score": 1.0,
+        "goodbye": 0.667,
+        "greeting": 0.667,
+        "maintenance_schedule": 0.5,
+        "oil": 1.0,
+        "pickup_return": 0.5,
+        "rental_duration": 0.75,
+        "rental_pricing": 1.0,
+        "rental_requirements": 0.5,
+        "rental_support": 0.0,
+        "safety": 1.0,
+        "vehicle_features": 0.333
+      },
+      "errors": [
+        {
+          "text": "may bakanteng sasakyan ba kayo",
+          "expected": "car_availability",
+          "predicted": "rental_duration"
+        },
+        {
+          "text": "which units can I take this saturday",
+          "expected": "car_availability",
+          "predicted": "fleet_analysis"
+        },
+        {
+          "text": "do you take credit cards",
+          "expected": "deposits_payments",
+          "predicted": "capabilities"
+        },
+        {
+          "text": "ano ang kailangan para makarenta",
+          "expected": "rental_requirements",
+          "predicted": "troubleshooting"
+        },
+        {
+          "text": "can a foreigner rent with an international license",
+          "expected": "rental_requirements",
+          "predicted": "car_availability"
+        },
+        {
+          "text": "saan kukunin ang kotse",
+          "expected": "pickup_return",
+          "predicted": "vehicle_features"
+        },
+        {
+          "text": "anong oras pwede kunin ang sasakyan",
+          "expected": "pickup_return",
+          "predicted": "vehicle_features"
+        },
+        {
+          "text": "what is the longest rental you allow",
+          "expected": "rental_duration",
+          "predicted": "rental_pricing"
+        },
+        {
+          "text": "magandang hapon",
+          "expected": "greeting",
+          "predicted": "safety"
+        },
+        {
+          "text": "salamat po",
+          "expected": "goodbye",
+          "predicted": "safety"
+        },
+        {
+          "text": "ano ang kaya mong gawin",
+          "expected": "capabilities",
+          "predicted": "troubleshooting"
+        },
+        {
+          "text": "may tao ba akong makakausap",
+          "expected": "rental_support",
+          "predicted": "rental_duration"
+        },
+        {
+          "text": "I need to talk to a human agent",
+          "expected": "rental_support",
+          "predicted": "rental_requirements"
+        },
+        {
+          "text": "does the fortuner have bluetooth",
+          "expected": "vehicle_features",
+          "predicted": "explain_score"
+        },
+        {
+          "text": "ilan ang upuan ng van",
+          "expected": "vehicle_features",
+          "predicted": "explain_score"
+        },
+        {
+          "text": "kailan ang susunod na maintenance",
+          "expected": "maintenance_schedule",
+          "predicted": "vehicle_prediction"
+        }
+      ],
+      "training_overlap": {
+        "exact": [],
+        "near_duplicates_jaccard_0_9": []
+      }
+    },
+    {
+      "label": "baseline_2026-10-31",
+      "examples": 60,
+      "accuracy": 0.75,
+      "per_intent_recall": {
+        "booking_reservation": 1.0,
+        "brakes": 1.0,
+        "cancellation_rescheduling": 1.0,
+        "capabilities": 0.5,
+        "car_availability": 0.5,
+        "cooling": 1.0,
+        "deposits_payments": 0.75,
+        "explain_score": 1.0,
+        "goodbye": 1.0,
+        "greeting": 0.667,
+        "maintenance_schedule": 0.5,
+        "oil": 1.0,
+        "pickup_return": 0.5,
+        "rental_duration": 0.75,
+        "rental_pricing": 1.0,
+        "rental_requirements": 0.5,
+        "rental_support": 0.0,
+        "safety": 1.0,
+        "vehicle_features": 0.333
+      },
+      "errors": [
+        {
+          "text": "may bakanteng sasakyan ba kayo",
+          "expected": "car_availability",
+          "predicted": "rental_duration"
+        },
+        {
+          "text": "which units can I take this saturday",
+          "expected": "car_availability",
+          "predicted": "fleet_analysis"
+        },
+        {
+          "text": "do you take credit cards",
+          "expected": "deposits_payments",
+          "predicted": "capabilities"
+        },
+        {
+          "text": "ano ang kailangan para makarenta",
+          "expected": "rental_requirements",
+          "predicted": "troubleshooting"
+        },
+        {
+          "text": "can a foreigner rent with an international license",
+          "expected": "rental_requirements",
+          "predicted": "car_availability"
+        },
+        {
+          "text": "saan kukunin ang kotse",
+          "expected": "pickup_return",
+          "predicted": "vehicle_features"
+        },
+        {
+          "text": "anong oras pwede kunin ang sasakyan",
+          "expected": "pickup_return",
+          "predicted": "vehicle_features"
+        },
+        {
+          "text": "what is the longest rental you allow",
+          "expected": "rental_duration",
+          "predicted": "rental_pricing"
+        },
+        {
+          "text": "magandang hapon",
+          "expected": "greeting",
+          "predicted": "safety"
+        },
+        {
+          "text": "ano ang kaya mong gawin",
+          "expected": "capabilities",
+          "predicted": "troubleshooting"
+        },
+        {
+          "text": "may tao ba akong makakausap",
+          "expected": "rental_support",
+          "predicted": "rental_duration"
+        },
+        {
+          "text": "I need to talk to a human agent",
+          "expected": "rental_support",
+          "predicted": "rental_requirements"
+        },
+        {
+          "text": "does the fortuner have bluetooth",
+          "expected": "vehicle_features",
+          "predicted": "explain_score"
+        },
+        {
+          "text": "ilan ang upuan ng van",
+          "expected": "vehicle_features",
+          "predicted": "explain_score"
+        },
+        {
+          "text": "kailan ang susunod na maintenance",
+          "expected": "maintenance_schedule",
+          "predicted": "vehicle_prediction"
+        }
+      ],
+      "training_overlap": {
+        "exact": [],
+        "near_duplicates_jaccard_0_9": []
+      }
+    },
+    {
+      "label": "after_training_data_2026-10-31",
+      "examples": 60,
+      "accuracy": 0.9167,
+      "per_intent_recall": {
+        "booking_reservation": 0.75,
+        "brakes": 1.0,
+        "cancellation_rescheduling": 1.0,
+        "capabilities": 1.0,
+        "car_availability": 0.75,
+        "cooling": 1.0,
+        "deposits_payments": 0.75,
+        "explain_score": 1.0,
+        "goodbye": 1.0,
+        "greeting": 1.0,
+        "maintenance_schedule": 1.0,
+        "oil": 1.0,
+        "pickup_return": 1.0,
+        "rental_duration": 0.75,
+        "rental_pricing": 1.0,
+        "rental_requirements": 1.0,
+        "rental_support": 0.5,
+        "safety": 1.0,
+        "vehicle_features": 1.0
+      },
+      "errors": [
+        {
+          "text": "may bakanteng sasakyan ba kayo",
+          "expected": "car_availability",
+          "predicted": "vehicle_features"
+        },
+        {
+          "text": "gusto ko mag book ng kotse",
+          "expected": "booking_reservation",
+          "predicted": "pickup_return"
+        },
+        {
+          "text": "do you take credit cards",
+          "expected": "deposits_payments",
+          "predicted": "capabilities"
+        },
+        {
+          "text": "what is the longest rental you allow",
+          "expected": "rental_duration",
+          "predicted": "rental_pricing"
+        },
+        {
+          "text": "may tao ba akong makakausap",
+          "expected": "rental_support",
+          "predicted": "vehicle_features"
+        }
+      ],
+      "training_overlap": {
+        "exact": [],
+        "near_duplicates_jaccard_0_9": []
+      }
+    }
+  ]
+}
