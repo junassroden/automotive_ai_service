@@ -1,0 +1,358 @@
+{
+  "started": "2026-10-31T22:31:59+0800",
+  "source_database": "car_rental_db",
+  "throwaway_database": "car_rental_db_chat_it",
+  "passed": 57,
+  "failed": 0,
+  "environment_warnings": [],
+  "checks": [
+    {
+      "check": "database copied to car_rental_db_chat_it",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "users.role accepts the application's 'customer' role (migration 007 applied)",
+      "passed": true,
+      "detail": "users.role is enum('admin','customer'); the test uses 'customer' for customers",
+      "kind": "environment"
+    },
+    {
+      "check": "Django AI service started",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "PHP Back-End started (php -S, as php lava serve does)",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "unauthenticated chat is rejected with 401",
+      "passed": true,
+      "detail": "401",
+      "kind": "chat"
+    },
+    {
+      "check": "customer_a signs in",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Login successful.\", \"data\": {\"id\": 8, \"username\": \"it_customer_a_3c1b1a\", \"full_name\": \"IT Customer A\", \"email\": \"it.a.3c1b1a@example.test\", \"role\": \"customer\"}, \"access_",
+      "kind": "chat"
+    },
+    {
+      "check": "customer_b signs in",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Login successful.\", \"data\": {\"id\": 9, \"username\": \"it_customer_b_3c1b1a\", \"full_name\": \"IT Customer B\", \"email\": \"it.b.3c1b1a@example.test\", \"role\": \"customer\"}, \"access_",
+      "kind": "chat"
+    },
+    {
+      "check": "admin signs in",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Login successful.\", \"data\": {\"id\": 10, \"username\": \"it_admin_3c1b1a\", \"full_name\": \"IT Admin\", \"email\": \"it.admin.3c1b1a@example.test\", \"role\": \"admin\"}, \"access_token\": ",
+      "kind": "chat"
+    },
+    {
+      "check": "price question answered from MySQL",
+      "passed": true,
+      "detail": "The Toyota Vios is PHP 1,500.00 per day, with a PHP 3,000.00 deposit.\nTotals are the daily rate times the number of days; tell me how many days for an estimate.",
+      "kind": "chat"
+    },
+    {
+      "check": "Taglish follow-up uses the same vehicle and the reservation pricing rule",
+      "passed": true,
+      "detail": "(About the Toyota Vios from earlier.)\nRenting the Toyota Vios for 3 days costs PHP 4,500.00 (PHP 1,500.00 x 3 days), plus a PHP 3,000.00 security deposit shown separately.\nThis is the daily rate times the number of days. The system stores no discounts or extra fees; the rental team confirms the final amount.",
+      "kind": "chat"
+    },
+    {
+      "check": "make-only price question lists that make's cars",
+      "passed": true,
+      "detail": "Daily rates:\n- Toyota Fortuner (SUV, 7 seats): PHP 3,500.00 per day, PHP 6,000.00 deposit\n- Toyota Vios (Sedan, 5 seats): PHP 1,500.00 per day, PHP 3,000.00 deposit\nTotals are the daily rate times the number of days; tell me how many days for an estimate.",
+      "kind": "chat"
+    },
+    {
+      "check": "availability lists the available cars",
+      "passed": true,
+      "detail": "Available for rent right now: Toyota Fortuner (PHP 3,500.00/day) and Toyota Vios (PHP 1,500.00/day).\nFor specific dates, give me the pickup and return dates and I'll check them against existing bookings.",
+      "kind": "chat"
+    },
+    {
+      "check": "a changed price is used on the next question",
+      "passed": true,
+      "detail": "The Toyota Vios is PHP 1,611.00 per day, with a PHP 3,000.00 deposit.\nTotals are the daily rate times the number of days; tell me how many days for an estimate.",
+      "kind": "chat"
+    },
+    {
+      "check": "a newly added vehicle is found without any code change",
+      "passed": true,
+      "detail": "The Mitsubishi Xpander is PHP 2,650.00 per day, with a PHP 5,000.00 deposit.\nTotals are the daily rate times the number of days; tell me how many days for an estimate.",
+      "kind": "chat"
+    },
+    {
+      "check": "customer A sees their own reservation",
+      "passed": true,
+      "detail": "Your reservations:\n- #2 Toyota Vios: 2026-11-10 to 2026-11-13 (3 day(s)), status pending, total PHP 4,500.00, pickup in 10 day(s)\nFull details are on My Reservations (/users/reservations).",
+      "kind": "chat"
+    },
+    {
+      "check": "customer A does not see customer B's reservation",
+      "passed": true,
+      "detail": "Your reservations:\n- #2 Toyota Vios: 2026-11-10 to 2026-11-13 (3 day(s)), status pending, total PHP 4,500.00, pickup in 10 day(s)\nFull details are on My Reservations (/users/reservations).",
+      "kind": "chat"
+    },
+    {
+      "check": "customer B sees only their own reservation",
+      "passed": true,
+      "detail": "Your reservations:\n- #3 Toyota Fortuner: 2026-11-20 to 2026-11-22 (2 day(s)), status confirmed, total PHP 7,000.00, pickup in 20 day(s)\nFull details are on My Reservations (/users/reservations).",
+      "kind": "chat"
+    },
+    {
+      "check": "an id written in the message does not change whose bookings are read",
+      "passed": true,
+      "detail": "Your reservations:\n- #2 Toyota Vios: 2026-11-10 to 2026-11-13 (3 day(s)), status pending, total PHP 4,500.00, pickup in 10 day(s)\nFull details are on My Reservations (/users/reservations).",
+      "kind": "chat"
+    },
+    {
+      "check": "customer request for everyone's reservations is refused",
+      "passed": true,
+      "detail": "I can't share other customers' reservations, names, phone numbers, emails or other personal details. Your role comes from your signed-in account, and the assistant only shows your own bookings. Administrators manage customer records in the admin pages, not in chat.",
+      "kind": "chat"
+    },
+    {
+      "check": "prompt injection does not unlock administrator data",
+      "passed": true,
+      "detail": "Fleet and maintenance records are limited to administrators, so I can't show them for this account. I can help with vehicle listings, prices, availability, your own reservations and general car questions.",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator sees every reservation",
+      "passed": true,
+      "detail": "Reservations in the system: 3 (confirmed: 1, pending: 2).\n- #3 IT Customer B: Toyota Fortuner, 2026-11-20 to 2026-11-22, confirmed, PHP 7,000.00\n- #2 IT Customer A: Toyota Vios, 2026-11-10 to 2026-11-13, pending, PHP 4,500.00\n- #1 Jhonas: Toyota Fortuner, 2026-10-30 to 2026-12-05, pending, PHP 72,000.00",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator answer has no customer emails",
+      "passed": true,
+      "detail": "Reservations in the system: 3 (confirmed: 1, pending: 2).\n- #3 IT Customer B: Toyota Fortuner, 2026-11-20 to 2026-11-22, confirmed, PHP 7,000.00\n- #2 IT Customer A: Toyota Vios, 2026-11-10 to 2026-11-13, pending, PHP 4,500.00\n- #1 Jhonas: Toyota Fortuner, 2026-10-30 to 2026-12-05, pending, PHP 72,000.00",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator maintenance records come from MySQL",
+      "passed": true,
+      "detail": "Latest maintenance records:\n- #1 2026-04-14 Toyota Vios: Integration test oil change (Completed), cost PHP 2,750.00, odometer 1,000 km - Test record\nService-log entries record work done; they are not verified fault diagnoses.",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator due-for-service answer lists the overdue test car",
+      "passed": true,
+      "detail": "Service status from recorded maintenance history (Rule-based estimate: due after 180 days or 5,000 km since the last completed service, or when a recorded next-maintenance date has passed; approaching within 30 days.):\nOverdue:\n- Toyota Vios (DEMO-001): last service 2026-04-14 (Integration test oil change); 15,000 km now; date-based due 2026-10-11.\nNot enough service history:\n- Toyota Fortuner (DEMO-002): 32,000 km now.\n- Mitsubishi Xpander (IT3C1B1A): .\nThese are schedule estimates, not confirmed faults; check the manufacturer schedule.",
+      "kind": "chat"
+    },
+    {
+      "check": "fleet count matches the cars table",
+      "passed": true,
+      "detail": "The fleet has 3 vehicle(s): available 3.",
+      "kind": "chat"
+    },
+    {
+      "check": "registration creates an account",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Account created successfully.\"}",
+      "kind": "chat"
+    },
+    {
+      "check": "a registered account gets the customer role",
+      "passed": true,
+      "detail": "[{'role': 'customer'}]",
+      "kind": "chat"
+    },
+    {
+      "check": "the new customer can sign in",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Login successful.\", \"data\": {\"id\": 11, \"username\": \"it.new.3c1b1a\", \"full_name\": \"IT New Customer\", \"email\": \"it.new.3c1b1a@example.test\", \"role\": \"customer\"}, \"access_to",
+      "kind": "chat"
+    },
+    {
+      "check": "profile with licence details and photo is saved",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Profile saved successfully.\", \"data\": {\"id\": 11, \"username\": \"it.new.3c1b1a\", \"full_name\": \"IT New Customer\", \"email\": \"it.new.3c1b1a@example.test\", \"role\": \"customer\", \"phone\": \"+63 912 345 6789\", \"address_line\": \"1 Test Street\", \"city\": \"Manila\", \"province\": \"Metro Ma",
+      "kind": "chat"
+    },
+    {
+      "check": "licence number, expiry and photo are stored",
+      "passed": true,
+      "detail": "[{'driver_license_number': 'N01-23-456789', 'driver_license_expiry': '2030-01-31', 'verification_photo_filename': '5839518e43b18d2eb655ac4a7e867fb231542ded.png'}]",
+      "kind": "chat"
+    },
+    {
+      "check": "a customer can view their own verification photo",
+      "passed": true,
+      "detail": "200 image/png",
+      "kind": "chat"
+    },
+    {
+      "check": "another customer cannot get that photo (only their own, which does not exist)",
+      "passed": true,
+      "detail": "404",
+      "kind": "chat"
+    },
+    {
+      "check": "signed-out requests cannot get a verification photo",
+      "passed": true,
+      "detail": "401",
+      "kind": "chat"
+    },
+    {
+      "check": "an expired licence is rejected",
+      "passed": true,
+      "detail": "{\"success\": false, \"error\": \"The driver\\u2019s licence must not be expired.\"}",
+      "kind": "chat"
+    },
+    {
+      "check": "the shared service key is configured (32+ characters)",
+      "passed": true,
+      "detail": "length 48",
+      "kind": "chat"
+    },
+    {
+      "check": "the AI service rejects a request without the key",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "the AI service rejects a wrong key",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "the AI service accepts the shared key",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "POST /api/chat without a trailing slash is not a server error",
+      "passed": true,
+      "detail": "400 b'{\"error\": \"message must be a non-empty string.\"}'",
+      "kind": "chat"
+    },
+    {
+      "check": "POST /api/predict without a trailing slash is not a server error",
+      "passed": true,
+      "detail": "503 b'{\"status\": \"unavailable\", \"code\": \"model_not_eligible\", \"error\": \"Service-need model did not meet the acceptance criteri'",
+      "kind": "chat"
+    },
+    {
+      "check": "POST /api/fleet/analyze without a trailing slash is not a server error",
+      "passed": true,
+      "detail": "200 b'{\"status\": \"success\", \"fleet_summary\": {\"submitted_vehicles\": 0, \"analyzed_vehicles\": 0, \"rejected_vehicles\": 0, \"vehicl'",
+      "kind": "chat"
+    },
+    {
+      "check": "POST /api/knowledge/search without a trailing slash is not a server error",
+      "passed": true,
+      "detail": "400 b'{\"error\": \"query must be a non-empty string of at most 4000 characters.\"}'",
+      "kind": "chat"
+    },
+    {
+      "check": "the AI service runs with DEBUG off (no debug error pages)",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator diagnostic mode answers for the selected vehicle",
+      "passed": true,
+      "detail": "{\"success\": true, \"message\": \"Chat response generated.\", \"data\": {\"message\": \"Direct answer: Brake pads and friction surfaces wear with use. Noise or vibration can have several causes and requires inspection; it is not a measurement of remaining pad life.\\n\\nPossible causes and mechanisms: Worn or c",
+      "kind": "chat"
+    },
+    {
+      "check": "customers cannot use diagnostic mode",
+      "passed": true,
+      "detail": "403",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator mileage ranking",
+      "passed": true,
+      "detail": "The highest-mileage vehicle is the Toyota Fortuner (DEMO-002) at 32,000 km.\n- Toyota Fortuner: 32,000 km\n- Toyota Vios: 15,000 km\n- Mitsubishi Xpander: no mileage recorded",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator pending reservations from MySQL",
+      "passed": true,
+      "detail": "2 reservation(s) pending.\n- #2 IT Customer A: Toyota Vios, 2026-11-10 to 2026-11-13, pending, PHP 4,500.00\n- #1 Jhonas: Toyota Fortuner, 2026-10-30 to 2026-12-05, pending, PHP 72,000.00",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator status of one vehicle",
+      "passed": true,
+      "detail": "Toyota Vios (DEMO-001): status available, 15,000 km. Service: Overdue, last completed service 2026-04-14, date-based due 2026-10-11. Latest log entry: #1 Integration test oil change on 2026-04-14 (Completed), cost PHP 2,750.00. Next booking: #2 2026-11-10 to 2026-11-13 (IT Customer A, pending).",
+      "kind": "chat"
+    },
+    {
+      "check": "administrator maintenance cost total from MySQL",
+      "passed": true,
+      "detail": "Total recorded maintenance cost: PHP 2,750.00 across 1 record(s).\n- Toyota Vios (DEMO-001): PHP 2,750.00 (1 record(s))",
+      "kind": "chat"
+    },
+    {
+      "check": "two questions in one message are both answered",
+      "passed": true,
+      "detail": "The Toyota Vios is PHP 1,611.00 per day, with a PHP 3,000.00 deposit.\nTotals are the daily rate times the number of days; tell me how many days for an estimate.\n\nYour reservations:\n- #3 Toyota Fortuner: 2026-11-20 to 2026-11-22 (2 day(s)), status confirmed, total PHP 7,000.00, pickup in 20 day(s)\nFull details are on My Reservations (/users/reservations).",
+      "kind": "chat"
+    },
+    {
+      "check": "8 concurrent requests from two customers each see only their own bookings",
+      "passed": true,
+      "detail": "",
+      "kind": "chat"
+    },
+    {
+      "check": "rate limiting stops a user after 20 chat messages a minute",
+      "passed": true,
+      "detail": "429 at attempt 17",
+      "kind": "chat"
+    },
+    {
+      "check": "empty message is rejected with 422",
+      "passed": true,
+      "detail": "422",
+      "kind": "chat"
+    },
+    {
+      "check": "malformed JSON is rejected without a server error",
+      "passed": true,
+      "detail": "422",
+      "kind": "chat"
+    },
+    {
+      "check": "a database error is reported, not answered from stale data",
+      "passed": true,
+      "detail": "500 {\"raw\": \"<!DOCTYPE html>\\r\\n<html lang=\\\"en\\\">\\r\\n<head>\\r\\n    <meta charset=\\\"UTF-8\\\">\\r\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\">\\r\\n    <title>Database Error &mdash; LavaLust</title>\\r\\n    <style nonce=\\\"rYnjx0TdV4lrG/spetzc3Q==\\\">\\r\\n        *, *::before, ",
+      "kind": "chat"
+    },
+    {
+      "check": "an unavailable AI service returns 503 with a safe message",
+      "passed": true,
+      "detail": "503 {\"success\": false, \"error\": \"The local AI chat service is unavailable right now.\"}",
+      "kind": "chat"
+    },
+    {
+      "check": "the chat recovers when the AI service is back",
+      "passed": true,
+      "detail": "200 Daily rates:\n- Toyota Fortuner (SUV, 7 seats): PHP 3,500.00 per day, PHP 6,000.00 deposit\n- Toyota Vios (Sedan, 5 seats): PHP 1,611.00 per day, PHP 3,000.00 deposit\nTotals are the daily rate times the",
+      "kind": "chat"
+    },
+    {
+      "check": "React frontend builds (output written to a temporary folder)",
+      "passed": true,
+      "detail": "../../Users/HP/AppData/Local/Temp/chat_it_4guk3z_9/dist/assets/index-DGmznHEY.css           183.79 kB \u2502 gzip:  36.20 kB\n../../../../Users/HP/AppData/Local/Temp/chat_it_4guk3z_9/dist/assets/index-qoZN52ed.js            547.64 kB \u2502 gzip: 161.53 kB\n../../../../Users/HP/AppData/Local/Temp/chat_it_4guk3z_9/dist/assets/InspectionStage-BU5E-B2f.js  958.70 kB \u2502 gzip: 255.11 kB\n\n\u001b[32m\u2713 built in 3.46s\u001b[39m\nINGS] \u001b[0mJavaScript callbacks ran for 2.7s of this 3.4s build (79%).\nThe slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):",
+      "kind": "chat"
+    }
+  ]
+}
