@@ -34,7 +34,14 @@
         "hi there how are you",
         "can I ask you something",
         "are you available to help",
-        "let us get started"
+        "let us get started",
+        "magandang umaga",
+        "magandang gabi po",
+        "hi po",
+        "kumusta",
+        "musta",
+        "hey hi",
+        "magandang araw po"
       ]
     },
     {
@@ -583,7 +590,17 @@
         "Can you help with preventive maintenance planning?",
         "What information can I get from this chatbot?",
         "Can this assistant explain vehicle maintenance recommendations?",
-        "What are the main functions of this AI assistant?"
+        "What are the main functions of this AI assistant?",
+        "ano ang matutulungan mo",
+        "what are you able to do",
+        "ano pwede kong itanong",
+        "what topics can you answer",
+        "anong klaseng tanong ang kaya mo",
+        "what services does this chatbot offer",
+        "how can you help me",
+        "what questions can I ask you",
+        "ano ang alam mo",
+        "what kind of help do you give"
       ]
     },
     {
@@ -649,12 +666,22 @@
         "What is a recommended vehicle service interval?",
         "How can I organize my vehicle maintenance schedule?",
         "What routine checks should I perform on my car?",
-        "When should I bring my vehicle to a mechanic?"
+        "When should I bring my vehicle to a mechanic?",
+        "when was the last service",
+        "kailan dapat i-service ang kotse",
+        "next maintenance date",
+        "is the car due for service",
+        "service schedule po",
+        "ilang kilometro bago mag service",
+        "due na ba sa maintenance",
+        "upcoming service for this vehicle",
+        "kailan ulit ang check up ng sasakyan",
+        "how often is the unit serviced"
       ]
     },
     {
       "tag": "goodbye",
-      "answer": "You're welcome. Have a vehicle inspected by a qualified technician when a maintenance or safety concern is identified.",
+      "answer": "You're welcome. Ask me anytime about vehicles, prices, your bookings or car problems.",
       "patterns": [
         "goodbye",
         "bye",
@@ -691,7 +718,17 @@
         "I am done asking questions",
         "alright take care",
         "thanks for your time",
-        "farewell"
+        "farewell",
+        "maraming salamat",
+        "salamat",
+        "ok thanks bye",
+        "sige salamat",
+        "thank you so much",
+        "that's all for now",
+        "paalam",
+        "bye po",
+        "thanks a bunch",
+        "got it thanks"
       ]
     },
     {
@@ -2647,7 +2684,19 @@
         "Show vehicles currently listed as available",
         "Is any car ready to be rented?",
         "I am looking for a car that is available to rent",
-        "Are there rental vehicles I can choose?"
+        "Are there rental vehicles I can choose?",
+        "do you have any cars available today",
+        "may available ba kayong kotse",
+        "anong sasakyan ang pwede ngayon",
+        "is there a free car for tomorrow",
+        "which vehicles are open for booking",
+        "meron pa bang available na unit",
+        "can I get a car on short notice",
+        "available ba ang suv bukas",
+        "what cars can I rent this week",
+        "may sasakyan pa ba para sa weekend",
+        "any open units next week",
+        "pwede pa bang mag rent ngayong araw"
       ]
     },
     {
@@ -2706,7 +2755,19 @@
         "Are there any driver qualifications for a rental?",
         "What should I bring to meet the rental conditions?",
         "Where are the car hire requirements listed?",
-        "What do I need to show before collecting a rental?"
+        "What do I need to show before collecting a rental?",
+        "what documents should I bring",
+        "anong requirements sa pag renta",
+        "kailangan ba ng valid id",
+        "is a driver's license required to rent",
+        "can I rent without a license",
+        "what do I need before I can book",
+        "minimum age to rent a car",
+        "ilang taon dapat para makapag renta",
+        "do tourists need an international driving permit",
+        "anong papeles ang kailangan",
+        "what are the conditions for renting",
+        "pwede ba student permit"
       ]
     },
     {
@@ -2766,7 +2827,19 @@
         "How many days can I keep a hired car?",
         "May I request a later return date?",
         "Can I add extra days to an existing rental?",
-        "Where can I ask to extend my rental period?"
+        "Where can I ask to extend my rental period?",
+        "what's the shortest time I can rent",
+        "maximum number of rental days",
+        "pwede ba ang isang araw lang",
+        "how many days minimum",
+        "can I rent for a month",
+        "ilang araw pinakamaikli",
+        "is there a minimum rental period",
+        "can I keep it for two weeks",
+        "how long can I rent the car",
+        "ilang araw max na renta",
+        "is there a limit on rental length",
+        "pwede ba long term na renta"
       ]
     },
     {
@@ -2796,7 +2869,19 @@
         "Can you confirm the payment options for a booking?",
         "Where can I see the deposit and payment terms?",
         "Do you accept online payment for car hire?",
-        "How do I verify a rental charge or deposit?"
+        "How do I verify a rental charge or deposit?",
+        "do you accept debit cards",
+        "can I pay through gcash",
+        "pwede bang mag bayad gamit ang card",
+        "how is the deposit returned",
+        "paano ang bayad",
+        "is the deposit refunded after the rental",
+        "do I pay online or in person",
+        "tumatanggap ba kayo ng maya",
+        "what payment methods do you accept",
+        "kailan ibabalik ang deposit ko",
+        "can I pay by bank transfer",
+        "is there a down payment"
       ]
     },
     {
@@ -2826,7 +2911,19 @@
         "What equipment does the selected car include?",
         "Show me the listed specifications for a rental vehicle",
         "Is the car equipped with navigation?",
-        "What vehicle details can I review before booking?"
+        "What vehicle details can I review before booking?",
+        "does it have a dashcam",
+        "may aircon ba ang sasakyan",
+        "how many seats does the suv have",
+        "ilang tao ang kasya",
+        "is the van manual transmission",
+        "does the car have usb charging",
+        "may gps ba",
+        "what fuel does it use",
+        "gaano kalaki ang trunk",
+        "is there a child seat",
+        "does the sedan have bluetooth audio",
+        "ilang pinto ang kotse"
       ]
     },
     {
@@ -2856,7 +2953,19 @@
         "How do I find the drop-off details for my car?",
         "Can the rental team tell me my collection instructions?",
         "Where should I go to collect a reserved vehicle?",
-        "How do I arrange returning a hired car?"
+        "How do I arrange returning a hired car?",
+        "where is the pickup point",
+        "saan ibabalik ang sasakyan",
+        "what time can I collect the car",
+        "how do I return the vehicle",
+        "anong oras ang balik ng kotse",
+        "where do I get the keys",
+        "can you bring the car to the airport",
+        "paano kukunin ang na-book kong kotse",
+        "what happens when I return the car",
+        "pickup location po",
+        "where should I park when returning",
+        "sino ang mag aabot ng susi"
       ]
     },
     {
@@ -2916,7 +3025,19 @@
         "Who can help me with a rental service issue?",
         "Where is the customer help channel for car reservations?",
         "I need a person to help with my rental",
-        "How can I ask the rental office for help?"
+        "How can I ask the rental office for help?",
+        "can I speak with a person",
+        "connect me to customer service",
+        "gusto kong makausap ang staff",
+        "is there a hotline",
+        "I want to talk to someone from the rental team",
+        "may customer service ba kayo",
+        "transfer me to an agent",
+        "kausap ng tao please",
+        "who can I call for help",
+        "need human support",
+        "pwede ko bang tawagan ang rental team",
+        "let me talk to a real person"
       ]
     }
   ]
