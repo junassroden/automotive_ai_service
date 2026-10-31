@@ -19,6 +19,7 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from data_pipeline.status import record_training_status
+from ai_api.language import normalize_message
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -26,6 +27,7 @@ DATA_PATH = BASE_DIR / "data" / "chatbot_intents.json"
 MODEL_DIR = BASE_DIR / "trained_models"
 MODEL_PATH = MODEL_DIR / "chatbot_nlp.joblib"
 REPORT_PATH = MODEL_DIR / "chatbot_evaluation.json"
+HOLDOUT_PATH = BASE_DIR / "data" / "evaluation" / "intent_holdout_v1.json"
 TRAINING_REPORT_PATH = BASE_DIR / "data" / "reports" / "chatbot_training.json"
 
 RANDOM_STATE = 42
@@ -115,7 +117,8 @@ def load_training_data():
             "answer": answer.strip()
         }
 
-        texts.extend(valid_patterns)
+        # Train on the same normalised text the assistant classifies (typos and Tagalog mapped).
+        texts.extend(normalize_message(pattern) for pattern in valid_patterns)
         labels.extend([tag] * len(valid_patterns))
 
     if not responses:
@@ -258,6 +261,26 @@ def evaluate_model(texts, labels):
     }
 
     return evaluation
+
+
+def independent_comparison(texts, labels):
+    """Accuracy of the candidate (trained on all examples) and the current model on
+    data/evaluation/intent_holdout_v1.json, or None when there is no held-out file or no current model.
+    The held-out set is used for this model selection, so its score is not an unbiased final test."""
+    if not HOLDOUT_PATH.exists() or not MODEL_PATH.exists():
+        return None
+    examples = json.loads(HOLDOUT_PATH.read_text(encoding="utf-8"))["examples"]
+    held_out = [normalize_message(item["text"]) for item in examples]
+    expected = [item["intent"] for item in examples]
+    training = {" ".join(text.casefold().split()) for text in texts}
+    leaked = [text for text in held_out if " ".join(text.casefold().split()) in training]
+    if leaked:
+        return {"error": f"{len(leaked)} held-out question(s) appear in the training data; remove them before comparing."}
+    candidate = create_pipeline().fit(texts, labels)
+    current = joblib.load(MODEL_PATH)["pipeline"]
+    score = lambda pipeline: round(sum(p == e for p, e in zip(pipeline.predict(held_out), expected)) / len(expected), 4)
+    return {"held_out_file": str(HOLDOUT_PATH.relative_to(BASE_DIR)), "examples": len(expected),
+            "candidate_accuracy": score(candidate), "current_accuracy": score(current)}
 
 
 def train_final_model(texts, labels, responses, evaluation):
@@ -414,16 +437,32 @@ def _train():
         if isinstance(current_report, dict)
         else None
     )
-    if (
+    # The internal split changes whenever the training data changes, so the candidate's and the
+    # saved model's split scores are only comparable on identical data. With different data, both
+    # models are compared on the independent held-out questions instead.
+    same_data = isinstance(current_report, dict) and current_report.get("training_data_sha256") == evaluation["training_data_sha256"]
+    comparison = None if same_data else independent_comparison(texts, labels)
+    if comparison is not None:
+        evaluation["acceptance_criteria"]["independent_holdout"] = comparison
+    if candidate_is_accepted and comparison is not None:
+        if comparison.get("error"):
+            candidate_is_accepted = False
+            evaluation["acceptance_criteria"]["rejection_reason"] = comparison["error"]
+        elif comparison["candidate_accuracy"] < comparison["current_accuracy"]:
+            candidate_is_accepted = False
+            evaluation["acceptance_criteria"]["rejection_reason"] = (
+                "Candidate is less accurate than the current model on the independent held-out questions."
+            )
+    elif (
         candidate_is_accepted
         and isinstance(existing_score, (int, float))
         and evaluation["macro_f1"] < existing_score
     ):
         candidate_is_accepted = False
-        evaluation["acceptance_criteria"]["acceptance_criteria_passed"] = False
         evaluation["acceptance_criteria"]["rejection_reason"] = (
             "Candidate macro F1 is lower than the current saved evaluation."
         )
+    evaluation["acceptance_criteria"]["acceptance_criteria_passed"] = candidate_is_accepted
 
     if candidate_is_accepted:
         train_final_model(texts, labels, responses, evaluation)
