@@ -27,7 +27,7 @@ from . import chatbot_service as core
 from . import grounded_answers as grounded
 from . import planner
 from .fleet_service import analyze_fleet
-from .language import normalize_message
+from .language import correct_typos, normalize_message
 from .prediction_service import MaintenancePredictionsUnavailableError
 from .rag import KnowledgeIndexUnavailable, extract_entities, lookup_parts, retrieve
 
@@ -57,6 +57,42 @@ GREETING_FILLER = {
     "i", "ask", "a", "something", "have", "got", "how", "are", "please", "hope", "doing", "well", "ok", "okay",
     "the", "assistant", "bot", "team", "everyone", "just", "wanted", "to", "one", "little", "need", "some",
 }
+# Greetings and fillers around a question ("Good morning, how much is the Vios po?") are not part of it.
+COURTESY_LEAD = re.compile(
+    r"^\s*(?:hi+|hiya|hello+|hey+|heya|good\s+(?:morning|afternoon|evening|day)|magandang\s+(?:umaga|hapon|gabi|araw)|kumusta|kamusta"
+    r"|excuse\s+me|quick\s+question|question|ask\s+ko\s+lang|tanong\s+(?:ko\s+)?lang|tanong|uh+m*|um+|uh+|ah+|po|pls|plz|please|sir"
+    r"|ma'?am|kuya|ate|boss|ok(?:ay)?|so|yo)"
+    r"(?:\s*[,:;.!?-]+\s*|\s+)",
+    re.IGNORECASE,
+)
+COURTESY_WORDS = {"hi", "hello", "hey", "hiya", "heya", "good", "morning", "afternoon", "evening", "day", "magandang", "umaga", "hapon",
+                  "gabi", "araw", "kumusta", "kamusta", "excuse", "uhm", "um", "uh", "pls", "plz", "please", "sir", "ma'am", "maam",
+                  "kuya", "ate", "boss", "yo"}
+THANKS_WORDS = {"thanks", "thank", "you", "u", "thx", "ty", "salamat", "lot", "so", "much", "naman", "sana", "lang"}
+FILLER_LEAD = re.compile(r"^\s*(?:(?:uh+m*|um+|uh+|ah+|po|pls|plz|please|ok(?:ay)?|so|excuse\s+me|quick\s+question|question|ask\s+ko\s+lang"
+                         r"|tanong\s+(?:ko\s+)?lang|sir|ma'?am|kuya|ate|boss)(?:\s*[,:;.!?-]+\s*|\s+))+", re.IGNORECASE)
+COURTESY_TAIL = re.compile(r"(?:[\s,]+(?:please|pls|plz|po|thanks|thank\s+you|thank\s+u|thx|ty|salamat|naman|sana|lang))+\s*([?!.]*)\s*$",
+                           re.IGNORECASE)
+
+
+def strip_courtesy(message):
+    """The question without greetings or fillers around it; a message that is only a greeting or thanks is kept as typed."""
+    text = message
+    while True:
+        match = COURTESY_LEAD.match(text)
+        if not match or not re.search(r"[A-Za-z0-9]", text[match.end():]):
+            break
+        text = text[match.end():]
+    tail = COURTESY_TAIL.search(text)
+    # "budget ko 2000 lang" keeps its "lang": after a number it means "only".
+    if tail and re.search(r"[A-Za-z0-9]", text[:tail.start()]) and not re.search(r"\d\s*$", text[:tail.start()]):
+        text = text[:tail.start()] + tail.group(1)
+    # "Hello there", "Hi, hi pls" or "hi, kumusta thanks" is still just a greeting (fillers before it dropped).
+    if all(word in GREETING_FILLER | COURTESY_WORDS | THANKS_WORDS for word in re.findall(r"[a-z']+", text.casefold())):
+        return FILLER_LEAD.sub("", message) or message
+    return text.strip() or message
+
+
 GREETING_ANSWERS = {
     "customer": ("Hello! I can help with vehicle prices and availability, your own reservations, how to book or cancel, "
                  "and general car questions such as warning lights or trouble codes. What would you like to know?"),
@@ -68,7 +104,8 @@ GREETING_ANSWERS = {
 RENTAL_POLICY = re.compile(
     r"\b(?:rent|rental|renting|book|booking|bookings|reserve|reservation|reservations|deposit|deposits|payment|pay"
     r"|licen[cs]e|requirements?|provide|bring|documents?|cancel|reschedule|pickup|account|profile"
-    r"|discounts?|promos?|promotions?|free\s+days?|fees?)\b",
+    r"|discounts?|promos?|promotions?|free\s+days?|fees?|cards?|credit|debit|gcash|g-cash|maya|paymaya|cash|online\s+payment|accept"
+    r"|sign\s*up|signup|register|papers)\b",
     re.IGNORECASE,
 )
 SYSTEM_PROCEDURE = re.compile(
@@ -121,6 +158,17 @@ VEHICLE_MANAGEMENT_ANSWER = (
     "see their details and daily rates, and reserve them from Vehicles (/users/vehicles)."
 )
 UNRECORDED_POLICY = "This policy is not recorded in the system. Please confirm it with the rental team."
+CREDENTIALS_ANSWER = ("I can't share passwords, keys or other account credentials, for any account. "
+                      "If you can't sign in to your own account, contact the rental team.")
+# General safety steps only: the system records no accident, insurance or liability procedure.
+ACCIDENT_ANSWER = (
+    "If you are in an accident:\n"
+    "- Stop in a safe place if you can, switch on the hazard lights and check whether anyone is hurt.\n"
+    "- Call emergency services if anyone is injured or the vehicle is a hazard to traffic.\n"
+    "- Follow local requirements for reporting the accident, and note the time, place, other vehicles and any witnesses.\n"
+    "- Notify the rental team as soon as you can, and follow your rental agreement.\n"
+    "The system does not record accident procedures, insurance coverage or liability terms, so confirm those with the rental team."
+)
 GUIDE_NOT_FOUND = UNRECORDED_POLICY
 OUT_OF_SCOPE_ANSWER = (
     "I can only answer from this system's data and its automotive references, and I found nothing "
@@ -152,7 +200,7 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
     if not isinstance(message, str) or not message.strip():
         raise ValueError("message must be a non-empty string.")
     role = resolve_role(viewer_role, conversation_scope)
-    message = message.strip()
+    message = strip_courtesy(correct_typos(message.strip()))
     memory = _load_memory(conversation_id, conversation_scope)
     entities = extract_entities(message)
     resolved_message, used_memory = _resolve_follow_up(message, entities, memory)
@@ -262,6 +310,10 @@ def _direct_response(kind, plan=None):
             "Ask \"show all reservations\" to see the customers' bookings."), "none", [])
     if kind == "refuse_private":
         return _with_evidence(core.build_response("permission_denied", 1.0, PRIVATE_DATA_ANSWER), "none", [])
+    if kind == "refuse_credentials":
+        return _with_evidence(core.build_response("permission_denied", 1.0, CREDENTIALS_ANSWER), "none", [])
+    if kind == "accident_guidance":
+        return _with_evidence(core.build_response("accident_guidance", 1.0, ACCIDENT_ANSWER), "none", [])
     return _with_evidence(core.build_response("permission_denied", 1.0, ADMIN_ONLY_ANSWER), "none", [])
 
 
@@ -441,7 +493,7 @@ def _is_greeting(message):
     if not match:
         return False
     rest = re.findall(r"[a-z']+", match.group("rest").casefold())
-    return all(word in GREETING_FILLER for word in rest)
+    return all(word in GREETING_FILLER | COURTESY_WORDS | THANKS_WORDS for word in rest)
 
 
 def _is_guide_question(message):
