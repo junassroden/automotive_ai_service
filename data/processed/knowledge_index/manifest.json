@@ -1,0 +1,32 @@
+{
+  "built_at": "2026-10-31T14:20:58.959395+00:00",
+  "chunk_count": 9837,
+  "chunks_by_source": {
+    "obdex": 9665,
+    "automotive_knowledge": 39,
+    "automotive_fault_flowcharts": 99,
+    "system_guide": 20,
+    "vehicle_service_records": 14
+  },
+  "chunks_by_trust": {
+    "verified_reference": 9704,
+    "unverified_reference": 99,
+    "system_documentation": 20,
+    "derived_from_records": 14
+  },
+  "rejected_entries": {},
+  "parts_lookup": {
+    "entries": 61961,
+    "rows_read": 61970,
+    "rows_rejected_invalid_part_number": 9,
+    "source": "masterparts.xlsx"
+  },
+  "chunks_sha256": "ba9914f38c6c3bd61ca46f7084e23e998b530154c983be737fe2a1667a20da1f",
+  "index_sha256": "354c5475799156769be5d4aa322f322fae0da7127dfa0dba763be4138f0a9798",
+  "not_indexed": {
+    "cvffad": "generated records (source='generated'); Chinese commercial-fleet content",
+    "vehicle_diagnostic_sample": "generated diagnostics with random measurements",
+    "dtc_chat_sft": "templated assistant answers with truncated unrelated text",
+    "auto_repair_orders": "synthetic relational sample (example.org customers)"
+  }
+}
