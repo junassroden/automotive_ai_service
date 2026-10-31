@@ -1,0 +1,449 @@
+{
+  "schema_version": 1,
+  "scope": "How the DriveRent car-rental and fleet application works, written from its source code. Each entry names the code it was verified against. Update this file when the application changes.",
+  "verified_on": "2026-10-31",
+  "documents": [
+    {
+      "id": "sys_overview_features",
+      "title": "What the DriveRent system can do",
+      "audience": "all",
+      "category": "system_support",
+      "keywords": [
+        "features",
+        "what can this system do",
+        "capabilities",
+        "what can I do here",
+        "help",
+        "how does this app work"
+      ],
+      "text": "Customers can browse vehicles, view vehicle details and daily rates, create reservation requests, view active rentals and reservation history, cancel their own pending or confirmed reservations, and maintain their profile including driver's licence details and a verification photo. Administrators can additionally manage the vehicle inventory and images, approve, reject, cancel or complete reservations, record maintenance and mileage, inspect vehicle components in the 3D predictive-maintenance view, collect and verify maintenance evidence records, and view model-based service-need predictions when an accepted model is registered (none is accepted as of 2026-10-31). Online payment is not implemented.",
+      "code_references": [
+        "Front-End/src/App.jsx",
+        "Back-End/app/config/routes.php"
+      ]
+    },
+    {
+      "id": "sys_booking_flow",
+      "title": "How to book a vehicle",
+      "audience": "all",
+      "category": "booking_reservation",
+      "keywords": [
+        "how do I book",
+        "make a reservation",
+        "reserve a car",
+        "booking steps",
+        "create reservation",
+        "rent a car"
+      ],
+      "text": "Open Vehicles (/users/vehicles), choose a vehicle, and select Reserve to open the reservation form (/users/reservations/create). Pick a pickup date and a return date. The system checks that the vehicle's status is available, that the period meets the vehicle's minimum rental duration, and that no pending or confirmed reservation overlaps the dates. A new reservation starts as pending and waits for an administrator to confirm or reject it. The total shown is the stored daily rate multiplied by the number of rental days.",
+      "code_references": [
+        "Back-End/app/models/ReservationModel.php::create",
+        "Front-End/src/Pages/Users/Pages/CreateReservation.jsx"
+      ]
+    },
+    {
+      "id": "sys_reservation_statuses",
+      "title": "Reservation statuses and who can change them",
+      "audience": "all",
+      "category": "booking_reservation",
+      "keywords": [
+        "reservation status",
+        "pending",
+        "confirmed",
+        "rejected",
+        "completed",
+        "cancelled",
+        "what does pending mean",
+        "booking status"
+      ],
+      "text": "Reservation statuses are pending, confirmed, cancelled, rejected and completed. An administrator may change pending to confirmed, rejected or cancelled, and confirmed to cancelled or completed. A customer may only cancel their own reservation while it is pending or confirmed. Pending and confirmed reservations block the vehicle for their dates; cancelled, rejected and completed ones do not. Confirming also requires the vehicle to still be available.",
+      "code_references": [
+        "Back-End/app/models/ReservationModel.php::STATUSES, ADMIN_TRANSITIONS, update_status"
+      ]
+    },
+    {
+      "id": "sys_cancellation",
+      "title": "How to cancel a reservation",
+      "audience": "all",
+      "category": "cancellation_rescheduling",
+      "keywords": [
+        "cancel booking",
+        "cancel reservation",
+        "how to cancel",
+        "reschedule",
+        "change dates",
+        "modify booking"
+      ],
+      "text": "Open My Reservations (/users/reservations) and cancel a reservation that is still pending or confirmed. Completed, rejected or already-cancelled reservations cannot be cancelled. There is no reschedule action: to change dates, cancel and create a new reservation, which is checked again for availability. The system stores no cancellation-fee rule, so ask the rental team about any fees.",
+      "code_references": [
+        "Back-End/app/controllers/ReservationController.php::updateReservation",
+        "Back-End/app/models/ReservationModel.php::update_status"
+      ]
+    },
+    {
+      "id": "sys_rental_extension",
+      "title": "Extending or changing a rental",
+      "audience": "all",
+      "category": "cancellation_rescheduling",
+      "keywords": [
+        "extend my rental",
+        "extend a reservation",
+        "can I extend",
+        "add more days",
+        "longer rental",
+        "change my dates",
+        "change reservation dates",
+        "keep the car longer"
+      ],
+      "text": "A reservation's dates cannot be changed or extended in the system: there is no extend or edit-dates action, and administrators can only change a reservation's status. To rent for longer or on other dates, create a new reservation for the period you need (it is checked for availability and the vehicle's minimum duration) and, if needed, cancel the old one while it is still pending or confirmed from My Reservations (/users/reservations). Ask the rental team about an extension during an active rental.",
+      "code_references": [
+        "Back-End/app/models/ReservationModel.php::update_status",
+        "Back-End/app/config/routes.php"
+      ]
+    },
+    {
+      "id": "sys_availability_rules",
+      "title": "How vehicle availability is decided",
+      "audience": "all",
+      "category": "car_availability",
+      "keywords": [
+        "is it available",
+        "availability rules",
+        "why can't I book",
+        "vehicle unavailable",
+        "already reserved"
+      ],
+      "text": "A vehicle can be reserved for a period only when its listing status is available and no pending or confirmed reservation overlaps the requested dates (periods are treated as pickup date inclusive, return date exclusive). Vehicle statuses are available, rented, maintenance and unavailable. The chat assistant checks a specific period when you give a pickup date in YYYY-MM-DD form plus a return date or a number of days.",
+      "code_references": [
+        "Back-End/app/models/CarModel.php::STATUSES",
+        "Back-End/app/models/ReservationModel.php::BLOCKING_STATUSES",
+        "Back-End/app/controllers/ChatController.php::availabilityPeriod"
+      ]
+    },
+    {
+      "id": "sys_payments",
+      "title": "Payments and deposits",
+      "audience": "all",
+      "category": "deposits_payments",
+      "keywords": [
+        "pay",
+        "payment",
+        "credit card",
+        "gcash",
+        "deposit",
+        "refund",
+        "payment history",
+        "how do I pay",
+        "is the deposit refundable",
+        "deposit refund",
+        "refundable deposit",
+        "pay with gcash",
+        "cash payment"
+      ],
+      "text": "Online payment is not implemented: there is no payment gateway, transaction endpoint or payment table, so the Payment and Payment History pages show that payments are unavailable and no card details are collected. Each vehicle stores a security-deposit amount that is shown with its details; how the deposit is collected and refunded is handled by the rental team outside the system.",
+      "code_references": [
+        "Front-End/src/Pages/Users/Pages/PaymentPage.jsx",
+        "Front-End/src/Pages/Admin/Pages/PaymentManagement.jsx"
+      ]
+    },
+    {
+      "id": "sys_account_registration",
+      "title": "Creating an account and signing in",
+      "audience": "all",
+      "category": "system_support",
+      "keywords": [
+        "create an account",
+        "sign up",
+        "register",
+        "registration",
+        "make an account",
+        "new account",
+        "how do I sign in",
+        "log in",
+        "forgot account"
+      ],
+      "text": "Create an account on the sign-up page (/auth/sign-up) with your full name, email address and a password of 8 to 72 characters; each email address can be registered once. Registration creates a customer account and does not sign you in, so sign in afterwards at /auth/login. Administrator accounts cannot be created by sign-up.",
+      "code_references": [
+        "Back-End/app/controllers/AuthController.php::register",
+        "Front-End/src/auth/SignUp.jsx"
+      ]
+    },
+    {
+      "id": "sys_profile_requirements",
+      "title": "Profile, driver's licence and verification",
+      "audience": "all",
+      "category": "rental_requirements",
+      "keywords": [
+        "requirements",
+        "driver's license",
+        "licence",
+        "verification photo",
+        "profile",
+        "documents needed",
+        "what do I need to rent"
+      ],
+      "text": "The profile page (/users/profile) records your contact details, driver's licence number and licence expiry date, and a verification photo with your consent. The licence expiry date must be a valid date that has not passed. The verification photo is stored privately and is only viewable through the authenticated profile endpoint.",
+      "code_references": [
+        "Back-End/app/controllers/ProfileController.php"
+      ]
+    },
+    {
+      "id": "sys_rental_requirements",
+      "title": "What you need before renting a vehicle",
+      "audience": "all",
+      "category": "rental_requirements",
+      "keywords": [
+        "what do I have to provide",
+        "provide before I can rent",
+        "what do I need to rent",
+        "rental requirements",
+        "requirements to rent",
+        "what do I need to bring",
+        "documents to rent",
+        "eligibility to rent",
+        "can I rent without a licence",
+        "need an account to rent",
+        "requirements before booking",
+        "can I rent without a license",
+        "do I need a driver's license",
+        "license required",
+        "minimum age",
+        "age requirement",
+        "how old do I need to be",
+        "valid id"
+      ],
+      "text": "To reserve a vehicle you need a signed-in, active customer account; administrator accounts cannot create reservations. The reservation form asks only for the vehicle, a pickup date and a return date: the pickup date cannot be in the past, the return date must be after the pickup date, and the period must meet the vehicle's minimum rental duration. Your profile (/users/profile) stores your driver's licence number, a licence expiry date that has not passed, and a photo of you holding your licence with your consent; the profile cannot be saved without them. The reservation form does not itself check the profile, and the system stores no age rule or other document requirement, so ask the rental team what they check at pickup. In particular, the system does not block a booking when no licence is saved, and it stores no minimum-age rule, so whether a licence or a minimum age is required at pickup cannot be confirmed here.",
+      "code_references": [
+        "Back-End/app/controllers/ReservationController.php::createReservation",
+        "Back-End/app/controllers/ProfileController.php"
+      ]
+    },
+    {
+      "id": "sys_pricing_rules",
+      "title": "How rental prices and totals are calculated",
+      "audience": "all",
+      "category": "rental_pricing",
+      "keywords": [
+        "how is the total calculated",
+        "rental total",
+        "discount",
+        "promo",
+        "promotion",
+        "free day",
+        "extra fees",
+        "hidden charges",
+        "taxes",
+        "is the deposit included in the total",
+        "weekly discount",
+        "monthly discount",
+        "long-term discount",
+        "do you offer discounts",
+        "discounts",
+        "late return fee",
+        "late fee",
+        "penalty"
+      ],
+      "text": "A reservation's total is the vehicle's daily rate multiplied by the number of rental days, counted from the pickup date up to but not including the return date. The system stores no discounts, promotions, free days, taxes or extra fees, and the listed security deposit is shown separately and is not added to the total. Ask the rental team about any charges they handle outside the system. No late-return fee or penalty is stored either.",
+      "code_references": [
+        "Back-End/app/models/ReservationModel.php::create_reservation",
+        "Back-End/app/controllers/ReservationController.php::createReservation"
+      ]
+    },
+    {
+      "id": "sys_chat_permissions",
+      "title": "What the assistant can see for customers and administrators",
+      "audience": "all",
+      "category": "system_support",
+      "keywords": [
+        "privacy",
+        "can you see my data",
+        "permissions",
+        "admin access",
+        "other users bookings",
+        "other people's bookings",
+        "other customers",
+        "who can see",
+        "what data can the chatbot see"
+      ],
+      "text": "Your role is taken from your signed-in account on the server, never from what you type. Customers' chat can use public vehicle listings and that customer's own bookings only. Administrators' chat can also use fleet status counts, maintenance records, verified maintenance evidence and model-based service-need predictions. The assistant never returns other customers' bookings or personal details, passwords, tokens or API keys, and it cannot create, change or delete records.",
+      "code_references": [
+        "Back-End/app/controllers/ChatController.php::chat, rentalContext"
+      ]
+    },
+    {
+      "id": "sys_troubleshooting_errors",
+      "title": "Common error messages and what to do",
+      "audience": "all",
+      "category": "system_support",
+      "keywords": [
+        "error",
+        "not working",
+        "authentication is required",
+        "administrator access is required",
+        "session expired",
+        "chat unavailable",
+        "something went wrong",
+        "401",
+        "403",
+        "409",
+        "422",
+        "503"
+      ],
+      "text": "'Authentication is required' (401): your session expired; sign in again. 'Administrator access is required' (403): the page or action is for administrators only. 'This vehicle is already reserved for part or all of those dates' or 'not available for those dates' (409): choose other dates or another vehicle. 'The selected dates do not meet this vehicle's minimum rental duration' (422): extend the period. 'Enter a message of up to 4,000 characters' (422): shorten the chat message. 'The local AI chat service is unavailable right now' (503): the Python AI service is not running or not reachable; an administrator should start it (python manage.py runserver 127.0.0.1:8001) and check AI_SERVICE_API_URL and AI_SERVICE_API_KEY.",
+      "code_references": [
+        "Back-End/app/controllers/ReservationController.php::ERRORS",
+        "Back-End/app/controllers/ChatController.php"
+      ]
+    },
+    {
+      "id": "sys_admin_vehicle_management",
+      "title": "Managing vehicles (administrators)",
+      "audience": "admin",
+      "category": "fleet_management",
+      "keywords": [
+        "add vehicle",
+        "edit vehicle",
+        "delete vehicle",
+        "upload images",
+        "vehicle management",
+        "change vehicle status",
+        "add a new vehicle",
+        "add a car",
+        "register a vehicle",
+        "register another car",
+        "new vehicle",
+        "update a vehicle",
+        "edit a car",
+        "remove a vehicle",
+        "delete a car",
+        "steps to add a vehicle"
+      ],
+      "text": "Administrators manage the inventory at /admin/vehicles: create a vehicle (/admin/vehicles/create), edit its details, daily rate, deposit, minimum rental duration, category and status, upload or delete images, or delete the vehicle. Setting status to maintenance or unavailable prevents new reservations.",
+      "code_references": [
+        "Back-End/app/controllers/CarController.php",
+        "Front-End/src/App.jsx"
+      ]
+    },
+    {
+      "id": "sys_admin_maintenance",
+      "title": "Maintenance records, 3D inspection and evidence collection (administrators)",
+      "audience": "admin",
+      "category": "fleet_management",
+      "keywords": [
+        "maintenance records",
+        "record maintenance",
+        "update mileage",
+        "3d inspection",
+        "component inspection",
+        "service interval",
+        "maintenance data collection",
+        "verify evidence"
+      ],
+      "text": "Maintenance Records (/admin/maintenance/records) logs services with type, date, cost, status and odometer, and updates vehicle mileage. Predictive Maintenance (/admin/maintenance/predictions) opens a 3D view per vehicle where each component shows three separate results: condition from the latest manual inspection, schedule status from configured service intervals, and the model-based service-need prediction (shown as unavailable, with the reason, until a model passes acceptance). Inspections and service intervals are recorded there. Maintenance Data Collection (/admin/maintenance/data) holds evidence records (symptoms, DTCs, confirmed cause, repair outcome) that move from draft to submitted to verified; only verified records are treated as confirmed evidence.",
+      "code_references": [
+        "Back-End/app/controllers/MaintenanceController.php",
+        "Back-End/app/controllers/ComponentMaintenanceController.php",
+        "Back-End/app/controllers/MaintenanceDataController.php"
+      ]
+    },
+    {
+      "id": "sys_prediction_meaning",
+      "title": "What the maintenance prediction means and its limits",
+      "audience": "admin",
+      "category": "explain_score",
+      "keywords": [
+        "what does the prediction mean",
+        "model score",
+        "risk score",
+        "how accurate is the model",
+        "model limitations",
+        "calibrated probability",
+        "service need"
+      ],
+      "text": "A maintenance prediction is shown only when a model has passed the service's acceptance gate (group-held-out evaluation, at least the baseline, calibrated probabilities). The candidate is a service-need model: for a vehicle's current odometer, body type and fuel type it estimates the probability that each service item (air filter, brake fluid, transmission fluid and so on) would be performed at a workshop visit. It was trained on 1,139 workshop visits for four car models (Honda Jazz, Amaze, City; Toyota Fortuner) and tested on a car model it had not seen. As of 2026-10-31 no version has passed the gate (best held-out macro F1 0.54 to 0.73 against a 0.60 minimum and the baseline), so predictions are reported as unavailable with that reason. It is a scheduled-service need, not a detected fault or a failure forecast, and never gives failure dates. Always confirm by inspection and the manufacturer schedule.",
+      "code_references": [
+        "automotive_ai_service/data_pipeline/service_need.py",
+        "automotive_ai_service/data/reports/training_report_v2.md"
+      ]
+    },
+    {
+      "id": "sys_rule_based_estimates",
+      "title": "Rule-based service due estimates",
+      "audience": "admin",
+      "category": "maintenance_schedule",
+      "keywords": [
+        "overdue",
+        "approaching",
+        "next service date",
+        "baseline interval",
+        "due soon",
+        "insufficient history"
+      ],
+      "text": "The maintenance overview also computes rule-based due estimates: a vehicle is approaching when its baseline 180-day interval since the last completed service ends within 30 days, and overdue when 5,000 km have been driven since the last recorded service odometer, a recorded next-maintenance date has passed, or 180 days have passed. Vehicles with no completed service history are marked insufficient. These are schedule estimates, not mechanical assessments; check the manufacturer schedule.",
+      "code_references": [
+        "Back-End/app/models/MaintenanceModel.php::generate_predictions"
+      ]
+    },
+    {
+      "id": "sys_admin_reservations",
+      "title": "Approving and managing reservations (administrators)",
+      "audience": "admin",
+      "category": "booking_reservation",
+      "keywords": [
+        "approve a reservation",
+        "confirm a booking",
+        "reject a reservation",
+        "manage reservations",
+        "complete a reservation",
+        "pending reservations"
+      ],
+      "text": "Administrators review reservations at Reservations (/admin/reservations), with past ones under Reservation History (/admin/reservations/history). A pending reservation can be confirmed, rejected or cancelled; a confirmed one can be cancelled or marked completed. Dates and prices cannot be edited.",
+      "code_references": [
+        "Back-End/app/models/ReservationModel.php::ADMIN_TRANSITIONS",
+        "Front-End/src/App.jsx"
+      ]
+    },
+    {
+      "id": "sys_password",
+      "title": "Changing or resetting a password",
+      "audience": "all",
+      "category": "system_support",
+      "keywords": [
+        "change my password",
+        "how do I change my password",
+        "reset password",
+        "forgot password",
+        "forgot my password",
+        "new password",
+        "update password",
+        "palitan ang password"
+      ],
+      "text": "DriveRent has no password-change or password-reset feature yet: there is no page or API for it, and the sign-in page has no \"forgot password\" link. If you need a new password or cannot sign in, contact the rental team.",
+      "code_references": [
+        "Back-End/app/config/routes.php",
+        "Front-End/src/auth/Login.jsx"
+      ]
+    },
+    {
+      "id": "sys_pickup_return",
+      "title": "Pickup and return of a rental",
+      "audience": "all",
+      "category": "pickup_return",
+      "keywords": [
+        "pickup procedure",
+        "how does pickup work",
+        "return procedure",
+        "how do I return the car",
+        "pickup time",
+        "where do I pick up the car",
+        "return the car",
+        "what happens at pickup"
+      ],
+      "text": "Each reservation records a pickup date and a return date; the return date is not counted as a rental day. The system stores no pickup or return times, no pickup location, and no fuel, cleaning or handover rules, so confirm those with the rental team. After the return, an administrator marks the confirmed reservation completed.",
+      "code_references": [
+        "Back-End/database/schema.sql (reservations)",
+        "Back-End/app/models/ReservationModel.php::ADMIN_TRANSITIONS"
+      ]
+    }
+  ]
+}
