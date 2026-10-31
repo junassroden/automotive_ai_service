@@ -22,6 +22,16 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:requirment|requirments|reqs|rekwayrments?)\b", "requirements"),
     (r"\b(?:cancle|cancell)\b", "cancel"),
     # Tagalog / Taglish
+    (r"\bilan\s+(?:ang\s+)?(?:mga\s+)?(?:sasakyan|kotse|cars?|vehicles?|units?)\b", "how many cars"),
+    (r"\bilan\b", "how many"),
+    # Text-speak
+    (r"\bur\b", "your"),
+    (r"\bu\b(?!-)", "you"),
+    (r"\br\b(?=\s+(?:available|there|you|the|they|these|those|any)\b)", "are"),
+    (r"\btemp\b", "temperature"),
+    (r"\bkailan\b", "when"),
+    (r"\b(?:kukunin|kunin|kukuha|makukuha)\b", "pick up"),
+    (r"\b(?:ibabalik|isasauli|isauli|ibalik)\b", "return"),
     (r"\b(?:magkano|mgkano|magkanu|hm)\b", "how much"),
     (r"\b(?:presyo|halaga)\b", "price"),
     (r"\bdeposito\b", "deposit"),
@@ -43,6 +53,7 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:kapag|pag|kung)\s+(?:nag-?preno|nagpepreno|nagbe-?brake|nagbrake)\b", "when braking"),
     (r"\b(?:nag-?preno|nagpepreno)\b", "braking"),
     (r"\b(?:ayaw|hindi)\s+(?:umandar|mag-?start|magstart|mag-?andar)\b", "won't start"),
+    (r"\b(?:won'?t|wont|doesn'?t|does not|will not|can'?t|cannot|ayaw)\s+(?:turn|switch|mag)\s*on\b", "won't start"),
     (r"\b(?:flat|butas|pumutok)\s+(?:ang\s+)?gulong\b", "flat tire"),
     (r"\b(?:sa\s+)?(?:mataas na takbo|mabilis na takbo|high speed)\b", "at high speed"),
     (r"\b(?:may\s+)?(?:tulo|tumulo|tumutulo|natutulo|tagas|tumatagas)\b", "leaking"),
@@ -74,8 +85,61 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
 )]
 
 
+# Words the assistant routes on. A typed word one keyboard slip away from exactly one of them
+# ("depoist", "aricon", "milaege", "novmeber") is read as that word; see correct_typos().
+DOMAIN_WORDS = set("""
+price prices pricing rate rates cost costs deposit deposits security total quote budget cheap cheapest expensive afford affordable
+daily available availability rent rental rentals renting reserve reservation reservations booking bookings booked book
+cancel cancellation cancelled refund refundable payment payments online credit debit gcash cash discount discounts promo promos
+requirements requirement license licence documents driver drivers chauffeur delivery deliver insurance smoking pets
+pending confirmed completed rejected status approved extend extension password account register signup schedule
+vehicle vehicles sedan seater seaters seats seating capacity passengers people persons transmission automatic manual
+navigation aircon conditioning color colour mileage odometer engine brakes braking brake squeaking squealing grinding
+overheating overheat temperature coolant battery alternator exhaust smoke tires tire tyres puncture steering vibration
+leaking leak warning flashing blinking misfire starter maintenance service inspection revenue utilization fleet
+monday tuesday wednesday thursday friday saturday sunday january february march april june july august september october
+november december tomorrow weekend
+toyota honda mitsubishi suzuki nissan hyundai isuzu mazda subaru chevrolet volkswagen ford
+vios fortuner hiace innova montero ertiga navara civic accent ranger everest hilux mirage sorento
+magkano presyo sasakyan pickup return thanks salamat hello please goodbye rented conditioned airconditioned excuse number
+magbayad bayad kotse nagastos gastos promo promos fleet odometer kilometers diesel petrol
+brother sister friend friends husband allowed approval approved papers signup register question magandang charge charges gearbox
+change changes changed changing chance charged charging charger
+""".split())
+# Ordinary words that are one slip away from a domain word but mean something else.
+_NOT_TYPOS = {"break", "breaks", "broke", "dates", "carry", "where", "there", "these", "those", "other", "about",
+              "house", "renter", "pricey", "lease", "leave", "later", "sellers", "covers", "brand", "ranter",
+              "router", "statue", "colors", "colours", "models", "today", "renters", "member", "numbers"}
+
+
+def _one_slip(word, target):
+    """True if word is target with one swapped adjacent pair, or (for longer words) one letter added, missing or changed."""
+    if word == target:
+        return False
+    if len(word) == len(target):
+        diff = [i for i in range(len(word)) if word[i] != target[i]]
+        if len(diff) == 2 and diff[1] == diff[0] + 1 and word[diff[0]] == target[diff[1]] and word[diff[1]] == target[diff[0]]:
+            return True
+        return len(diff) == 1 and len(word) >= 6
+    if abs(len(word) - len(target)) == 1 and min(len(word), len(target)) >= 6:
+        short, long_ = (word, target) if len(word) < len(target) else (target, word)
+        return any(long_[:i] + long_[i + 1:] == short for i in range(len(long_)))
+    return False
+
+
+def correct_typos(text):
+    def fix(match):
+        word = match.group(0)
+        low = word.casefold()
+        if len(low) < 4 or low in DOMAIN_WORDS or low in _NOT_TYPOS:
+            return word
+        candidates = [target for target in DOMAIN_WORDS if abs(len(target) - len(low)) <= 1 and _one_slip(low, target)]
+        return candidates[0] if len(candidates) == 1 else word
+    return re.sub(r"[A-Za-z]+", fix, text)
+
+
 def normalize_message(message):
-    text = message
+    text = correct_typos(message)
     for pattern, replacement in _RULES:
         text = pattern.sub(replacement, text)
     return re.sub(r"\s+", " ", text).strip() or message
