@@ -14,6 +14,14 @@ ADMIN_ONLY = ("That information is limited to administrators, so I can't show it
 DATA_ERROR = ("I couldn't read {what} from the database just now, so I can't give a verified answer. "
               "Please try again in a moment.")
 AMOUNT = re.compile(r"PHP\s?([\d,]+(?:\.\d{1,2})?)")
+# Reservation statuses as the system guide defines them.
+STATUS_MEANINGS = {
+    "pending": "it is waiting for an administrator to confirm or reject it",
+    "confirmed": "an administrator approved it and the vehicle is reserved for your dates",
+    "cancelled": "it was cancelled and no longer holds the vehicle",
+    "rejected": "an administrator did not approve it, so it does not hold the vehicle",
+    "completed": "the rental has finished and the vehicle was returned",
+}
 STATUS_LABELS = {"overdue": "Overdue", "approaching": "Due within 30 days", "not_due": "Not due",
                  "insufficient_history": "Not enough service history"}
 # Explanations shown once per conversation (the conversation memory records which were shown).
@@ -127,6 +135,10 @@ def _numbers(value, known):
     elif isinstance(value, dict):
         for item in value.values():
             _numbers(item, known)
+        # A quote's rental charge plus its deposit is the one derived amount answers may state.
+        if all(isinstance(value.get(key), (int, float)) and not isinstance(value.get(key), bool)
+               for key in ("base_total", "security_deposit")):
+            known.add(round(float(value["base_total"]) + float(value["security_deposit"]), 2))
     elif isinstance(value, list):
         for item in value:
             _numbers(item, known)
@@ -189,8 +201,18 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
                      + _join(label[id(v)] for v in vehicles) + ". Ask me about any of them for prices and details.")
         return "\n".join(lines)
 
-    if purpose == "feature_check":
-        lines += _feature_lines(plan.get("feature_check") or {}, vehicles, label)
+    if purpose == "attribute":
+        lines += _attribute_lines(plan.get("attribute"), vehicles, label, role)
+    elif purpose == "ranking" and plan.get("rank_by") == "seats":
+        by_seats = sorted(vehicles, key=lambda v: v.get("seating_capacity") or 0, reverse=True)
+        top = by_seats[0]
+        lines.append(f"The {label[id(top)]} seats the most people: {top.get('seating_capacity')} seats.")
+        if len(by_seats) > 1:
+            lines += [f"- {label[id(v)]} ({v.get('category') or 'vehicle'}): {v.get('seating_capacity')} seats, "
+                      f"{money(v['daily_rental_price'])} per day" for v in by_seats]
+    elif purpose == "feature_check":
+        lines += _feature_lines(plan.get("feature_check") or {}, vehicles, label,
+                                listing=not (requested.get("models") or requested.get("makes")))
     elif purpose == "compare":
         lines += _compare_lines(plan.get("compare") or {}, vehicles, label)
     elif purpose == "deposit":
@@ -214,6 +236,13 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
             if taken:
                 lines.append(f"{_join(taken)} {'is' if len(taken) == 1 else 'are'} already booked for {dates}.")
         lines += _quote_lines(vehicles, data, label)
+        if plan.get("include_deposit"):
+            for v in vehicles:
+                quote = v["quote"]
+                if quote.get("security_deposit"):
+                    lines.append(f"{'The ' + label[id(v)] + ': r' if len(vehicles) > 1 else 'R'}ental {money(quote['base_total'])} + "
+                                 f"security deposit {money(quote['security_deposit'])} = "
+                                 f"{money(quote['base_total'] + quote['security_deposit'])} including the deposit.")
         notes.add(lines, "quote_rule")
     elif purpose == "availability" or purpose == "status":
         lines += _availability_lines(vehicles, data, role, purpose, label)
@@ -228,6 +257,9 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
                 lines.append(f"{heading or _feature_words(args).capitalize() + ' vehicles'} {scope}:")
             lines += [f"- {label[id(v)]}: {_specs(v)}" for v in vehicles]
     else:
+        if plan.get("rate_period"):
+            lines.append("Only daily rates are recorded; the system has no weekly or monthly rates or discounts. "
+                         "A longer rental is the daily rate times the number of days.")
         lines += _price_lines(vehicles, args, label, role, scope)
         if purpose == "price" and len(vehicles) > 0:
             notes.add(lines, "price_rule")
@@ -259,7 +291,12 @@ def _price_lines(vehicles, args, label, role, scope):
         return lines
     elif len(vehicles) == 1:
         v = vehicles[0]
-        lines.append(f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day, with a {money(v['security_deposit'])} deposit.")
+        features = _feature_words(args)
+        if features and not (args.get("models") or args.get("makes")):
+            lines.append(f"Yes: the {label[id(v)]} is the {features} vehicle {scope}, at {money(v['daily_rental_price'])} per day "
+                         f"with a {money(v['security_deposit'])} deposit.")
+        else:
+            lines.append(f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day, with a {money(v['security_deposit'])} deposit.")
         return lines
     features = _feature_words(args)
     lines.append(f"{features.capitalize()} vehicles {scope}:" if features else ("Vehicles in the fleet:" if role == "admin" else "Daily rates:"))
@@ -285,9 +322,79 @@ def _feature_words(args):
     return " ".join(parts)
 
 
-def _feature_lines(check, vehicles, label):
+ATTRIBUTE_NAMES = {"plate_number": "plate number", "minimum_rental_duration": "minimum rental period", "year": "model year",
+                   "color": "colour", "seating_capacity": "seating capacity", "fuel_type": "fuel type", "transmission": "transmission",
+                   "current_mileage": "mileage figure"}
+
+
+def _attribute_value(attribute, v):
+    value = v.get(attribute)
+    if value in (None, ""):
+        return None
+    if attribute == "minimum_rental_duration":
+        return f"{value} day" + ("" if int(value) == 1 else "s")
+    if attribute == "seating_capacity":
+        return f"{value} seats"
+    if attribute == "current_mileage":
+        return f"{int(value):,} km"
+    return str(value)
+
+
+def _attribute_lines(attribute, vehicles, label, role):
+    """Only the field that was asked for, or why it is not shown."""
+    what = ATTRIBUTE_NAMES.get(attribute, "that detail")
+    if attribute in ("plate_number", "current_mileage") and role != "admin":
+        return [f"{what.capitalize()}s are shown only to administrators, so I can't share them on this account. "
+                "I can tell you a vehicle's model, year, colour, seats, features and daily rate."]
+    lines = []
+    for v in vehicles:
+        value = _attribute_value(attribute, v)
+        if value is None:
+            lines.append(f"The {label[id(v)]}'s {what} is not recorded.")
+        elif attribute == "minimum_rental_duration":
+            lines.append(f"The {label[id(v)]} has a minimum rental period of {value}.")
+        elif attribute == "seating_capacity":
+            lines.append(f"The {label[id(v)]} has {value}.")
+        elif attribute == "fuel_type":
+            lines.append(f"The {label[id(v)]} uses {value}.")
+        elif attribute == "year":
+            lines.append(f"The {label[id(v)]} is a {value} model.")
+        else:
+            lines.append(f"The {label[id(v)]}'s {what} is {value}.")
+    if len(lines) > 1:
+        lines = [f"{what.capitalize()} by vehicle:"] + [f"- {line}" for line in lines]
+    return lines
+
+
+COUNTABLE_EQUIPMENT = {"dash camera", "backup camera", "child seat", "sunroof", "touchscreen", "roof rack"}
+
+
+def _has_equipment(v, terms):
+    listed = [re.sub(r"[^a-z0-9]", "", str(item).casefold()) for item in (v.get("additional_features") or [])]
+    wanted = [re.sub(r"[^a-z0-9]", "", term.casefold()) for term in terms]
+    return any(term and term in item for item in listed for term in wanted)
+
+
+def _feature_lines(check, vehicles, label, listing=False):
     feature, value = check.get("feature"), check.get("value")
     lines = []
+    if feature == "equipment":
+        terms = list(check.get("terms") or []) + [str(value)]
+        # "a dash camera", but "Bluetooth" and "parking sensors" take no article.
+        item = f"a {value}" if value in COUNTABLE_EQUIPMENT else str(value)
+        if listing:
+            having = [label[id(v)] for v in vehicles if _has_equipment(v, terms)]
+            if having:
+                return [f"Vehicles that list {item} among their features: {_join(having)}."]
+            return [f"None of the listed vehicles has {item} in its recorded features, so I can't confirm one. "
+                    "Please check with the rental team."]
+        for v in vehicles:
+            if _has_equipment(v, terms):
+                lines.append(f"Yes, the {label[id(v)]} lists {item} among its features.")
+            else:
+                lines.append(f"The {label[id(v)]}'s recorded features don't include {item}, so I can't confirm it has it; "
+                             "please check with the rental team.")
+        return lines
     for v in vehicles:
         car = label[id(v)]
         if feature == "has_gps":
@@ -302,7 +409,11 @@ def _feature_lines(check, vehicles, label):
             wanted = [str(item).lower() for item in value]
             matches = actual.lower() in wanted
             noun = {"transmissions": "transmission", "fuel_types": "fuel", "colors": "colour"}[feature]
-            lines.append(f"{'Yes' if matches else 'No'}, the {car}'s {noun} is {actual}.")
+            if len(wanted) > 1:
+                # "Diesel or gasoline?" is not a yes/no question.
+                lines.append(f"The {car}'s {noun} is {actual}.")
+            else:
+                lines.append(f"{'Yes' if matches else 'No'}, the {car}'s {noun} is {actual}.")
     return lines
 
 
@@ -427,12 +538,38 @@ def _own_bookings(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None
     elif not rows:
         lines.append("You don't have any reservations on this account. You can book from Vehicles (/users/vehicles).")
     elif purpose in ("status", "details"):
+        asked = plan.get("asked_statuses") or []
+        matching = [r for r in rows if r.get("status") in asked]
+        if asked and not matching and not args.get("reservation_id"):
+            lines.append(f"None of your reservations is {_join(asked)}.")
+        if matching and "rejected" in asked:
+            lines.append("The system does not record a reason for a rejection; the rental team can tell you why.")
         # Lead with the reservation the question is most likely about: an active or upcoming one first.
-        focus = [r for r in rows if r.get("is_active") or r.get("days_until_pickup") is not None] or rows[:1]
+        focus = matching or [r for r in rows if r.get("is_active") or r.get("days_until_pickup") is not None] or rows[:1]
         for r in focus[:3]:
-            lines.append(f"Your reservation #{r['id']} for the {name(r)} ({r['start_date']} to {r['end_date']}) is {r['status']}.")
+            meaning = STATUS_MEANINGS.get(r.get("status"))
+            lines.append(f"Your reservation #{r['id']} for the {name(r)} ({r['start_date']} to {r['end_date']}) is {r['status']}"
+                         + (f": {meaning}." if meaning else "."))
         if purpose == "details":
             lines += [f"- {one(r)}" for r in focus[:1]]
+    elif purpose == "last":
+        # Past or closed reservations: neither upcoming nor in progress. Completed ones are actual rentals.
+        past = sorted((r for r in rows if r.get("days_until_pickup") is None and not r.get("is_active")),
+                      key=lambda row: row["start_date"], reverse=True)
+        completed = [r for r in past if r.get("status") == "completed"]
+        if completed:
+            r = completed[0]
+            lines.append(f"Your most recent completed rental was the {name(r)}: reservation #{r['id']}, {r['start_date']} to {r['end_date']}.")
+        elif past:
+            r = past[0]
+            lines.append(f"You have no completed rentals. Your most recent past reservation was #{r['id']} for the {name(r)} "
+                         f"({r['start_date']} to {r['end_date']}), status {r['status']}.")
+        else:
+            lines.append("You have no past rentals on this account yet.")
+        upcoming_rows = [r for r in rows if r.get("days_until_pickup") is not None or r.get("is_active")]
+        if upcoming_rows:
+            r = sorted(upcoming_rows, key=lambda row: row["start_date"])[0]
+            lines.append(f"Your next one is #{r['id']} ({name(r)}), from {r['start_date']}, status {r['status']}.")
     elif purpose == "next":
         r = next((row for row in sorted(rows, key=lambda row: row["start_date"]) if row.get("days_until_pickup") is not None or row.get("is_active")), None)
         if r is None:
@@ -454,7 +591,13 @@ def _own_bookings(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None
                             if nxt else ""))
     elif purpose == "spent":
         totals = data.get("totals_by_status") or {}
-        if totals:
+        open_totals = {status: total for status, total in totals.items() if status in ("pending", "confirmed")}
+        if plan.get("owe") and open_totals:
+            lines.append("Your open reservations (pending or confirmed) total "
+                         + "; ".join(f"{status} {money(total)}" for status, total in sorted(open_totals.items())) + ".")
+        elif plan.get("owe"):
+            lines.append("You have no pending or confirmed reservations, so no open reservation total is recorded.")
+        elif totals:
             lines.append("Your recorded reservation totals: "
                          + "; ".join(f"{status} {money(total)}" for status, total in sorted(totals.items())) + ".")
         else:
@@ -467,7 +610,8 @@ def _own_bookings(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None
             lines.insert(0, found[0])
             plan.setdefault("_guide_sources", []).extend(found[1])
     if rows and purpose in ("list",) or (rows and plan.get("guide")):
-        lines.append(("Your upcoming reservations:" if upcoming else "Your reservations:"))
+        count = data.get("total_count", len(rows))
+        lines.append(f"You have {count} {'upcoming ' if upcoming else ''}reservation{'s' if count != 1 else ''}:")
         lines += [f"- {one(r)}" for r in rows]
         if data.get("total_count", len(rows)) > len(rows):
             lines.append(f"Showing the latest {len(rows)} of {data['total_count']}.")
@@ -481,6 +625,14 @@ def _reservation_summary(plan, by_tool, role, vocabulary, guide, fleet_risk, not
     rows = data.get("reservations") or []
     counts = data.get("counts_by_status") or {}
     args = (plan.get("retrievals") or [{}])[0].get("args") or {}
+    if args.get("reservation_id"):
+        if not rows:
+            return f"No reservation #{args['reservation_id']} was found."
+        r = rows[0]
+        meaning = STATUS_MEANINGS.get(r.get("status"), "").replace("your dates", "those dates")
+        return (f"Reservation #{r['id']} ({r.get('customer_name') or 'customer'}): {name(r)}, {r['start_date']} to {r['end_date']}, "
+                f"total " + (money(r["total_amount"]) if r.get("total_amount") is not None else "not recorded")
+                + f". Status {r['status']}" + (f": {meaning}." if meaning else "."))
     filters = []
     if args.get("statuses"):
         filters.append(" or ".join(args["statuses"]))
@@ -563,7 +715,12 @@ def _revenue(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
     if not by_status:
         period = f" with pickup dates from {data['from'] or 'the start'} to {data['to'] or 'today'}" if window else ""
         return f"There are no reservations{period}, so no booked value is recorded."
-    lines = [f"Booked value{window}: {money(data.get('booked_total', 0))} (pending, confirmed and completed reservations)."]
+    lines = []
+    for status in plan.get("focus_statuses") or []:
+        item = by_status.get(status)
+        lines.append(f"{status.capitalize()} reservations{window}: {money(item['total'])} from {item['reservations']} reservation(s)."
+                     if item else f"There are no {status} reservations{window}.")
+    lines.append(f"{'Overall b' if lines else 'B'}ooked value{window}: {money(data.get('booked_total', 0))} (pending, confirmed and completed reservations).")
     lines += [f"- {status}: {money(item['total'])} from {item['reservations']} reservation(s)" for status, item in by_status.items()]
     if notes:
         notes.add(lines, "booked_value")
