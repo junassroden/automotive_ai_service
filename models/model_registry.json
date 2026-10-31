@@ -1,21 +1,244 @@
 {
   "schema_version": 1,
   "maintenance_model": {
-    "status": "blocked",
+    "status": "evaluated_rejected",
     "model_name": "maintenance_model",
-    "task": "vehicle maintenance prediction",
-    "dataset": "EngineFaultDB",
-    "source_dataset": "C:\\laragon\\www\\Car_Rental_System\\automotive_ai_service\\data\\processed\\enginefaultdb\\enginefaultdb_normalized.csv",
-    "source_sha256": "9674ea43606ffefacd4c687df518c2a90d7f388cd826e1b17984d2e602683da0",
-    "target_definitions": {},
-    "training_records": 55998,
-    "test_records": 0,
-    "training_groups": 0,
-    "test_groups": 0,
-    "metrics": null,
-    "artifact_path": null,
+    "model_version": "service_need_v3_3a435be143",
+    "task": "service_need_at_visit",
+    "dataset": "Vehicle Maintenance- Service Records.csv",
+    "source_sha256": "7b785211082064748502e7fc41d6ac5393e8ca160ba1381042daecfac6840847",
     "eligible_for_inference": false,
-    "reason": "Group column not found: acquisition_run_id. A vehicle, trip, or acquisition-run identifier is required; row-random splitting is intentionally disabled.",
-    "updated_at": "2026-10-29T01:24:00.218006+00:00"
+    "evaluation": {
+      "acceptance_criteria_passed": false
+    },
+    "artifact_path": "trained_models/service_need/service_need_v3_3a435be143/pipeline.joblib",
+    "artifact_sha256": "bce25e392485f7d9168eb843703ed50fd5ddfe92e42fe4d00c05492d9f3eacbb",
+    "evaluation_report_path": "trained_models/service_need/service_need_v3_3a435be143/evaluation.json",
+    "evaluation_report_sha256": "a424ac61dbf7f53b5bc26aaf479435ab4a982294efc28224f676ee23fc16ce38",
+    "feature_columns": [
+      "vehicle_type",
+      "fuel_type",
+      "mileage"
+    ],
+    "target_definitions": {
+      "dust_and_pollen_filter": {
+        "label": "Cabin dust and pollen filter",
+        "component_keys": [],
+        "action": "replacement"
+      },
+      "air_clean_filter": {
+        "label": "Air filter",
+        "component_keys": [
+          "engine"
+        ],
+        "action": "replacement"
+      },
+      "fuel_filter": {
+        "label": "Fuel filter",
+        "component_keys": [
+          "engine"
+        ],
+        "action": "replacement"
+      },
+      "brake_fluid": {
+        "label": "Brake fluid",
+        "component_keys": [
+          "brakes-front",
+          "brakes-rear"
+        ],
+        "action": "replacement"
+      },
+      "brake_and_clutch_oil": {
+        "label": "Brake and clutch fluid",
+        "component_keys": [
+          "brakes-front",
+          "brakes-rear",
+          "transmission"
+        ],
+        "action": "replacement"
+      },
+      "transmission_fluid": {
+        "label": "Transmission fluid",
+        "component_keys": [
+          "transmission"
+        ],
+        "action": "replacement"
+      },
+      "brake_pads": {
+        "label": "Brake pads",
+        "component_keys": [
+          "brakes-front",
+          "brakes-rear"
+        ],
+        "action": "inspection"
+      },
+      "clutch": {
+        "label": "Clutch",
+        "component_keys": [
+          "transmission"
+        ],
+        "action": "inspection"
+      }
+    },
+    "metrics": {
+      "balanced_accuracy": 0.7429,
+      "macro_f1": 0.5364,
+      "macro_pr_auc": 0.6312,
+      "macro_roc_auc": 0.8411,
+      "macro_brier": 0.1481,
+      "macro_ece": 0.1557,
+      "served_estimator": "milestone_frequency (training-group service frequency at the nearest 10,000 km milestone, smoothed towards prevalence)",
+      "baseline": "prevalence (training positive rate for every visit)",
+      "baseline_balanced_accuracy": 0.5,
+      "baseline_macro_f1": 0.0,
+      "baseline_macro_pr_auc": 0.2448,
+      "prevalence_baseline_macro_brier": 0.1788,
+      "best_ml_candidate": "logistic_regression {'C': 0.1, 'feature_set': 'full'} (calibrated)",
+      "best_ml_candidate_balanced_accuracy": 0.7251,
+      "best_ml_candidate_macro_f1": 0.4927,
+      "best_ml_candidate_macro_pr_auc": 0.6871,
+      "best_ml_candidate_macro_brier": 0.1392,
+      "served_targets": [
+        "air_clean_filter",
+        "brake_and_clutch_oil",
+        "brake_fluid",
+        "brake_pads",
+        "clutch",
+        "dust_and_pollen_filter",
+        "fuel_filter",
+        "transmission_fluid"
+      ],
+      "all_modeled_targets_macro_f1": 0.4831,
+      "all_modeled_targets_best_ml_macro_f1": 0.4481
+    },
+    "reason": "Service-need model did not meet the acceptance criteria; see evaluation.json.",
+    "updated_at": "2026-10-31T08:45:44.294343+00:00"
+  },
+  "experiments": {
+    "engine_condition_experiment": {
+      "status": "evaluated_not_served",
+      "task": "engine_condition_experiment",
+      "dataset": "train.csv, test.csv, raw_data.csv",
+      "eligible_for_inference": false,
+      "reason": "The meaning of engine_condition (0/1) is undocumented, there is no source or licence, and rows cannot be grouped by engine or vehicle, so held-out scores may overstate performance on new vehicles. The fleet database also holds none of these live sensor readings.",
+      "metrics": {
+        "prevalence_baseline": {
+          "records": 3907,
+          "positives": 2463,
+          "threshold": 0.5,
+          "precision": 0.6304,
+          "recall": 1.0,
+          "f1": 0.7733,
+          "balanced_accuracy": 0.5,
+          "pr_auc": 0.6304,
+          "roc_auc": 0.5,
+          "brier": 0.233,
+          "ece": 0.0001,
+          "prevalence": 0.6304
+        },
+        "logistic_regression": {
+          "records": 3907,
+          "positives": 2463,
+          "threshold": 0.25,
+          "precision": 0.6511,
+          "recall": 0.9622,
+          "f1": 0.7767,
+          "balanced_accuracy": 0.5414,
+          "pr_auc": 0.7888,
+          "roc_auc": 0.692,
+          "brier": 0.2222,
+          "ece": 0.1137,
+          "prevalence": 0.6304
+        },
+        "random_forest": {
+          "records": 3907,
+          "positives": 2463,
+          "threshold": 0.225,
+          "precision": 0.6355,
+          "recall": 0.9903,
+          "f1": 0.7742,
+          "balanced_accuracy": 0.5107,
+          "pr_auc": 0.79,
+          "roc_auc": 0.69,
+          "brier": 0.2131,
+          "ece": 0.054,
+          "prevalence": 0.6304
+        },
+        "gradient_boosting": {
+          "records": 3907,
+          "positives": 2463,
+          "threshold": 0.25,
+          "precision": 0.643,
+          "recall": 0.9785,
+          "f1": 0.776,
+          "balanced_accuracy": 0.5259,
+          "pr_auc": 0.8009,
+          "roc_auc": 0.6975,
+          "brier": 0.2189,
+          "ece": 0.1062,
+          "prevalence": 0.6304
+        }
+      },
+      "updated_at": "2026-10-31T08:55:50.028038+00:00"
+    },
+    "synthetic_signal_audit": {
+      "status": "excluded_no_learnable_signal",
+      "task": "synthetic_signal_audit",
+      "dataset": null,
+      "eligible_for_inference": false,
+      "reason": "Models do not beat the prevalence baseline (ROC-AUC near 0.5, R-squared near 0): the labels are independent of every input, consistent with randomly generated data. Training on them would produce a model that outputs noise, so both datasets are excluded from every served model.",
+      "metrics": null,
+      "updated_at": "2026-10-31T08:55:50.028062+00:00"
+    },
+    "cvffad_fault_system_experiment": {
+      "status": "evaluated_not_served",
+      "task": "fault_system (7 systems) from operating readings and vehicle context",
+      "dataset": null,
+      "eligible_for_inference": false,
+      "reason": "Every CVFFAD record is marked source='generated' and the dataset covers Chinese commercial trucks/vans with a placeholder DOI. Patterns learned from generated events must not be presented as real fleet risk.",
+      "metrics": {
+        "macro_f1": 0.3115,
+        "majority_baseline_macro_f1": 0.0395
+      },
+      "updated_at": "2026-10-31T08:55:50.028072+00:00"
+    },
+    "diesel_dtc_presence_experiment": {
+      "status": "evaluated_not_served",
+      "task": "any active DTC (excluding P0000) from 11 OBD-II PIDs",
+      "dataset": null,
+      "eligible_for_inference": false,
+      "reason": "DTCs are constant per vehicle, so labels identify the vehicle. With only one fault-free signature the vehicle-disjoint evaluation cannot support a fault detector; the fleet also has no live PID stream.",
+      "metrics": null,
+      "updated_at": "2026-10-31T08:55:50.028079+00:00"
+    },
+    "carobd_sensor_anomaly_v1": {
+      "status": "evaluated_unsupervised_experiment",
+      "task": null,
+      "dataset": null,
+      "eligible_for_inference": false,
+      "reason": "Evaluated experiment kept from its own pipeline; not connected to fleet inference.",
+      "metrics": null,
+      "updated_at": "2026-10-31T08:55:50.028085+00:00"
+    },
+    "nasa_battery_cell_rul_1p4ah": {
+      "status": "evaluated_experiment",
+      "task": null,
+      "dataset": null,
+      "eligible_for_inference": false,
+      "reason": "Evaluated experiment kept from its own pipeline; not connected to fleet inference.",
+      "metrics": {
+        "random_forest": {
+          "mae_cycles": 14.194759803418808,
+          "rmse_cycles": 15.79951164370811,
+          "r2": 0.8082760613059384
+        },
+        "median_baseline": {
+          "mae_cycles": 32.216,
+          "rmse_cycles": 37.72267222772003,
+          "r2": -0.0929339477726574
+        }
+      },
+      "updated_at": "2026-10-31T08:55:50.028089+00:00"
+    }
   }
 }
