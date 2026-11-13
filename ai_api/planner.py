@@ -621,7 +621,11 @@ class Understanding:
         today = timezone.localdate()
         text = self.text
         start = end = None
-        if re.search(r"\b(?:this|ngayong|sa) (?:weekend|sabado at linggo)\b|\bweekend\b", text):
+        if re.search(r"\b(?:next week|susunod na linggo|sa isang linggo)\b", text):
+            # "Next week": Monday to the Monday after (7 days, the longest standard rental).
+            start = today + timedelta(days=7 - today.weekday())
+            end = start + timedelta(days=7)
+        elif re.search(r"\b(?:this|ngayong|sa) (?:weekend|sabado at linggo)\b|\bweekend\b", text):
             start = today + timedelta(days=(5 - today.weekday()) % 7)
             end = start + timedelta(days=2)
         elif re.search(r"\b(?:day after tomorrow|sa makalawa|makalawa)\b", text):
@@ -1122,7 +1126,9 @@ def _admin_lookup_plan(u):
         return _plan("reservation_summary", u, [("reservations.summary", args)])
     asks_status = re.search(r"\b(?:status|where is|where's|how is|how's|how far|mileage|odometer|km|kilometers|kilometres|kilometro|last (?:service|serviced|maintenance)|next (?:service|maintenance)"
                             r"|currently (?:booked|rented)|is (?:it|the [\w-]+(?: [\w-]+){0,2}) (?:booked|rented|available|out|in the shop)|kumusta|nasaan)\b", text)
-    if (u.models or u.vehicle_ids) and asks_status and not u.has("price", "deposit") and not u.sort:
+    # "Is the Fortuner available tomorrow?" with dates is a booking check of those days, not today's status.
+    dated_availability = bool(u.start_date or u.single_date) and u.has("availability")
+    if (u.models or u.vehicle_ids) and asks_status and not u.has("price", "deposit") and not u.sort and not dated_availability:
         return _plan("vehicle_status", u, [("vehicles.status", vehicle)])
     return None
 
