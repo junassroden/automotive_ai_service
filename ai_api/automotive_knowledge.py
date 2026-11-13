@@ -21,6 +21,7 @@ GENERIC_ENGLISH = {"no", "symptom", "symptoms", "open", "safety", "safe", "speci
                    "motorcycle", "motorbike", "bike", "van", "truck", "pickup", "suv", "sedan", "hatchback",
                    "toyota", "honda", "ford", "nissan", "mitsubishi", "hyundai", "kia", "suzuki", "mazda", "isuzu", "chevrolet", "subaru"}
 NEAR_TIE_RATIO = 0.9
+COVERAGE_TIE_RATIO = 0.8
 CLEARLY_BETTER_COVERAGE = 0.5
 # One specific word in common is enough only with a reasonable retrieval score ("wheel" alone in a lug-nut torque question is not).
 MIN_SINGLE_TERM_SCORE = 0.15
@@ -319,6 +320,14 @@ def retrieve_knowledge(
             preferred["phrase_length"] == ranked[0]["phrase_length"]
             and preferred["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE):
         ranked = [preferred] + [item for item in ranked if item is not preferred]
+    elif ranked[0]["phrase_length"] == 0:
+        # With no keyword phrase on top, a document whose keywords and title name clearly more of the question
+        # also wins from a little further back ("I smell gas in my car": the fuel-leak entry over a rotten-egg
+        # smell entry that shares only "smell").
+        wider = [item for item in ranked if item["score"] >= ranked[0]["score"] * COVERAGE_TIE_RATIO]
+        covering = max(wider, key=lambda item: (item["topic_coverage"], item["score"]))
+        if covering["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE:
+            ranked = [covering] + [item for item in ranked if item is not covering]
     query_terms = [
         term for term in _normalize(query).split()
         if term not in QUERY_STOP_WORDS
@@ -668,6 +677,9 @@ def compose_chat_answer(document, query=""):
         cause_count, action_count = 5, 1
     else:
         cause_count, action_count = 4, 2
+    if document.get("triage") and not definition:
+        # The narrowing question takes the place of the other suggestions; the next steps follow from the reply.
+        action_count = min(action_count, 1)
     if causes and cause_count:
         paragraphs.append(causes_sentence(causes[:cause_count], "Possible causes include" if wants_cause else "Common causes include"))
         shown.append(f"causes:{min(cause_count, len(causes))}")
@@ -677,7 +689,60 @@ def compose_chat_answer(document, query=""):
     if stop and not emergency:
         paragraphs.append(stop)
         shown.append("stop")
+    triage = document.get("triage") or []
+    if triage and not definition:
+        already = triage_reply(document, query)
+        if already is not None:
+            # The question already says what a narrowing question would ask ("green fluid near the front", "only in traffic").
+            narrowed, asked = already
+            # On a first message the closing "have a mechanic test those parts" line is not needed yet.
+            narrowed = narrowed.replace("\n\n" + TRIAGE_CLOSING, "")
+            return "\n\n".join([document["answer"], narrowed]), ["answer"] + asked
+        # Like a mechanic: one question that splits the likely causes; the reply is handled by triage_reply().
+        paragraphs.append(f"To narrow it down: {triage[0]['ask']}")
+        shown.append("triage_asked:0")
     return "\n\n".join(paragraph for paragraph in paragraphs if paragraph), shown
+
+
+TRIAGE_CLOSING = "If that doesn't settle it, have a mechanic test those parts before replacing anything."
+
+
+def triage_reply(document, message, shown=()):
+    """(answer, parts shown) when the message answers one of the topic's narrowing questions, else None.
+
+    The answer says what the reply points to and asks the next question that hasn't been asked yet."""
+    triage = document.get("triage") or []
+    if not triage:
+        return None
+    shown = set(shown or ())
+    asked = sorted(int(item.split(":")[1]) for item in shown if item.startswith("triage_asked:"))
+    answered = {int(item.split(":")[1]) for item in shown if item.startswith("triage_answered:")}
+    # The question just asked is checked first, then any other question the reply happens to answer.
+    order = list(reversed(asked)) + [index for index in range(len(triage)) if index not in asked]
+    text = message.casefold()
+    for index in order:
+        if index in answered:
+            continue
+        hits = [(option_position, match.group(0))
+                for option_position, option in enumerate(triage[index]["answers"])
+                for match in re.finditer(option["match"], text, re.IGNORECASE)]
+        if not hits:
+            continue
+        # The most specific answer wins: "cold while driving but warm in traffic" hits the traffic answer twice.
+        counts = {}
+        for position, _ in hits:
+            counts[position] = counts.get(position, 0) + 1
+        position = max(counts, key=lambda key: (counts[key], -key))
+        option = triage[index]["answers"][position]
+        parts, new = [option["narrow"]], [f"triage_answered:{index}"]
+        upcoming = [i for i in range(len(triage)) if i not in answered and i != index and i not in asked]
+        if upcoming:
+            parts.append(f"Next: {triage[upcoming[0]]['ask']}")
+            new.append(f"triage_asked:{upcoming[0]}")
+        else:
+            parts.append(TRIAGE_CLOSING)
+        return "\n\n".join(parts), new
+    return None
 
 
 def compose_follow_up(document, kind, shown=(), subject=None, lead=None):
