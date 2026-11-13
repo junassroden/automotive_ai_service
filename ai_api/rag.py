@@ -3,7 +3,8 @@
 Ranking: BM25 on word tokens and TF-IDF cosine on character n-grams are fused
 with reciprocal-rank fusion, then reranked by how many of the query's content
 terms each passage covers. A DTC code in the question is an exact metadata
-match and bypasses fuzzy ranking. Chunks marked audience="admin" are only
+match and bypasses fuzzy ranking; without a code in the question, code
+definitions get half weight. Chunks marked audience="admin" are only
 returned to administrators.
 
 The returned ``support`` value is a heuristic evidence-strength score in
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 DTC_PATTERN = re.compile(r"\b([PBCU][0-9][0-9A-F]{3})\b", re.IGNORECASE)
 PART_NUMBER_PATTERN = re.compile(r"\b([0-9]{5}[A-Z0-9]{3,7})\b", re.IGNORECASE)
 RRF_K = 60
+DTC_WITHOUT_CODE_WEIGHT = 0.5
 STOP_TERMS = {
     "what", "does", "mean", "means", "is", "the", "a", "an", "my", "car", "vehicle", "how", "do", "i", "to", "of",
     "and", "or", "in", "on", "for", "it", "can", "you", "me", "about", "tell", "should", "when", "why", "with",
@@ -125,7 +127,12 @@ def retrieve(query, role="customer", top_k=5, source_types=None):
         chunk_terms = set(analyzer(" ".join([chunks[position]["title"], chunks[position]["text"], " ".join(chunks[position].get("keywords", []))]).casefold()))
         coverage = len(terms & chunk_terms) / len(terms) if terms else 0.0
         rrf = 1 / (RRF_K + rank_bm25[position]) + 1 / (RRF_K + rank_char[position])
-        fused.append((rrf * (0.5 + coverage), position, coverage))
+        score = rrf * (0.5 + coverage)
+        if not entities["dtc_codes"] and chunks[position]["source_type"] == "dtc_reference":
+            # The ~9,500 code definitions share words with almost any car question ("battery", "light");
+            # without a code in the question they rank behind the general references.
+            score *= DTC_WITHOUT_CODE_WEIGHT
+        fused.append((score, position, coverage))
     fused.sort(reverse=True)
     top_score = fused[0][0] if fused else 0
     for score, position, coverage in fused[: max(0, top_k - len(results))]:
