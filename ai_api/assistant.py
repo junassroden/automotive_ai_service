@@ -27,7 +27,7 @@ from . import chatbot_service as core
 from . import grounded_answers as grounded
 from . import planner
 from .automotive_knowledge import (
-    _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, mentions, retrieve_knowledge, triage_reply,
+    GENERIC_REPLY_WORDS, _terms_match, asks_about, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, mentions, retrieve_knowledge, triage_reply,
 )
 from .fleet_service import analyze_fleet
 from .language import correct_typos, normalize_message
@@ -1033,11 +1033,18 @@ def _topic_follow_up(message, entities, memory):
     document = knowledge_document(topic["id"])
     if document is None or not has_chat_fields(document):
         return None
+    # Searched the way a first question is ("engine not starting" reads as "engine won't start"), so a new
+    # problem is recognised as one instead of being read as a reply to the question just asked.
+    normalized = normalize_message(text)
     if len(re.findall(r"[a-z0-9']+", text.casefold())) <= 12:
         # A short reply to the narrowing question just asked ("in traffic", "the coolant is low", "oo, umiikot").
-        other = retrieve_knowledge(text)
-        if other is None or other["document"]["id"] == document["id"] or other.get("phrase_length", 0) == 0:
-            reply = triage_reply(document, normalize_message(text), topic.get("shown"))
+        other = retrieve_knowledge(normalized)
+        last_asked = max((int(str(part).split(":")[1]) for part in topic.get("shown") or [] if str(part).startswith("triage_asked:")),
+                         default=None)
+        triage = document.get("triage") or []
+        about_question = last_asked is not None and last_asked < len(triage) and asks_about(triage[last_asked]["ask"], normalized)
+        if other is None or other["document"]["id"] == document["id"] or (other.get("phrase_length", 0) == 0 and about_question):
+            reply = triage_reply(document, normalized, topic.get("shown"))
             if reply is not None:
                 answer, shown = reply
                 response = core.build_response(document["category"], 1.0, answer,
@@ -1055,6 +1062,16 @@ def _topic_follow_up(message, entities, memory):
                 response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
                 response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
                 return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
+            words = set(re.findall(r"[a-z]+", normalized.casefold()))
+            if other is None and last_asked is not None and last_asked < len(triage) and words and words <= GENERIC_REPLY_WORDS:
+                # A bare "yes" or "no" to an either-or question ("low or empty?") doesn't say which; ask for the detail
+                # instead of guessing or dropping the conversation.
+                answer = f"I couldn't tell which one from that. {triage[last_asked]['ask']}"
+                response = core.build_response(document["category"], 1.0, answer,
+                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "clarify"})
+                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
+                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
+                return response, {"last_topic": {"id": document["id"], "shown": sorted(topic.get("shown") or [])}}
     if len(re.findall(r"[a-z0-9']+", text.casefold())) > 16 or not TOPIC_FOLLOW_UP.search(text):
         return None
     document_text = " ".join([document["answer"], document["title"], " ".join(document.get("key_causes") or []),
@@ -1063,7 +1080,7 @@ def _topic_follow_up(message, entities, memory):
     ruled_out = CONDITION.search(text) or CHECKED.search(text) or NOT_THE.search(text)
     about_this_topic = ruled_out is not None and mentions(document_text, [
         term for term in re.findall(r"[a-z]+", ruled_out.group("subject").casefold()) if term not in {"the", "my", "a", "an", "it", "that", "this"}])
-    other = retrieve_knowledge(text)
+    other = retrieve_knowledge(normalized)
     if not about_this_topic and other is not None and other["document"]["id"] != document["id"] and other.get("phrase_length", 0) > 0:
         return None  # "what about a flat tire?" after overheating: a new topic. "I replaced the spark plugs" after a misfire is not.
     switch = TOPIC_SWITCH.match(text)
@@ -1144,7 +1161,8 @@ def _is_car_problem(message, entities):
     matched and no booking, price or inventory words are present."""
     if entities["dtc_codes"] or RENTAL_REQUEST.search(message) or NAMED_VEHICLE_SPEC.search(message):
         return False
-    knowledge = retrieve_knowledge(message)
+    # Matched the way the answer is: "the car is not starting" reads as "won't start" (language.normalize_message).
+    knowledge = retrieve_knowledge(normalize_message(message))
     return knowledge is not None and knowledge.get("phrase_length", 0) > 0
 
 

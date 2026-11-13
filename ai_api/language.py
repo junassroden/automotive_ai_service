@@ -97,6 +97,14 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:may\s+)?(?:tulo|tumulo|tumutulo|natutulo|tagas|tumatagas)\b", "leaking"),
     (r"\b(?:amoy|naaamoy|maamoy)\s+(?:na\s+)?(?:sunog|nasusunog|nasunog)\b", "burning smell"),
     (r"\b(?:hirap|mahirap|matagal)\s+(?:mag[- ]?)?(?:start|paandarin|umandar)\b", "hard to start"),
+    # "The car is not starting immediately", "it doesn't start right away": starts, but only after a while.
+    (r"\b(car|engine|vehicle|unit|it|kotse|sasakyan|makina)(?:'s| is| was)?\s+(?:not|isn't|wasn't|doesn't|does not|didn't|did not|won't|will not)"
+     r"\s+start(?:ing)?\s+(?:immediately|right away|at once|straight away|quickly|on the first try|the first time|instantly)\b", r"\1 is hard to start"),
+    # "The car is not starting", "my car doesn't start", "engine can't start": the no-start topic ("won't start").
+    (r"\b(car|engine|vehicle|unit|it|kotse|sasakyan|makina)(?:'s| is| was)?\s+(?:not|isn't|wasn't|doesn't|does not|didn't|did not|will not|wont"
+     r"|can't|cannot|can not)\s+start(?:ing)?\b", r"\1 won't start"),
+    # A bare "not starting" / "no start" with no subject: the same no-start topic.
+    (r"^(?:(?:it'?s|is|still)\s+)?(?:not\s+start(?:ing)?|no\s+start)\b", "won't start"),
     (r"\b(?:namamatay|namatayan|nag-?ii?stall)\b", "stalls"),
     (r"\b(?:lumiliko|liliko|pagliko|pag liko|kumakanan|kumakaliwa)\b", "turning"),
     (r"\b(?:kalabog|kumakalabog|lagabog)\b", "clunk"),
