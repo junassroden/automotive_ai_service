@@ -41,6 +41,8 @@ SYSTEM_GUIDE_INTENTS = core.RENTAL_INTENTS - core.LIVE_RENTAL_INTENTS | {"capabi
 FOLLOW_UP = re.compile(
     r"^(?:and|what about|how about|also|then)\b|\b(?:it|that|this|those|these)\b.*\b(?:code|fault|mean|cause|causes|symptom|symptoms|fix|repair|cost|serious|safe)\b"
     r"|^(?:causes?|symptoms?|fix(?:es)?|how (?:do i|to) fix|is it (?:serious|safe))\??$"
+    # "How much to fix?", "magkano ipagawa?", "can I still drive?" right after a code.
+    r"|^(?:so |and |ok )?(?:how much(?: (?:to|will it|would it|does it|is it))?(?: cost)?(?: to)? (?:fix|repair)\w*|magkano(?: ang)? (?:ipagawa|paayos|pagawa)|can i (?:still )?drive(?: it)?|(?:is it )?(?:ok|okay) to drive)\b.*$"
     r"|^(?:what|why|how)\b[\w\s']{0,30}\b(?:it|that|this)\s*\??$",
     re.IGNORECASE,
 )
@@ -202,7 +204,7 @@ VEHICLE_ADMINISTRATION = re.compile(
 MECHANICAL = re.compile(
     r"\b(?:engine|brakes?|braking|smoke|smoking|noise|squeak\w*|squeal\w*|grind\w*|leak\w*|overheat\w*|tires?|tyres?"
     r"|oil|battery|alternator|starter|misfir\w*|stall\w*|vibrat\w*|warning light|check engine|coolant|transmission"
-    r"|exhaust|won'?t start|inspect\w*|parts?|repair\w*|maintenance|diagnos\w*|mechanic\w*|fault\w*|symptoms?)\b",
+    r"|exhaust|won'?t start|inspect\w*|parts?|repair\w*|maintenance|diagnos\w*|mechanic\w*|fault\w*|symptoms?|downtime|breakdowns?)\b",
     re.IGNORECASE,
 )
 ADMIN_RECORDS_REQUEST = re.compile(
@@ -335,7 +337,9 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
         # "Is it serious?" / "What causes it?" about a code from earlier in the conversation answers just that.
         dtc_focus = None
         if used_memory and used_memory.get("dtc_codes"):
-            dtc_focus = "safety" if ASKS_SAFE.search(message) else "causes" if ASKS_WHY.search(message) else None
+            dtc_focus = "safety" if ASKS_SAFE.search(message) or re.search(r"\bcan i (?:still )?drive\b", message, re.IGNORECASE) \
+                else "cost" if ASKS_COST.search(message) or re.search(r"\bmagkano\b", message, re.IGNORECASE) \
+                else "causes" if ASKS_WHY.search(message) else None
         response = direct or _route(normalize_message(resolved_message), entities, role, vehicle, vehicles, rental_context, diagnostic_context,
                                     dtc_focus=dtc_focus)
     response.setdefault("data", None)
@@ -347,7 +351,9 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
     if used_memory:
         response["data"]["resolved_from_conversation"] = used_memory
     topic_id = response["data"].get("knowledge_id")
-    if topic_id and topic_id not in RENTAL_OPERATION_TOPICS and RENTAL_CAR.search(message) and "rental team" not in response["answer"]:
+    # Fleet-management knowledge (pm_*) is for the business, not a renter with a problem car.
+    if topic_id and topic_id not in RENTAL_OPERATION_TOPICS and not topic_id.startswith("pm_") and RENTAL_CAR.search(message) \
+            and "rental team" not in response["answer"]:
         response["answer"] += "\n\nAs it's a rental car, tell the rental team before arranging any repairs."
     response["data"]["latency_ms"] = round((time.perf_counter() - started) * 1000, 1)
     if "last_topic" not in memory_updates:
@@ -461,6 +467,11 @@ def _route(message, entities, role, vehicle, vehicles, rental_context, diagnosti
         # Both use the existing "goodbye" intent, which the rest of the service already treats as small talk.
         return _with_evidence(core.build_response("goodbye", 1.0, GOODBYE_ANSWER if closing == "goodbye" else ACK_ANSWER if re.search(
             r"\b(?:thanks?|thx|tnx|ty|salamat)\b", message, re.IGNORECASE) else OKAY_ANSWER), "general_guidance", [])
+    if not isinstance(database_context, dict) and not diagnostic_context and planner.MODEL_QUESTION.search(message.casefold()) \
+            and not MECHANICAL.search(message.replace("maintenance", "")):
+        # "How accurate is the maintenance model?", "what data do you use?": from the model registry, as it is now.
+        return _with_evidence(core.build_response("model_overview", 1.0, _models_answer(role, message)), "reference",
+                              [{"name": "model registry", "file": "models/model_registry.json"}])
     if not isinstance(database_context, dict) and not diagnostic_context and ABOUT_YOU.match(message.strip()):
         return _with_evidence(core.build_response("capabilities", 1.0, ABOUT_YOU_ANSWER + GREETING_ANSWERS[role].replace("Hello! ", "", 1)),
                               "general_guidance", [])
@@ -558,6 +569,117 @@ def _route(message, entities, role, vehicle, vehicles, rental_context, diagnosti
     return response
 
 
+MODEL_ACCURACY = re.compile(r"\b(?:accura\w*|precision|recall|reliab\w*|how good|how well|performance|evaluat\w*|trust)\b", re.IGNORECASE)
+MODEL_DATA = re.compile(r"\b(?:what data|which data|data do you|data does|trained on|training data|learn\w* from|inputs?)\b", re.IGNORECASE)
+MODEL_STATUS = re.compile(r"\b(?:approved|accepted|ready|status|unavailable|not available|switched off|disabled|turned off|in use)\b", re.IGNORECASE)
+NEXT_STEPS = ("To make the predictions real: keep recording monthly assessments of the real fleet and the verified outcome of every "
+              "repair (what was found, what was replaced, the date and odometer). Once there are a few hundred real outcomes, retrain "
+              "the models from Model Management (/admin/maintenance/model-management).")
+SIMULATED_WARNING = ("All the fault models were trained on the simulated SAMPLE- vehicles, so treat them as a demonstration: the "
+                     "numbers show the method works, not how your real cars will behave.")
+
+
+def _models_answer(role, message=""):
+    """How the maintenance predictions work, how good each model is, what data they use, or whether they're in use:
+    whichever the question asks, read from the registry and evaluation reports as they are now."""
+    import json
+    from pathlib import Path
+    from .category_models import models_overview
+
+    if role != "admin":
+        return ("Maintenance predictions are an administrator tool: vehicles are assessed monthly, and the ratings, findings and "
+                "verified repair outcomes decide which cars get serviced first. As a customer you only rent vehicles marked available.")
+    models = models_overview()
+    in_use = [m for m in models if m["status"] == "in_use"]
+    others = [m for m in models if m["status"] != "in_use"]
+    horizon = next((m["horizon_days"] for m in models if m.get("horizon_days")), 90)
+    simulated = any(m.get("training_source") in ("simulated", "mixed") for m in models)
+    try:
+        registry = json.loads(Path(settings.AI_MAINTENANCE_MODEL_REGISTRY_PATH).read_text(encoding="utf-8"))
+        main = registry.get("maintenance_model") or {}
+        report = main.get("evaluation_report_path")
+        evaluation = json.loads((settings.BASE_DIR / report).read_text(encoding="utf-8")) if report else {}
+    except (OSError, ValueError, TypeError):
+        main, evaluation = {}, {}
+    metrics = evaluation.get("metrics") or {}
+    visits = (evaluation.get("dataset") or {}).get("rows_used")
+    main_accepted = main.get("status") == "evaluated_accepted"
+
+    def model_line(m):
+        if m["status"] == "in_use":
+            return f"- {m['name']}: in use; catches {m['recall']:.0%} of faults, and {m['precision']:.0%} of its alerts are right."
+        if m["status"] == "rejected" and m.get("recall") is not None:
+            return f"- {m['name']}: rejected; it misses too many faults (catches {m['recall']:.0%}, not reliably enough to pass)."
+        return f"- {m['name']}: {str(m['status']).replace('_', ' ')}."
+
+    def service_need_line():
+        if not main:
+            return None
+        if main_accepted:
+            return "Service-need model (which service items are due, from vehicle type, fuel type and mileage): approved and in use."
+        detail = (f": it ranks cars sensibly (ROC-AUC {metrics['macro_roc_auc']:.2f}) but picks the right service items only about "
+                  f"half the time (F1 {metrics['macro_f1']:.2f})" if metrics.get("macro_roc_auc") and metrics.get("macro_f1") else "")
+        return ("Service-need model (which service items are due, from vehicle type, fuel type and mileage): switched off" + detail
+                + ". Three inputs aren't enough to know what a particular car needs.")
+
+    text = message or ""
+    if MODEL_ACCURACY.search(text):
+        lines = [f"How accurate each model is, tested on assessments it never saw in training (fault within {horizon} days):"]
+        lines += [model_line(m) for m in in_use + others]
+        if service_need_line():
+            lines.append(service_need_line())
+        lines.append("\"Catches\" (recall) is the share of real faults it flags; \"alerts right\" (precision) is the share of its "
+                     "flags that were real faults. For safety systems catching faults matters more, so some false alarms are accepted.")
+        if simulated:
+            lines.append(SIMULATED_WARNING)
+        return "\n".join(lines)
+    if MODEL_DATA.search(text):
+        lines = ["The maintenance answers use four kinds of data from your records:",
+                 "1. Monthly assessments: each system's rating, the checklist answers, measurements (pad thickness, tread depth and "
+                 "so on), warning lights and fault codes.",
+                 "2. Verified outcomes: for each recommendation, whether a mechanic confirmed a fault, repaired it, or found nothing.",
+                 "3. Maintenance records: date, odometer, the work done and its cost.",
+                 "4. The vehicle profile: type, fuel, year, mileage and how often it's rented."]
+        if models:
+            rows = sum(m.get("rows") or 0 for m in models) // max(1, len(models))
+            lines.append(f"The per-system fault models learned from about {rows} assessments each, of "
+                         f"{max((m.get('vehicles') or 0) for m in models)} vehicles"
+                         + (" (the simulated SAMPLE- fleet)" if simulated else "") + ".")
+        if visits:
+            lines.append(f"The service-need model learned from {visits:,} workshop visits in a public dataset, not from your cars.")
+        lines.append(NEXT_STEPS)
+        return "\n".join(lines)
+    if MODEL_STATUS.search(text):
+        lines = [f"{len(in_use)} of {len(models)} per-system fault models are in use"
+                 + (f" ({_join_names(m['name'] for m in in_use)})" if in_use else "") + "."]
+        lines += [model_line(m) for m in others]
+        if service_need_line():
+            lines.append(service_need_line())
+        if simulated:
+            lines.append(SIMULATED_WARNING)
+        lines.append("The condition screening (assessment ratings, findings and their trend) is always on, whatever the models' status.")
+        return "\n".join(lines)
+    lines = ["Maintenance predictions here work in three layers:",
+             "1. Condition screening (always on): every vehicle is assessed monthly and each system gets a rating. The ratings, the "
+             "findings and how they changed since the previous assessment decide which cars are at risk; that's what I use when "
+             "you ask which cars or components need attention.",
+             f"2. Per-system fault models: each predicts whether a system will have a verified fault within {horizon} days of an "
+             f"assessment, from the assessment's answers. {len(in_use)} of {len(models)} are in use"
+             + (f" ({_join_names(m['name'] for m in in_use)})" if in_use else "") + "; ask \"how accurate is the maintenance model\" "
+             "for their figures."]
+    if service_need_line():
+        lines.append("3. " + service_need_line())
+    if simulated:
+        lines.append(SIMULATED_WARNING)
+    lines.append(NEXT_STEPS)
+    return "\n".join(lines)
+
+
+def _join_names(names):
+    names = list(names)
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1] if names else ""
+
+
 def _with_evidence(response, evidence_type, sources, support=None, clarification=None):
     data = response.get("data") or {}
     data["evidence"] = {"evidence_type": evidence_type, "sources": sources}
@@ -608,6 +730,16 @@ def _dtc_causes(text):
 def _dtc_focused(codes, passages, focus):
     """A short answer to "is it serious?" or "what causes it?" about codes already defined."""
     found = [code for code in codes if code in passages]
+    if focus == "cost":
+        # "How much to fix it?": what the bill depends on, without inventing prices.
+        lines = []
+        for code in found:
+            causes = _dtc_causes(passages[code]["text"])
+            lines.append(f"I can't quote an exact price for {code} without the car being checked: it depends on what's behind it"
+                         + (f", usually one of these: {'; '.join(causes)}." if causes else "."))
+        return ("\n\n".join(lines) + "\n\nHave a shop confirm the cause with tests before replacing anything; with fault codes, guessing "
+                "at parts is how a cheap fix becomes an expensive one. Reading the codes costs little, and ask for a written quote "
+                "after the diagnosis.") if lines else None
     if focus == "causes":
         lines = [f"The usual causes of {code} are: " + "; ".join(_dtc_causes(passages[code]["text"])) + "."
                  for code in found if _dtc_causes(passages[code]["text"])]
@@ -910,6 +1042,16 @@ def _topic_follow_up(message, entities, memory):
                 answer, shown = reply
                 response = core.build_response(document["category"], 1.0, answer,
                                                {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "triage"})
+                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
+                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
+                return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
+            asked = any(str(part).startswith("triage_asked:") for part in topic.get("shown") or [])
+            if asked and other is not None and other["document"]["id"] == document["id"] and not TOPIC_FOLLOW_UP.search(text):
+                # A reply about the same problem that none of the narrowing answers covers: carry on from what was
+                # said instead of repeating the first answer.
+                answer, shown = compose_follow_up(document, "more", topic.get("shown"))
+                response = core.build_response(document["category"], 1.0, answer,
+                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "more"})
                 response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
                 response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
                 return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}

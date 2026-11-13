@@ -644,6 +644,37 @@ def causes_sentence(causes, lead="Common causes include"):
     return _sentence(f"{lead} {_join(causes)}") if causes else ""
 
 
+def likely_causes(causes):
+    """The causes as a mechanic says them. Entries don't rank their causes reliably, so no order is claimed."""
+    if not causes:
+        return ""
+    return _sentence(f"Usually it's {_join(causes)}")
+
+
+# "Can I still drive it?", "is it safe to drive?", "pwede pa ba i-drive?"
+ASKS_DRIVE = re.compile(
+    r"\b(?:can i (?:still |keep )?drive|could i (?:still )?drive|can i (?:still |keep )?use (?:it|the car|my car|the vehicle)\b(?! (?:instead|for))|safe to drive|ok(?:ay)? to drive|is it safe|still drive|keep driving"
+    r"|drive (?:it )?with|drive on it|pwede (?:pa )?(?:ba )?(?:i-?|ma)?(?:drive|gamitin|byahe)|delikado)\b", re.IGNORECASE)
+# "How much does it cost to fix?", "magkano ipagawa?"
+ASKS_PRICE = re.compile(r"\b(?:how much (?:does|do|will|would|is|to|for)|cost|costs|price|magkano|expensive|mahal ba)\b", re.IGNORECASE)
+COST_TIP = "Get a written quote before the work starts."
+# Words in "how often should X be replaced" that don't name the component.
+INTERVAL_FILLER = {"often", "long", "last", "lasts", "replace", "replaced", "replacing", "change", "changed", "should", "be", "interval",
+                   "intervals", "life", "lifespan", "typical", "every", "when", "much", "km", "car", "parts", "part"}
+
+
+def cost_answer(document):
+    """What decides the bill for this problem, the way a shop explains it before quoting. No prices are invented:
+    the entry's cost note when it has one, otherwise the likely causes the price depends on."""
+    if document.get("cost_note"):
+        return f"No exact price without seeing the car. What decides it: {document['cost_note']} {COST_TIP}"
+    causes = list(document.get("key_causes") or [])[:3]
+    if causes:
+        return (f"No exact price without seeing the car: it depends on which it turns out to be: {_join(causes)}. "
+                f"Have it diagnosed first so you only pay for the part that's bad. {COST_TIP}")
+    return f"No exact price without seeing the car; it depends on what the workshop finds. {COST_TIP}"
+
+
 def compose_chat_answer(document, query=""):
     """(answer, parts shown) for a chat question, from this document only.
 
@@ -664,6 +695,24 @@ def compose_chat_answer(document, query=""):
     wants_cause = bool(ASKS_CAUSE.search(query))
     definition = bool(ASKS_DEFINITION.search(query)) and not wants_cause and not wants_action
 
+    if document.get("interval_items"):
+        # "How often should brake pads be replaced?": the item asked about, not the whole table.
+        terms = [term for term in _normalize(query).split() if term not in QUERY_STOP_WORDS and term not in INTERVAL_FILLER]
+        scores = {item: sum(1 for term in terms if mentions(item.split(":")[0], [term])) for item in document["interval_items"]}
+        best = max(scores.values(), default=0)
+        matched = [item for item, score in scores.items() if best and score == best]
+        if matched and len(matched) <= 3:
+            return ("Typical interval: " + "; ".join(matched) + ". The owner's manual decides for each car, and city traffic and heat "
+                    "put rental cars at the short end of the range."), ["interval_items"]
+    if ASKS_DRIVE.search(query) and (document.get("drive_safety") or stop) and not emergency:
+        # "Can I still drive with the check-engine light on?": the yes or no first, like a mechanic would.
+        verdict = document.get("drive_safety") or stop
+        rest = [document["answer"]] + ([_sentence(actions[0])] if actions else [])
+        return "\n\n".join([verdict] + rest), ["drive_safety" if document.get("drive_safety") else "stop", "answer", "actions:1"]
+    if ASKS_PRICE.search(query) and not definition:
+        # "How much does a brake pad replacement cost?": what decides the bill, without inventing prices.
+        return "\n\n".join([document["answer"], cost_answer(document)]), ["answer", "cost"]
+
     paragraphs, shown = [], ["answer"]
     if emergency:
         paragraphs.append(stop)
@@ -681,7 +730,7 @@ def compose_chat_answer(document, query=""):
         # The narrowing question takes the place of the other suggestions; the next steps follow from the reply.
         action_count = min(action_count, 1)
     if causes and cause_count:
-        paragraphs.append(causes_sentence(causes[:cause_count], "Possible causes include" if wants_cause else "Common causes include"))
+        paragraphs.append(likely_causes(causes[:cause_count]))
         shown.append(f"causes:{min(cause_count, len(causes))}")
     if actions and action_count:
         paragraphs.append(" ".join(_sentence(item) for item in actions[:action_count]))
@@ -782,8 +831,7 @@ def compose_follow_up(document, kind, shown=(), subject=None, lead=None):
             return stop, ["stop"]
         return _sentence(document.get("urgency") or "Have it checked by a technician before relying on the car"), ["urgency"]
     if kind == "cost":
-        return ("I don't have repair prices. The cost depends on what's actually wrong and on the car, so ask a workshop "
-                "for a quote once they've diagnosed it."), ["cost"]
+        return cost_answer(document), ["cost"]
     if kind == "causes":
         if not causes:
             return _sentence(document["answer"]), ["answer"]
