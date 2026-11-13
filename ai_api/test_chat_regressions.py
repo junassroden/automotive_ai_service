@@ -1035,3 +1035,237 @@ class EverydayQuestionTests(TestCase):
     def test_how_to_rent_is_the_booking_guide(self):
         response = answer_chat("how to rent a car", viewer_role="customer", retrieval_protocol=1)
         self.assertIn("select Reserve", response["answer"])
+
+
+class RealFleetAnswerTests(TestCase):
+    """Answers that were wrong on the real fleet (3 rentable cars, 20 marked unavailable, no bookings) on 2026-11-13."""
+
+    def compose(self, vehicles, purpose, role="admin", period=None, plan_extra=None, total=None):
+        from . import grounded_answers as grounded
+        data = {"vehicles": vehicles, "total_matching": total or len(vehicles), "truncated": bool(total and total > len(vehicles))}
+        if period:
+            data.update(period=period, rental_days=period["rental_days"])
+        plan = {"intent": "vehicles", "purpose": purpose, "retrievals": [{"tool": "vehicles.search", "args": {}}],
+                "requested": {}, **(plan_extra or {})}
+        return grounded.compose(plan, [{"tool": "vehicles.search", "status": "ok", "data": data}], role)[0]
+
+    def car(self, model, status="available", free=None, deposit=3000.0, plate="DEMO-001", price=1500.0, days=1):
+        quote = {"rental_days": days, "daily_rate": price, "base_total": price * days, "meets_minimum": days >= 3, "minimum_days": 3,
+                 "standard_maximum_days": 7, "maximum_days": 21, "security_deposit": deposit}
+        return {"make": "Toyota", "model": model, "plate_number": plate, "status": status, "daily_rental_price": price,
+                "security_deposit": deposit, "seating_capacity": 5, "category": "Sedan", "available_for_period": free, "quote": quote}
+
+    def test_unavailable_cars_are_not_called_booked(self):
+        period = {"start_date": "2026-11-14", "end_date": "2026-11-15", "rental_days": 1}
+        text = self.compose([self.car("Vios", free=True), self.car("Vios", "unavailable", free=False, deposit=0.0, plate="SAMPLE-011")],
+                            "availability", period=period)
+        self.assertNotIn("already booked", text)
+        self.assertIn("marked unavailable", text)
+        self.assertIn("at least 3 days", text)
+        self.assertNotIn("1 day can't be booked", text)  # no estimate for a period that can't be booked
+        self.assertIn("2026-11-14 to 2026-11-17", text)
+
+    def test_only_unavailable_cars_get_no_estimate(self):
+        period = {"start_date": "2026-11-14", "end_date": "2026-11-15", "rental_days": 1}
+        text = self.compose([self.car("Xpander", "unavailable", free=False, deposit=0.0, plate="SAMPLE-010")], "availability", period=period)
+        self.assertIn("marked unavailable", text)
+        self.assertNotIn("Estimate", text)
+
+    def test_zero_deposit_is_not_shown_as_an_amount(self):
+        text = self.compose([self.car("Vios"), self.car("Hilux", "unavailable", deposit=0.0, plate="SAMPLE-019")], "listing")
+        self.assertNotIn("PHP 0.00", text)
+        self.assertIn("no deposit listed", text)
+
+    def test_biggest_deposit_is_answered_first(self):
+        cars = [self.car("Vios"), self.car("Fortuner", deposit=6000.0, plate="DEMO-002")] + \
+            [self.car("Hilux", "unavailable", deposit=0.0, plate=f"SAMPLE-{n}") for n in range(5)]
+        text = self.compose(cars, "deposit", plan_extra={"deposit_rank": "desc"}, total=8)
+        self.assertTrue(text.startswith("The highest deposit is the Toyota Fortuner's"), text)
+        self.assertIn("6 other vehicles have no security deposit listed", text)
+
+    def test_why_a_status_says_no_reason_is_recorded(self):
+        text = self.compose([self.car("Hilux", "unavailable", deposit=0.0, plate="SAMPLE-019")], "status",
+                            plan_extra={"asks_why_status": True})
+        self.assertIn("doesn't record why", text)
+
+    def test_rental_wording_is_understood(self):
+        admin = plan_message("give me list of the availables and can be rented", "admin", FLEET_VOCABULARY, {})
+        self.assertNotIn("rented", admin["retrievals"][0]["args"].get("statuses") or [])
+        self.assertEqual(admin["purpose"], "availability")
+        dated = plan_message("I want to rent a car tomorrow until sunday", "customer", FLEET_VOCABULARY, {})
+        self.assertEqual(dated["purpose"], "availability")
+        self.assertTrue(dated["retrievals"][0]["args"].get("start_date"))
+
+
+@skipUnless(INDEX_BUILT, "knowledge index not built")
+class MechanicAnswerTests(TestCase):
+    """Drive-safety, cost and follow-up answers given the way a mechanic would (2026-11-13)."""
+
+    def conversation(self, *messages):
+        conversation = f"7a4c2a1e-0000-4000-9000-{abs(hash(messages)) % 10**12:012d}"
+        return [answer_chat(message, viewer_role="customer", conversation_id=conversation, conversation_scope="customer:mechanic-test",
+                            retrieval_protocol=1)["answer"] for message in messages]
+
+    def test_can_i_drive_gets_a_yes_or_no_first(self):
+        answer = answer_chat("can I drive with the check engine light on", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertTrue(answer.startswith("A steady check-engine light: yes"), answer)
+
+    def test_cost_questions_explain_what_decides_the_price(self):
+        answer = answer_chat("how much does a brake pad replacement cost", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertIn("What decides it", answer)
+        self.assertIn("quote", answer)
+        _, cost = self.conversation("what does P0420 mean", "how much to fix")
+        self.assertIn("exact price for P0420", cost)
+
+    def test_unlisted_reply_does_not_repeat_the_first_answer(self):
+        first, weak = self.conversation("my aircon is not cold", "the air is weak")
+        self.assertNotEqual(first, weak)
+        self.assertIn("cabin air filter", weak)
+
+    def test_use_instead_is_not_a_driving_question(self):
+        answer = answer_chat("can I use water instead of coolant", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertTrue(answer.startswith("Plain water"), answer)
+
+
+class PredictiveMaintenanceAnswerTests(TestCase):
+    """Maintenance questions answered from assessments, the schedule and costs (2026-11-13)."""
+
+    SCORES = {"critical": 1, "poor": 2, "fair": 3, "good": 4, "excellent": 5}
+
+    def car(self, vehicle_id, model, plate, systems, findings=(), outcomes=None, year=2020, km=90000):
+        return {"id": vehicle_id, "make": "Toyota", "model": model, "plate_number": plate, "year": year, "current_mileage": km,
+                "assessed_on": "2026-11-01", "odometer_km": km, "previous_assessed_on": "2026-10-01", "overall_screening": "critical",
+                "safety_warning_count": len(findings), "outcomes": outcomes or {},
+                "systems": [{"category_key": key, "category": key.replace("_", " ").title(), "safety_critical": key in ("brakes", "tires_wheels"),
+                             "rating": rating, "rating_score": self.SCORES[rating], "previous_rating": before, "previous_score": self.SCORES[before]}
+                            for key, rating, before in systems],
+                "findings": list(findings)}
+
+    def fleet(self):
+        return [
+            self.car(1, "Vios", "AAA-1", [("brakes", "critical", "fair"), ("engine", "good", "good")],
+                     [{"category_key": "brakes", "severity": "critical", "is_safety": True, "observation": "Brake pedal not firm.",
+                       "recommended_action": "Do not drive until the brakes are inspected."}], {"brakes": {"confirmed_failure": 2}}),
+            self.car(2, "Innova", "BBB-2", [("transmission", "poor", "good"), ("brakes", "good", "good")],
+                     outcomes={"transmission": {"confirmed_failure": 3}}),
+            self.car(3, "Hiace", "CCC-3", [("transmission", "poor", "poor"), ("brakes", "excellent", "excellent")]),
+        ]
+
+    def compose(self, plan, tools):
+        from . import grounded_answers as grounded
+        results = [{"tool": tool, "status": "ok", "data": data} for tool, data in tools.items()]
+        plan = {"version": 1, "requested": {}, "retrievals": [{"tool": t, "args": {}} for t in tools], **plan}
+        return grounded.compose(plan, results, "admin")[0]
+
+    def test_each_question_type_leads_with_its_own_answer(self):
+        vehicles = {"assessments.condition": {"vehicles": self.fleet()}, "maintenance.due": {"vehicles": []}}
+        at_risk = self.compose({"intent": "maintenance_condition", "purpose": "fleet"}, vehicles)
+        systems = self.compose({"intent": "maintenance_condition", "purpose": "fleet", "focus": "systems"}, vehicles)
+        trend = self.compose({"intent": "maintenance_condition", "purpose": "fleet", "focus": "trend"}, vehicles)
+        self.assertIn("Vehicles most at risk:\n- Toyota Vios (AAA-1): brakes critical (was fair; safety-critical)", at_risk)
+        self.assertIn("The system most likely to need work is transmission: 2 of 3 vehicles", systems)
+        self.assertIn("2 vehicles got worse since the previous assessment", trend)
+        self.assertEqual(len({at_risk.splitlines()[1], systems.splitlines()[1], trend.splitlines()[1]}), 3)
+
+    def test_priority_puts_safety_first(self):
+        text = self.compose({"intent": "maintenance_priority"},
+                            {"assessments.condition": {"vehicles": self.fleet()}, "maintenance.due": {"vehicles": []}})
+        self.assertTrue(text.splitlines()[1].startswith("1. Toyota Vios (AAA-1): safety: brake pedal not firm"), text)
+
+    def test_vehicle_report_and_odometer_mismatch(self):
+        due = [{"id": 2, "make": "Toyota", "model": "Innova", "plate_number": "BBB-2", "current_mileage": 90000,
+                "last_service_date": "2026-10-01", "last_service_odometer": 90500, "estimated_due_date": "2027-03-30",
+                "service_status": "not_due"}]
+        text = self.compose({"intent": "maintenance_condition", "purpose": "vehicle"},
+                            {"assessments.condition": {"vehicles": [self.fleet()[1]]}, "maintenance.due": {"vehicles": due}})
+        self.assertIn("Transmission: poor (was good).", text)
+        self.assertIn("lower than at its last service", text)
+        self.assertNotIn("-500", text)
+
+    def test_overdue_question_answers_yes_or_no(self):
+        due = [{"id": 5, "make": "Toyota", "model": "Hilux", "plate_number": "H-1", "current_mileage": 81000,
+                "last_service_date": "2026-09-01", "last_service_odometer": 75000, "estimated_due_date": "2027-02-28",
+                "service_status": "overdue"}]
+        text = self.compose({"intent": "maintenance_due", "asked_overdue": True}, {"maintenance.due": {"vehicles": due}})
+        self.assertIn("is overdue because: last service 2026-09-01 at 75,000 km; 6,000 km driven since then, "
+                      "past the 5,000 km interval", text)
+        due[0].update(service_status="not_due", current_mileage=76000)
+        text = self.compose({"intent": "maintenance_due", "asked_overdue": True}, {"maintenance.due": {"vehicles": due}})
+        self.assertTrue(text.startswith("It isn't overdue"), text)
+
+    def test_retirement_weighs_the_signs(self):
+        worn = self.car(9, "Hiace", "OLD-1", [("engine", "critical", "fair"), ("transmission", "critical", "poor"), ("brakes", "poor", "fair")],
+                        outcomes={"engine": {"confirmed_failure": 2}, "transmission": {"confirmed_failure": 2},
+                                  "brakes": {"confirmed_failure": 2}}, year=2012, km=250000)
+        text = self.compose({"intent": "maintenance_retire", "requested": {"models": ["Hiace"]}},
+                            {"assessments.condition": {"vehicles": [worn]}, "maintenance.costs": {"per_vehicle": []},
+                             "maintenance.due": {"vehicles": []}})
+        self.assertIn("A retirement candidate", text)
+        self.assertIn("older than 10 years", text)
+        self.assertIn("Rule of thumb", text)
+
+    def test_older_back_end_without_the_assessment_tool(self):
+        """The AI service can go live before the Back-End: an unknown tool is reported as unavailable, never as 'no assessments'."""
+        from . import grounded_answers as grounded
+        rejected = {"tool": "assessments.condition", "status": "rejected", "reason": "unknown_tool"}
+        due = {"tool": "maintenance.due", "status": "ok", "data": {"vehicles": []}}
+        for intent, purpose in (("maintenance_condition", "fleet"), ("maintenance_priority", None), ("maintenance_retire", None)):
+            plan = {"version": 1, "intent": intent, "purpose": purpose, "requested": {},
+                    "retrievals": [{"tool": "assessments.condition", "args": {}}, {"tool": "maintenance.due", "args": {}}]}
+            text = grounded.compose(plan, [rejected, due], "admin")[0]
+            self.assertIn("isn't available from the server", text, intent)
+            self.assertNotIn("No vehicle assessments are recorded", text, intent)
+
+    def test_no_costs_recorded_is_said_plainly(self):
+        text = self.compose({"intent": "maintenance_costs"},
+                            {"maintenance.costs": {"total_cost": 0.0, "records": 12, "records_without_cost": 12, "per_vehicle": [],
+                                                   "from": None, "to": None}})
+        self.assertIn("None of the 12 maintenance record(s) has a cost entered", text)
+        self.assertNotIn("PHP 0.00", text)
+
+    def test_maintenance_questions_are_routed(self):
+        cases = {
+            "which component is most likely to fail": ("maintenance_condition", "systems"),
+            "which cars are getting worse": ("maintenance_condition", "trend"),
+            "which vehicles are at risk": ("maintenance_condition", None),
+            "what should we service first this week": ("maintenance_priority", None),
+            "anong sasakyan ang uunahin ipaayos": ("maintenance_priority", None),
+            "should we retire the hilux": ("maintenance_retire", None),
+            "what does the hilux need": ("maintenance_condition", None),
+        }
+        for message, (intent, focus) in cases.items():
+            plan = plan_message(normalize_message(message), "admin", FLEET_VOCABULARY, {})
+            self.assertEqual(plan["intent"], intent, message)
+            self.assertEqual(plan.get("focus"), focus, message)
+        for message in ("what is predictive maintenance", "how accurate is the maintenance model", "what is a reassessment",
+                        "are the prediction models approved"):
+            self.assertIsNone(plan_message(normalize_message(message), "admin", FLEET_VOCABULARY, {}), message)
+
+
+@skipUnless(INDEX_BUILT, "knowledge index not built")
+class PredictiveMaintenanceKnowledgeTests(TestCase):
+    def test_concept_questions_reach_their_topic(self):
+        expected = {
+            "what is predictive maintenance": "pm_what_is_predictive",
+            "what is the difference between preventive and predictive maintenance": "pm_preventive_vs_predictive",
+            "what is condition based maintenance": "pm_condition_based",
+            "what is a reassessment": "pm_reassessment",
+            "how do I decide whether to repair or replace a car": "pm_repair_vs_replace",
+            "what's the cost of downtime for a rental car": "pm_downtime_cost",
+            "what should we record to improve predictions": "pm_data_needed",
+        }
+        for message, topic in expected.items():
+            response = answer_chat(message, viewer_role="admin", retrieval_protocol=1)
+            self.assertEqual((response.get("data") or {}).get("knowledge_id"), topic, message)
+
+    def test_interval_question_gets_only_that_part(self):
+        answer = answer_chat("how often should brake pads be replaced", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertTrue(answer.startswith("Typical interval: brake pads"), answer)
+        self.assertNotIn("timing belt", answer)
+
+    def test_model_questions_get_different_answers(self):
+        answers = [answer_chat(q, viewer_role="admin", retrieval_protocol=1)["answer"] for q in
+                   ("how accurate is the maintenance model", "what data do you use for predictions", "how does the prediction model work")]
+        self.assertEqual(len({a.splitlines()[0] for a in answers}), 3)
+        self.assertTrue(answers[0].startswith("How accurate each model is"), answers[0])
+        self.assertTrue(answers[1].startswith("The maintenance answers use four kinds of data"), answers[1])
