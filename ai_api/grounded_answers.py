@@ -6,6 +6,7 @@ rejects an answer that mentions a peso amount not present in the results, and th
 caller then falls back to a plain listing of the records. When a record is missing or
 a tool failed, the answer says exactly what could not be verified.
 """
+import datetime
 import re
 
 
@@ -113,11 +114,16 @@ def compose(plan, results, role, vocabulary=None, guide=None, fleet_risk=None, s
         "maintenance_prediction": _maintenance_prediction, "maintenance_costs": _maintenance_costs,
         "vehicle_status": _vehicle_status, "revenue": _revenue, "utilization": _utilization,
         "reassessment_due": _reassessment_due,
+        "maintenance_condition": _maintenance_condition, "maintenance_priority": _maintenance_priority,
+        "maintenance_retire": _maintenance_retire,
     }.get(intent)
     if handler is None:
         return "I couldn't work out which records answer that. Could you rephrase it?", data
     notes = Notes(shown_notes)
     answer = handler(plan, by_tool, role, vocabulary or {}, guide, fleet_risk, notes)
+    if intent in ("maintenance_priority", "maintenance_retire") and _condition_missing(by_tool) \
+            and not answer.startswith(CONDITION_UNAVAILABLE):
+        answer = CONDITION_UNAVAILABLE + ". This is based on the service schedule and maintenance records only.\n\n" + answer
     data["notes_shown"] = notes.added
     try:
         validate_amounts(answer, results)
@@ -203,8 +209,9 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
     label = labels(vehicles)
     lines = []
 
-    if plan.get("follow_up") and vehicles:
-        lines.append(f"(About the {_join(sorted({name(v) for v in vehicles}))} from earlier.)")
+    if plan.get("asks_why_status"):
+        lines.append("The system doesn't record why a vehicle has a status: an administrator sets it when editing the vehicle "
+                     "(/admin/vehicles), so check with whoever changed it. These are the vehicles with that status now:")
     if plan.get("stock_check") and vehicles and (requested.get("models") or requested.get("makes") or requested.get("categories")) \
             and not requested.get("unknown_names"):
         # "Do you have the Vios?" is answered yes first; its rate follows.
@@ -263,27 +270,65 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
             lines.append(f"The {label[id(v)]} has a {money(v['security_deposit'])} deposit (daily rate {money(v['daily_rental_price'])})."
                          if v.get("security_deposit") else f"No security deposit is listed for the {label[id(v)]}.")
         else:
+            amount = lambda v: float(v.get("security_deposit") or 0)  # noqa: E731
+            listed = vehicles
+            if plan.get("deposit_rank"):
+                with_deposit = sorted((v for v in vehicles if amount(v) > 0), key=amount, reverse=plan["deposit_rank"] == "desc")
+                if with_deposit:
+                    top = with_deposit[0]
+                    word = "highest" if plan["deposit_rank"] == "desc" else "lowest"
+                    lines.append(f"The {word} deposit is the {label[id(top)]}'s: {money(top['security_deposit'])}.")
+                listed = with_deposit + [v for v in vehicles if amount(v) <= 0]
             lines.append("Security deposits from the vehicle records:")
-            lines += [f"- {label[id(v)]}: {money(v['security_deposit'])} deposit (daily rate {money(v['daily_rental_price'])})"
-                      if v.get("security_deposit") else f"- {label[id(v)]}: no security deposit is listed" for v in vehicles]
+            shown = [v for v in listed if amount(v) > 0]
+            none_listed = [v for v in listed if amount(v) <= 0]
+            lines += [f"- {label[id(v)]}: {money(v['security_deposit'])} deposit (daily rate {money(v['daily_rental_price'])})" for v in shown]
+            if none_listed:
+                # Twenty "no deposit is listed" lines say less than one line with the count (of every match, not only those returned).
+                others = max(int(data.get("total_matching") or 0), len(vehicles)) - len(shown)
+                lines.append(f"- {_join(label[id(v)] for v in none_listed)}: no security deposit is listed" if others <= 3
+                             else f"- {others} other vehicles have no security deposit listed")
         notes.add(lines, "deposit_rule")
     elif purpose in {"quote", "availability"} and vehicles[0].get("quote"):
+        # A car whose status is not "available" can't be rented on any date; that is not a booking.
+        off_fleet = [v for v in vehicles if v.get("status") not in (None, "", "available")]
+        rentable = [v for v in vehicles if v not in off_fleet]
+        if purpose == "quote" and not data.get("period"):
+            # "How much is the Hiace for 1 day?" is a price question: quote every car asked about, and say which can't be booked.
+            rentable, off_fleet_note = vehicles, off_fleet
+        else:
+            off_fleet_note = None
+        if not rentable:
+            # "How about the Xpander?" when every Xpander is marked unavailable: no estimate for cars nobody can book.
+            return "\n".join(lines + _off_fleet_lines(off_fleet, label, every=True))
         if purpose == "availability" and data.get("period"):
             period = data["period"]
-            free = [label[id(v)] for v in vehicles if v.get("available_for_period")]
-            taken = [label[id(v)] for v in vehicles if v.get("available_for_period") is False]
+            free = [label[id(v)] for v in rentable if v.get("available_for_period")]
+            taken = [label[id(v)] for v in rentable if v.get("available_for_period") is False and v not in off_fleet]
             dates = f"{period['start_date']} to {period['end_date']}"
-            too_short = [v for v in vehicles if v.get("available_for_period") and not (v.get("quote") or {}).get("meets_minimum", True)]
+            too_short = [v for v in rentable if v.get("available_for_period") and not (v.get("quote") or {}).get("meets_minimum", True)]
             if free and len(too_short) == len(free):
-                # "Is the Staria available on Saturday?": free that day, but one day is shorter than any rental allowed.
+                # "Is the Vios available tomorrow?": free that day, but one day is shorter than any rental allowed,
+                # so the shortest rental that can be booked from that day is quoted instead.
                 minimum = max(v["quote"]["minimum_days"] for v in too_short)
-                lines.append(f"{_join(free)} {'is' if len(free) == 1 else 'are'} free from {dates}, but rentals are at least "
-                             f"{minimum} days. Tell me your return date and I'll check the whole period.")
-            elif free:
+                lines.append(f"{_join(free)} {'is' if len(free) == 1 else 'are'} free on {period['start_date']}, but rentals are "
+                             f"at least {minimum} days.")
+                lines += _minimum_rental_lines(too_short, period["start_date"], minimum, label)
+                lines.append("Tell me your return date and I'll check that the whole period is free.")
+                if taken:
+                    lines.append(f"{_join(taken)} {'is' if len(taken) == 1 else 'are'} already booked on {period['start_date']}.")
+                lines += _off_fleet_lines(off_fleet, label)
+                notes.add(lines, "quote_rule")
+                return "\n".join(lines)
+            if free:
                 lines.append(f"Yes: {_join(free)} {'is' if len(free) == 1 else 'are'} free from {dates}.")
+            elif not taken:
+                lines.append(f"None of those vehicles can be rented for {dates}.")
             if taken:
                 lines.append(f"{_join(taken)} {'is' if len(taken) == 1 else 'are'} already booked for {dates}.")
-        lines += _quote_lines(vehicles, data, label)
+        lines += _quote_lines(rentable, data, label)
+        lines += _off_fleet_lines(off_fleet, label, every=len(off_fleet) == len(vehicles)) if off_fleet_note is not None \
+            else _off_fleet_lines(off_fleet, label)
         if plan.get("include_deposit"):
             for v in vehicles:
                 quote = v["quote"]
@@ -315,12 +360,51 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
             lines.append("Only daily rates are recorded; the system has no weekly or monthly rates or discounts. "
                          "A longer rental is the daily rate times the number of days.")
         count = max(int(data.get("total_matching") or 0), len(vehicles)) if plan.get("count_question") else None
-        lines += _price_lines(vehicles, {**args, "_count": count}, label, role, scope)
+        lines += _price_lines(vehicles, {**args, "_count": count, "_total": data.get("total_matching")}, label, role, scope)
         if purpose == "price" and len(vehicles) > 0:
             notes.add(lines, "price_rule")
-    if data.get("truncated"):
-        lines.append(f"Showing {len(vehicles)} of {data.get('total_matching')} matching vehicles.")
+    if data.get("truncated") and not any(line.startswith("...and ") for line in lines) \
+            and not (role == "admin" and purpose in ("availability", "status") and not data.get("period")) \
+            and not (purpose == "deposit" and plan.get("deposit_rank")):
+        # The admin availability summary already says how many others there are.
+        lines.append(f"Showing {len(vehicles)} of {data.get('total_matching')} matching vehicles; name a make, model or status to narrow it down.")
     return "\n".join(lines)
+
+
+def _deposit(amount):
+    """ "PHP 3,000.00 deposit", or that none is listed (a 0.00 deposit is a missing value, not a free deposit)."""
+    return f"{money(amount)} deposit" if amount and float(amount) > 0 else "no deposit listed"
+
+
+def _minimum_rental_lines(vehicles, start_date, minimum, label):
+    """The shortest bookable rental from that day, with each vehicle's daily rate. Totals are only stated when the
+    Back-End has quoted them (every peso amount must come from the records), so the rate is given here instead."""
+    end = (datetime.date.fromisoformat(start_date) + datetime.timedelta(days=minimum)).isoformat()
+    lines = [f"The shortest booking from that day is {start_date} to {end} ({minimum} days), at:"]
+    for v in vehicles:
+        quote = v.get("quote") or {}
+        rate = quote.get("daily_rate") or v.get("daily_rental_price")
+        deposit = quote.get("security_deposit", v.get("security_deposit"))
+        lines.append(f"- {label[id(v)]}: {money(rate)} per day"
+                     + (f", plus a {money(deposit)} security deposit" if deposit and float(deposit) > 0 else ""))
+    return lines
+
+
+def _off_fleet_lines(vehicles, label, every=False):
+    """Cars an administrator has marked unavailable (or in maintenance): not bookable on any date, and not booked.
+    every=True when they are all the vehicles asked about (no "other")."""
+    if not vehicles:
+        return []
+    groups = {}
+    for v in vehicles:
+        groups.setdefault(v.get("status") or "unavailable", []).append(label[id(v)])
+    lines = []
+    for status, names in sorted(groups.items()):
+        status_text = "in maintenance" if status == "maintenance" else f"marked {status}"
+        who = _join(names) if len(names) <= 4 else f"{len(names)} {'' if every else 'other '}vehicles"
+        lines.append(f"{who} {'is' if len(names) == 1 else 'are'} {status_text}, so {'it' if len(names) == 1 else 'they'} "
+                     f"can't be booked on any date until {'its' if len(names) == 1 else 'their'} status is changed.")
+    return lines
 
 
 def _price_lines(vehicles, args, label, role, scope):
@@ -348,21 +432,39 @@ def _price_lines(vehicles, args, label, role, scope):
         v = vehicles[0]
         features = _feature_words(args)
         if features and not (args.get("models") or args.get("makes")):
-            lines.append(f"Yes: the {label[id(v)]} is the {features} vehicle {scope}, at {money(v['daily_rental_price'])} per day "
-                         f"with a {money(v['security_deposit'])} deposit.")
+            has_deposit = v.get("security_deposit") and float(v["security_deposit"]) > 0
+            lines.append(f"Yes: the {label[id(v)]} is the {features} vehicle {scope}, at {money(v['daily_rental_price'])} per day"
+                         + (f" with a {money(v['security_deposit'])} deposit." if has_deposit else "; no security deposit is listed for it."))
         else:
-            lines.append(f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day, with a {money(v['security_deposit'])} deposit.")
+            lines.append(f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day, with a {money(v['security_deposit'])} deposit."
+                         if v.get("security_deposit") and float(v["security_deposit"]) > 0
+                         else f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day; no security deposit is listed for it.")
         return lines
+    if role == "admin" and sort in ("price_asc", "price_desc") and first.get("status") not in (None, "", "available"):
+        # The cheapest car in the whole fleet may be one nobody can rent right now; say so, and name the rentable one.
+        rentable = next((v for v in vehicles if v.get("status") == "available"), None)
+        lines[-1] = lines[-1][:-1] + f", but it is marked {first['status']}."
+        if rentable is not None:
+            lines.append(f"The {'cheapest' if sort == 'price_asc' else 'most expensive'} rentable one is the {label[id(rentable)]} "
+                         f"at {money(rentable['daily_rental_price'])} per day.")
     features = _feature_words(args)
     if args.get("_count"):
         total = args["_count"]  # "How many cars do you have?"
         lines.append(f"There {'is' if total == 1 else 'are'} {total} vehicle{'s' if total != 1 else ''} {scope}:")
     else:
         lines.append(f"{_upper_first(features)} vehicles {scope}:" if features else ("Vehicles in the fleet:" if role == "admin" else "Daily rates:"))
+    shown = vehicles[:LIST_LIMIT_AFTER_ANSWER] if sort in ("price_asc", "price_desc") and len(vehicles) > LIST_LIMIT_AFTER_ANSWER + 1 else vehicles
     lines += [f"- {label[id(v)]} ({v.get('category') or 'vehicle'}, {v.get('seating_capacity')} seats): "
-              f"{money(v['daily_rental_price'])} per day, {money(v['security_deposit'])} deposit"
-              + (f", status {v['status']}" if role == "admin" and v.get("status") else "") for v in vehicles]
+              f"{money(v['daily_rental_price'])} per day, {_deposit(v['security_deposit'])}"
+              + (f", status {v['status']}" if role == "admin" and v.get("status") else "") for v in shown]
+    if len(shown) < len(vehicles):
+        more = max(int(args.get("_total") or 0), len(vehicles)) - len(shown)
+        lines.append(f"...and {more} more. Ask \"show all cars\" for the full list.")
     return lines
+
+
+# A "cheapest"/"most expensive" answer is the first line; a few runners-up are enough after it.
+LIST_LIMIT_AFTER_ANSWER = 5
 
 
 def _feature_words(args):
@@ -541,14 +643,19 @@ def _quote_lines(vehicles, data, label):
         v = vehicles[0]
         quote = v["quote"]
         return [f"Renting the {label[id(v)]} for {days} day{plural}{when} costs {money(quote['base_total'])} "
-                f"({money(quote['daily_rate'])} x {days} day{plural}), plus a {money(quote['security_deposit'])} "
-                f"security deposit shown separately{extras(v, quote)}."]
+                f"({money(quote['daily_rate'])} x {days} day{plural}){deposit(quote)}{extras(v, quote)}."]
     lines = [f"Estimate for {days} day{plural}{when}:"]
     for v in vehicles:
         quote = v["quote"]
-        lines.append(f"- {label[id(v)]}: {money(quote['base_total'])} ({money(quote['daily_rate'])} x {days} day{plural}), "
-                     f"plus a {money(quote['security_deposit'])} security deposit shown separately{extras(v, quote)}")
+        lines.append(f"- {label[id(v)]}: {money(quote['base_total'])} ({money(quote['daily_rate'])} x {days} day{plural})"
+                     f"{deposit(quote)}{extras(v, quote)}")
     return lines
+
+
+def deposit(quote):
+    amount = quote.get("security_deposit")
+    return (f", plus a {money(amount)} security deposit shown separately" if amount and float(amount) > 0
+            else "; no security deposit is listed")
 
 
 def _recommend_lines(vehicles, args, label, limit=3):
@@ -605,13 +712,14 @@ def _recommend_lines(vehicles, args, label, limit=3):
 def _availability_lines(vehicles, data, role, purpose, label):
     period = data.get("period")
     if period:
-        free = [label[id(v)] for v in vehicles if v.get("available_for_period")]
-        taken = [label[id(v)] for v in vehicles if v.get("available_for_period") is False]
+        off_fleet = [v for v in vehicles if v.get("status") not in (None, "", "available")]
+        free = [label[id(v)] for v in vehicles if v.get("available_for_period") and v not in off_fleet]
+        taken = [label[id(v)] for v in vehicles if v.get("available_for_period") is False and v not in off_fleet]
         lines = [f"For {period['start_date']} to {period['end_date']} ({period['rental_days']} days, return date not counted):"]
         lines.append("Available: " + (_join(free) if free else "none of the matching vehicles") + ".")
         if taken:
-            lines.append("Already booked or not rentable then: " + _join(taken) + ".")
-        return lines
+            lines.append("Already booked then: " + _join(taken) + ".")
+        return lines + _off_fleet_lines(off_fleet, label)
     if role == "admin" and purpose == "status":
         groups = {}
         for v in vehicles:
@@ -921,13 +1029,19 @@ def _maintenance_costs(plan, by_tool, role, vocabulary, guide, fleet_risk, notes
     window = f" from {data['from'] or 'the first record'} to {data['to'] or 'today'}" if data.get("from") or data.get("to") else ""
     if not data.get("records"):
         return f"No maintenance records with costs are stored{window}."
+    if not float(data.get("total_cost") or 0) and data.get("records_without_cost") == data.get("records"):
+        # Records exist but none has a cost: there is nothing to rank, so don't name a "highest" PHP 0.00.
+        return (f"None of the {data['records']} maintenance record(s){window} has a cost entered, so costs can't be compared yet. "
+                "Enter the cost when you record maintenance (Maintenance Records, /admin/maintenance/records) and I can rank vehicles by spend.")
     lines = [f"Total recorded maintenance cost{window}: {money(data['total_cost'])} across {data['records']} record(s)."]
-    per_vehicle = data.get("per_vehicle") or []
+    per_vehicle = [v for v in data.get("per_vehicle") or [] if float(v.get("total_cost") or 0) > 0]
     if len(per_vehicle) > 1:
         top = max(per_vehicle, key=lambda v: float(v["total_cost"]))
         lines.insert(0, f"The highest recorded maintenance cost is the {name(top)} at {money(top['total_cost'])}.")
     lines += [f"- {name(v)}" + (f" ({v['plate_number']})" if v.get("plate_number") else "")
-              + f": {money(v['total_cost'])} ({v['records']} record(s))" for v in data.get("per_vehicle") or []]
+              + f": {money(v['total_cost'])} ({v['records']} record(s))" for v in per_vehicle[:10]]
+    if len(per_vehicle) > 10:
+        lines.append(f"...and {len(per_vehicle) - 10} more vehicles.")
     if data.get("records_without_cost"):
         lines.append(f"{data['records_without_cost']} record(s) have no cost entered and are not included.")
     return "\n".join(lines)
@@ -1042,27 +1156,461 @@ def _maintenance_due(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=N
     rows = data.get("vehicles") or []
     if not rows:
         return "No vehicles matched, so there is no service status to report."
-    lines = ["Service status from recorded maintenance history (" + data.get("rule", "rule-based estimate") + "):"]
+    lines = []
+    if plan.get("asked_overdue"):
+        # "Why is the Hilux overdue?": say first whether it is.
+        overdue = [r for r in rows if r.get("service_status") == "overdue"]
+        others = [r for r in rows if r.get("service_status") != "overdue"]
+        if not overdue:
+            lines.append(("It isn't overdue: " if len(rows) == 1 else "No, none of them is overdue: ")
+                         + "; ".join(f"{_plate_label(r)}: {STATUS_LABELS.get(r.get('service_status'), '').lower()}, {_service_reason(r)}" for r in rows[:4]) + ".")
+            return "\n".join(lines)
+        lines.append(f"{_join(_plate_label(r) for r in overdue)} {'is' if len(overdue) == 1 else 'are'} overdue because: "
+                     + "; ".join(_service_reason(r) for r in overdue) + "."
+                     + (f" {_join(_plate_label(r) for r in others)} {'is' if len(others) == 1 else 'are'} not." if others else ""))
+        return "\n".join(lines)
+    lines.append(f"Service schedule (every {BASELINE_SERVICE_KM:,} km or {BASELINE_SERVICE_DAYS} days since the last completed service, "
+                 "whichever comes first, or a recorded next-service date):")
     order = ["overdue", "approaching", "insufficient_history", "not_due"]
+    many = len(rows) > 8
     for status in order:
         group = [r for r in rows if r.get("service_status") == status]
         if not group:
             continue
+        if status == "not_due" and many:
+            # A long fleet list: the cars that need nothing are counted, not listed.
+            lines.append(f"Not due: {len(group)} vehicle{'s' if len(group) != 1 else ''}.")
+            continue
         lines.append(f"{STATUS_LABELS[status]}:")
-        for r in group:
-            detail = []
-            if r.get("last_service_date"):
-                detail.append(f"last service {r['last_service_date']}" + (f" ({r['last_service_type']})" if r.get("last_service_type") else ""))
-            if r.get("current_mileage") is not None:
-                detail.append(f"{r['current_mileage']:,} km now")
-            if r.get("estimated_due_date") and status != "insufficient_history":
-                detail.append(f"date-based due {r['estimated_due_date']}")
-            lines.append(f"- {name(r)}" + (f" ({r['plate_number']})" if r.get("plate_number") else "") + ": " + "; ".join(detail) + ".")
+        for r in group[:10]:
+            type_text = f" ({r['last_service_type']})" if r.get("last_service_type") and status != "insufficient_history" else ""
+            lines.append(f"- {_plate_label(r)}: {_service_reason(r)}{type_text}.")
+        if len(group) > 10:
+            lines.append(f"...and {len(group) - 10} more.")
+    assessed = _rows(by_tool, "assessments.condition")
+    if assessed:
+        # The schedule is only half of it: what the latest assessments found.
+        needing = sorted((v for v in assessed if _concerns(v) or _safety_findings(v)), key=lambda v: -_priority_score(v, None))
+        critical = [v for v in needing if any(s["rating"] == "critical" for s in _concerns(v)) or
+                    any(f["severity"] == "critical" for f in _safety_findings(v))]
+        if needing:
+            lines.append(f"By condition, though, {len(needing)} of {len(assessed)} assessed vehicles have systems needing work"
+                         + (f", {len(critical)} with critical or safety items (worst: "
+                            + ", ".join(_plate_label(v) for v in critical[:3]) + ")" if critical else "")
+                         + ". Ask \"what should we service first\" for the ranked list.")
+        else:
+            lines.append(f"By condition, none of the {len(assessed)} assessed vehicles has a system rated poor or critical.")
     if notes:
         notes.add(lines, "schedule_estimate")
     else:
         lines.append(NOTES["schedule_estimate"])
     return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------- condition-based maintenance (assessments)
+
+RATING_ORDER = {"critical": 0, "poor": 1, "fair": 2, "good": 3, "excellent": 4}
+BASELINE_SERVICE_KM = 5000
+BASELINE_SERVICE_DAYS = 180
+CONDITION_SOURCE_NOTE = ("These rankings come from the recorded assessments (ratings, findings and their trend) and the verified "
+                         "fault history, not from a machine-learning forecast.")
+MODEL_PENDING_NOTE = ("Model-based service-need predictions are unavailable (no service-need model has passed its acceptance check), "
+                      "so this isn't a model forecast: it's the assessment ratings, findings, their trend and the verified fault history.")
+
+
+def _plate_label(v):
+    return name(v) + (f" ({v['plate_number']})" if v.get("plate_number") else "")
+
+
+def _rows(by_tool, tool, key="vehicles"):
+    item = by_tool.get(tool) or {}
+    return ((item.get("data") or {}).get(key) or []) if item.get("status") == "ok" else []
+
+
+CONDITION_UNAVAILABLE = ("The vehicle assessment data isn't available from the server right now, so this can't include the "
+                         "assessment ratings and findings")
+
+
+def _condition_missing(by_tool):
+    """The assessment records were asked for but didn't come back: an older Back-End without the tool, or a database error.
+    Answers then say the data is unavailable instead of claiming no assessments exist."""
+    item = by_tool.get("assessments.condition")
+    return item is not None and item.get("status") != "ok"
+
+
+def _worsened(system):
+    return system.get("previous_score") is not None and system.get("rating_score") is not None \
+        and system["rating_score"] < system["previous_score"]
+
+
+def _rating_text(system, safety=False):
+    """ "critical (was fair; safety-critical)": the rating, its previous value and, when asked, the safety flag."""
+    extra = []
+    if system.get("previous_rating") and system["previous_rating"] != system["rating"]:
+        extra.append(f"was {system['previous_rating']}")
+    if safety and system.get("safety_critical"):
+        extra.append("safety-critical")
+    return system["rating"] + (f" ({'; '.join(extra)})" if extra else "")
+
+
+def _concerns(v):
+    """Systems needing attention, worst first: critical or poor, or fair and worse than at the previous assessment."""
+    found = [s for s in v.get("systems") or [] if s.get("rating") in ("critical", "poor") or s.get("rating") == "fair" and _worsened(s)]
+    return sorted(found, key=lambda s: (RATING_ORDER.get(s["rating"], 9), not s.get("safety_critical"), s.get("category") or ""))
+
+
+def _safety_findings(v):
+    return [f for f in v.get("findings") or [] if f.get("is_safety") and f.get("severity") in ("critical", "warning")]
+
+
+def _due_by_id(by_tool):
+    return {int(r["id"]): r for r in _rows(by_tool, "maintenance.due") if r.get("id") is not None}
+
+
+def _service_reason(r):
+    """Why a car is overdue or when it is due, in km and days, from the service-due row."""
+    status = r.get("service_status")
+    current, last_km = r.get("current_mileage"), r.get("last_service_odometer")
+    since = current - last_km if current is not None and last_km is not None else None
+    if status == "insufficient_history":
+        return "no completed service with a date is recorded, so no schedule can be worked out"
+    if since is not None and since < 0:
+        # The car's mileage is below the odometer at its last service: one of the two entries is wrong.
+        since = None
+        mismatch = (f"its recorded mileage ({current:,} km) is lower than at its last service ({last_km:,} km), so one of those "
+                    "odometer entries needs correcting")
+    else:
+        mismatch = None
+    parts = []
+    if r.get("last_service_date"):
+        parts.append(f"last service {r['last_service_date']}" + (f" at {last_km:,} km" if last_km is not None else ""))
+    if status == "overdue":
+        if since is not None and since >= BASELINE_SERVICE_KM:
+            parts.append(f"{since:,} km driven since then, past the {BASELINE_SERVICE_KM:,} km interval")
+        elif r.get("next_scheduled_date"):
+            parts.append(f"the scheduled date {r['next_scheduled_date']} has passed")
+        else:
+            parts.append(f"more than {BASELINE_SERVICE_DAYS} days have passed")
+    else:
+        due = []
+        if last_km is not None:
+            due.append(f"{last_km + BASELINE_SERVICE_KM:,} km")
+        if r.get("estimated_due_date"):
+            due.append(r["estimated_due_date"])
+        if due:
+            parts.append("next due at " + " or ".join(due) + ", whichever comes first")
+        if since is not None:
+            parts.append(f"{since:,} km driven since")
+    if mismatch:
+        parts.append(mismatch)
+    return "; ".join(parts)
+
+
+def _priority_score(v, due):
+    concerns = _concerns(v)
+    score = 100 * len([f for f in _safety_findings(v) if f["severity"] == "critical"]) + 30 * len(_safety_findings(v))
+    score += sum(40 if s["rating"] == "critical" else 15 if s["rating"] == "poor" else 5 for s in concerns)
+    score += 5 * sum(1 for s in concerns if _worsened(s))
+    status = (due or {}).get("service_status")
+    score += 25 if status == "overdue" else 10 if status == "approaching" else 0
+    return score
+
+
+def _first_action(v):
+    finding = next((f for f in v.get("findings") or [] if f.get("severity") in ("critical", "warning")), None)
+    return finding.get("recommended_action") if finding else None
+
+
+def _model_line(fleet_risk, by_tool):
+    """The registered model's results when one is accepted; otherwise one plain sentence instead of the long notice."""
+    if fleet_risk is None or (by_tool.get("maintenance.model_inputs") or {}).get("status") != "ok":
+        return None
+    text = fleet_risk(_rows(by_tool, "maintenance.model_inputs"))
+    return MODEL_PENDING_NOTE if not text or text.startswith("Model-based maintenance predictions are unavailable") else text
+
+
+def _maintenance_condition(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    vehicles = _rows(by_tool, "assessments.condition")
+    due = _due_by_id(by_tool)
+    model = _model_line(fleet_risk, by_tool)
+    if plan.get("purpose") == "vehicle":
+        text = _vehicle_condition(plan, by_tool, vehicles, due)
+        # A "will it break down?" question also says whether a model forecast exists.
+        return text.replace("\n\n" + CONDITION_SOURCE_NOTE, "\n\n" + model) if model else text
+    if not vehicles:
+        lead = (CONDITION_UNAVAILABLE + "." if _condition_missing(by_tool) else
+                "No vehicle assessments are recorded yet, so there's no condition data to rank. Record assessments under "
+                "Predictive Maintenance (/admin/maintenance/predictions).")
+        text = (lead + " The service schedule is below.\n\n" + _maintenance_due(plan, by_tool, role, vocabulary, guide, fleet_risk, notes)) \
+            if due else lead
+        return text + ("\n\n" + model if model else "")
+    dates = sorted(v["assessed_on"] for v in vehicles if v.get("assessed_on"))
+    focus = plan.get("focus") or "vehicles"
+    lines = [f"From the latest assessments of {len(vehicles)} vehicle{'s' if len(vehicles) != 1 else ''}"
+             + (f" ({dates[0]} to {dates[-1]})" if dates else "") + ":"]
+    labels = {s["category_key"]: s["category"] for v in vehicles for s in v.get("systems") or []}
+
+    # Vehicles at risk, worst first.
+    ranked = sorted((v for v in vehicles if _concerns(v) or _safety_findings(v)), key=lambda v: -_priority_score(v, due.get(v["id"])))
+    shown = 5 if focus == "vehicles" else 3
+    at_risk = []
+    if ranked:
+        at_risk.append("Vehicles most at risk:" if focus == "vehicles" else "Vehicles to look at first:")
+        for v in ranked[:shown]:
+            systems = ", ".join(f"{s['category'].lower()} {_rating_text(s, safety=True)}" for s in _concerns(v)[:3])
+            action = _first_action(v)
+            at_risk.append(f"- {_plate_label(v)}: {systems or 'safety findings recorded'}." + (f" First: {action}" if action else ""))
+        if len(ranked) > shown:
+            at_risk.append(f"{len(ranked) - shown} more vehicle{'s have' if len(ranked) - shown != 1 else ' has'} items needing attention.")
+    else:
+        at_risk.append("No vehicle has a system rated poor or critical, or getting worse.")
+
+    # Systems: how many cars have each one in poor or critical condition, and the verified failures per system.
+    weak, critical = {}, {}
+    for v in vehicles:
+        for s in v.get("systems") or []:
+            if s.get("rating") in ("critical", "poor"):
+                weak.setdefault(s["category_key"], []).append(v)
+            if s.get("rating") == "critical":
+                critical.setdefault(s["category_key"], []).append(v)
+    failures = {}
+    for v in vehicles:
+        for system, results in (v.get("outcomes") or {}).items():
+            failures[system] = failures.get(system, 0) + int((results or {}).get("confirmed_failure") or 0)
+    systems = []
+    if weak:
+        # The most vehicles needing work on a system first; more critical ones break a tie.
+        top = sorted(weak.items(), key=lambda item: (-len(item[1]), -len(critical.get(item[0], [])), labels.get(item[0], item[0])))
+        if focus == "systems":
+            key, cars = top[0]
+            systems.append(f"The system most likely to need work is {labels.get(key, key).lower()}: {len(cars)} of {len(vehicles)} vehicles "
+                           f"have it poor or critical ({len(critical.get(key, []))} critical)"
+                           + (f", and it has {failures[key]} verified failure{'s' if failures[key] != 1 else ''} on record" if failures.get(key) else "")
+                           + ".")
+            systems.append("Systems by how many vehicles have them poor or critical:")
+            for key, cars in top[:5]:
+                worst = sorted(cars, key=lambda v: next(RATING_ORDER[s["rating"]] for s in v["systems"] if s["category_key"] == key))[:3]
+                systems.append(f"- {labels.get(key, key)}: {len(cars)} ({len(critical.get(key, []))} critical)"
+                               + (f", {failures[key]} verified failure{'s' if failures[key] != 1 else ''}" if failures.get(key) else "")
+                               + "; worst: " + ", ".join(v.get("plate_number") or name(v) for v in worst))
+            most_failed = max(failures.items(), key=lambda item: item[1]) if failures else None
+            if most_failed and most_failed[1] and most_failed[0] != key:
+                systems.append(f"By history, {labels.get(most_failed[0], most_failed[0]).lower()} has failed most often "
+                               f"({most_failed[1]} verified failures), so keep it on the inspection list even where it's rated well now.")
+        else:
+            systems.append("Weakest systems across the fleet: "
+                           + ", ".join(f"{labels.get(k, k)} ({len(cars)} vehicle{'s' if len(cars) != 1 else ''} poor or critical)" for k, cars in top[:3]) + ".")
+
+    # The trend since the previous assessment.
+    worse = [(v, s) for v in vehicles for s in v.get("systems") or [] if _worsened(s)]
+    worse.sort(key=lambda pair: (RATING_ORDER.get(pair[1]["rating"], 9), pair[1]["rating_score"] - pair[1]["previous_score"]))
+    trend = []
+    if focus == "trend":
+        cars = {}
+        for v, s in worse:
+            cars.setdefault(v["id"], (v, []))[1].append(s)
+        if not cars:
+            trend.append("No system got worse since the previous assessment.")
+        else:
+            trend.append(f"{len(cars)} vehicle{'s' if len(cars) != 1 else ''} got worse since the previous assessment, worst first:")
+            for v, drops in sorted(cars.values(), key=lambda item: min(RATING_ORDER[s["rating"]] for s in item[1]))[:6]:
+                trend.append(f"- {_plate_label(v)} (assessed {v['assessed_on']}, before that {v.get('previous_assessed_on') or 'earlier'}): "
+                             + ", ".join(f"{s['category'].lower()} {s['previous_rating']} to {s['rating']}" for s in drops) + ".")
+            if len(cars) > 6:
+                trend.append(f"...and {len(cars) - 6} more.")
+            trend.append("A rating that drops between monthly assessments is the earliest warning the records give: inspect those systems "
+                         "before they reach poor or critical.")
+    elif worse:
+        trend.append("Getting worse since the previous assessment: "
+                     + "; ".join(f"{_plate_label(v)} {s['category'].lower()} {s['previous_rating']} to {s['rating']}" for v, s in worse[:3])
+                     + (f" (and {len(worse) - 3} more)" if len(worse) > 3 else "") + ".")
+
+    history = []
+    if failures and focus != "systems" and any(failures.values()):
+        system, count = max(failures.items(), key=lambda item: item[1])
+        history.append(f"In the verified repair history, {labels.get(system, system).lower()} has the most confirmed failures ({count}).")
+
+    order = {"systems": [systems, at_risk, trend], "trend": [trend, at_risk, systems]}.get(focus, [at_risk, systems, trend])
+    for section in order + [history]:
+        lines += section
+    model = _model_line(fleet_risk, by_tool)
+    lines.append(model or CONDITION_SOURCE_NOTE)
+    return "\n".join(lines)
+
+
+def _vehicle_condition(plan, by_tool, vehicles, due):
+    records = _rows(by_tool, "maintenance.records", "legacy_service_records") or _rows(by_tool, "maintenance.records", "records")
+    ids = {v["id"] for v in vehicles} | set(due)
+    if not ids:
+        return "No assessment or service record matched that vehicle."
+    by_id = {v["id"]: v for v in vehicles}
+    blocks = []
+    for vehicle_id in sorted(ids, key=lambda i: -_priority_score(by_id.get(i, {}), due.get(i)))[:3]:
+        v, d = by_id.get(vehicle_id), due.get(vehicle_id)
+        label = _plate_label(v or d)
+        lines = []
+        if v is None and _condition_missing(by_tool):
+            lines.append(f"{label}: {CONDITION_UNAVAILABLE[0].lower() + CONDITION_UNAVAILABLE[1:]}.")
+        elif v is None:
+            lines.append(f"{label}: no assessment is recorded, so its condition is unknown. Record one under Predictive Maintenance "
+                         "(/admin/maintenance/predictions).")
+        else:
+            km = f" at {v['odometer_km']:,} km" if v.get("odometer_km") is not None else ""
+            safety = f", {v['safety_warning_count']} safety warning{'s' if v['safety_warning_count'] != 1 else ''}" if v.get("safety_warning_count") else ""
+            lines.append(f"{label}, assessed {v['assessed_on']}{km}: overall {str(v.get('overall_screening') or 'unknown').replace('_', ' ')}{safety}.")
+            concerns = _concerns(v)
+            findings = v.get("findings") or []
+            if concerns:
+                lines.append("Needs attention:")
+                for s in concerns[:5]:
+                    detail = next((f for f in findings if f.get("category_key") == s["category_key"] and f.get("severity") in ("critical", "warning")),
+                                  None) or next((f for f in findings if f.get("category_key") == s["category_key"]), None)
+                    text = f"- {s['category']}: {_rating_text(s, safety=True)}."
+                    if detail and not detail["observation"].startswith("Assessor rated"):
+                        text += f" {detail['observation']}"
+                    if detail:
+                        text += f" Next: {detail['recommended_action']}"
+                    lines.append(text)
+            else:
+                lines.append("No system is rated poor or critical.")
+            fine = [s for s in v.get("systems") or [] if s.get("rating") in ("good", "excellent")]
+            if fine:
+                lines.append("In good shape: " + ", ".join(f"{s['category']} ({s['rating']})" for s in fine) + ".")
+            repeats = [(system, (results or {}).get("confirmed_failure")) for system, results in (v.get("outcomes") or {}).items()
+                       if (results or {}).get("confirmed_failure")]
+            if repeats:
+                labels = {s["category_key"]: s["category"] for s in v.get("systems") or []}
+                lines.append("Verified failures on record: " + ", ".join(f"{labels.get(k, k)} {n}" for k, n in sorted(repeats, key=lambda x: -x[1])) + ".")
+        if d:
+            lines.append(f"Service schedule: {STATUS_LABELS.get(d.get('service_status'), d.get('service_status')).lower()}; {_service_reason(d)}.")
+        own = [r for r in records if int(r.get("vehicleID") or r.get("vehicle_id") or 0) == vehicle_id][:3]
+        if own:
+            lines.append("Recent work: " + "; ".join(f"{r.get('maintenanceDate') or r.get('date')} {r.get('maintenanceType') or r.get('type')}"
+                                                     for r in own) + ".")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks) + "\n\n" + CONDITION_SOURCE_NOTE
+
+
+def _maintenance_priority(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    vehicles = _rows(by_tool, "assessments.condition")
+    due = _due_by_id(by_tool)
+    by_id = {v["id"]: v for v in vehicles}
+    ids = set(by_id) | set(due)
+    scored = sorted(((i, _priority_score(by_id.get(i, {}), due.get(i))) for i in ids), key=lambda pair: -pair[1])
+    urgent = [(i, score) for i, score in scored if score > 0]
+    if not urgent and _condition_missing(by_tool):
+        return CONDITION_UNAVAILABLE + ", and no vehicle is overdue on the service schedule."
+    if not urgent:
+        return ("Nothing stands out: no vehicle has a poor or critical rating, a safety finding or an overdue service. "
+                "Keep to the regular schedule and the monthly reassessments.")
+    lines = ["Service priority, most urgent first:"]
+    for rank, (vehicle_id, _) in enumerate(urgent[:5], 1):
+        v, d = by_id.get(vehicle_id), due.get(vehicle_id)
+        reasons = []
+        safety = _safety_findings(v or {})
+        if safety:
+            reasons.append(f"safety: {safety[0]['observation'].rstrip('.').lower()}")
+        concerns = _concerns(v or {})
+        if concerns:
+            reasons.append(", ".join(f"{s['category'].lower()} {_rating_text(s)}" for s in concerns[:2] if not safety or s["category_key"] != safety[0].get("category_key"))
+                           or f"{concerns[0]['category'].lower()} {_rating_text(concerns[0])}")
+        if d and d.get("service_status") in ("overdue", "approaching"):
+            reasons.append(f"service {STATUS_LABELS[d['service_status']].lower()} ({_service_reason(d)})")
+        action = _first_action(v or {})
+        lines.append(f"{rank}. {_plate_label(v or d)}: " + "; ".join(r for r in reasons if r) + "." + (f" Do first: {action}" if action else ""))
+    rest = len(ids) - len(urgent)
+    if len(urgent) > 5:
+        lines.append(f"{len(urgent) - 5} more vehicle{'s' if len(urgent) - 5 != 1 else ''} need attention after these.")
+    if rest:
+        lines.append(f"{rest} vehicle{'s have' if rest != 1 else ' has'} nothing urgent recorded.")
+    lines.append("Order: safety findings first, then critical and poor ratings (and anything getting worse), then overdue service.")
+    return "\n".join(lines)
+
+
+RETIRE_RULE = ("Rule of thumb: retire a car when the next repairs would cost more than about half its resale value, when the same "
+               "safety system keeps failing, or when downtime keeps it off the road more than it earns. The system doesn't store "
+               "resale values, so get a repair quote and a valuation before deciding.")
+
+
+def _maintenance_retire(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    vehicles = {v["id"]: v for v in _rows(by_tool, "assessments.condition")}
+    due = _due_by_id(by_tool)
+    costs_data = (by_tool.get("maintenance.costs") or {}).get("data") or {}
+    spend = {int(r["vehicle_id"]): r for r in costs_data.get("per_vehicle") or [] if r.get("vehicle_id") is not None}
+    named = bool((plan.get("requested") or {}).get("models") or (plan.get("requested") or {}).get("makes")
+                 or any((r.get("args") or {}).get("vehicle_ids") for r in plan.get("retrievals") or []))
+    ids = set(vehicles) | set(due) | set(spend)
+    if not ids:
+        return "No assessment, service or cost record matched that vehicle, so there's nothing to base a decision on.\n\n" + RETIRE_RULE
+    all_spend = sorted(float(r.get("total_cost") or 0) for r in spend.values())
+    median_spend = all_spend[len(all_spend) // 2] if all_spend else 0.0
+    today = datetime.date.today()
+
+    def signals(vehicle_id):
+        v, d, c = vehicles.get(vehicle_id, {}), due.get(vehicle_id, {}), spend.get(vehicle_id)
+        found, facts = [], []
+        year = v.get("year")
+        if year:
+            age = today.year - int(year)
+            facts.append(f"{age} year{'s' if age != 1 else ''} old ({year})")
+            if age >= 10:
+                found.append("older than 10 years")
+        km = v.get("current_mileage") if v.get("current_mileage") is not None else d.get("current_mileage")
+        if km is not None:
+            facts.append(f"{km:,} km")
+            if km >= 200000:
+                found.append("over 200,000 km")
+        if c:
+            plural = "s" if c["records"] != 1 else ""
+            if float(c.get("total_cost") or 0) > 0:
+                facts.append(f"{money(c['total_cost'])} spent over {c['records']} maintenance record{plural}")
+                if median_spend and float(c["total_cost"]) >= 1.5 * median_spend and len(all_spend) >= 3:
+                    found.append("maintenance spend well above the fleet's typical car")
+            else:
+                facts.append(f"{c['records']} maintenance record{plural}, with no costs recorded")
+        bad = [s for s in v.get("systems") or [] if s.get("rating") in ("critical", "poor")]
+        if bad:
+            facts.append(f"{len(bad)} system{'s' if len(bad) != 1 else ''} poor or critical (" + ", ".join(s["category"].lower() for s in bad[:4]) + ")")
+            if sum(1 for s in bad if s["rating"] == "critical") >= 2:
+                found.append("two or more systems rated critical")
+            elif len(bad) >= 3:
+                found.append(f"{len(bad)} systems in poor or critical condition at once")
+        labels = {s["category_key"]: s["category"] for s in v.get("systems") or []}
+        repeats = [labels.get(k, k).lower() for k, r in (v.get("outcomes") or {}).items() if int((r or {}).get("confirmed_failure") or 0) >= 2]
+        if repeats:
+            found.append("repeated verified failures in " + _join(repeats))
+            if len(repeats) >= 3:
+                found.append("problems keep coming back across several systems")
+        if _safety_findings(v):
+            facts.append("open safety findings")
+        return found, facts
+
+    def verdict(found):
+        if len(found) >= 3:
+            return "a retirement candidate"
+        if len(found) == 2:
+            return "worth reviewing: repair the open items only if the quote is well below its value"
+        return "keep it running: nothing points to retirement yet" if not found else "keep it for now, but watch it"
+
+    if named:
+        blocks = []
+        for vehicle_id in sorted(ids)[:3]:
+            found, facts = signals(vehicle_id)
+            label = _plate_label(vehicles.get(vehicle_id) or due.get(vehicle_id) or spend.get(vehicle_id) or {"id": vehicle_id})
+            blocks.append(f"{label}: {verdict(found).capitalize()}.\n- Facts: " + ("; ".join(facts) if facts else "nothing recorded") + "."
+                          + ("\n- Retirement signs: " + "; ".join(found) + "." if found else ""))
+        return "\n\n".join(blocks) + "\n\n" + RETIRE_RULE
+    candidates = sorted(((i,) + signals(i) for i in ids), key=lambda item: -len(item[1]))
+    candidates = [c for c in candidates if c[1]]
+    if not candidates:
+        return "No vehicle shows signs that point to retirement (age, mileage, spend, critical ratings or repeated failures).\n\n" + RETIRE_RULE
+    lines = ["Vehicles with the most signs pointing to retirement:"]
+    for vehicle_id, found, facts in candidates[:4]:
+        label = _plate_label(vehicles.get(vehicle_id) or due.get(vehicle_id) or spend.get(vehicle_id) or {"id": vehicle_id})
+        lines.append(f"- {label}: {verdict(found)}. Signs: {'; '.join(found)}. Facts: {'; '.join(facts)}.")
+    if len(candidates) > 4:
+        lines.append(f"{len(candidates) - 4} more vehicle{'s show' if len(candidates) - 4 != 1 else ' shows'} one or two signs.")
+    return "\n".join(lines) + "\n\n" + RETIRE_RULE
 
 
 def _maintenance_records(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
