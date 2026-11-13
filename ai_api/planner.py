@@ -34,8 +34,9 @@ CONCEPTS = {
     },
     "deposit": {"words": {"deposit", "deposits", "refundable", "refund", "refunds"}, "phrases": ["security deposit", "security on", "security for the", "security of the"]},
     "availability": {
-        "words": {"available", "availability", "bakante", "vacant", "free", "rentable"},
-        "phrases": ["for rent", "can i rent", "can i book", "can i reserve", "is there any", "are there any", "ready to go", "be around"],
+        "words": {"available", "availables", "availability", "bakante", "vacant", "free", "rentable"},
+        "phrases": ["for rent", "can i rent", "can i book", "can i reserve", "is there any", "are there any", "ready to go", "be around",
+                    "be rented", "available to rent", "available for rent", "pwedeng rentahan", "pwede rentahan"],
     },
     "listing": {
         "words": {"what", "which", "list", "show", "anong", "ano", "lahat", "all", "options", "choices", "meron", "offer", "units"},
@@ -311,6 +312,22 @@ SQL_TEXT = re.compile(r"\b(?:select\s+[\w*,\s]+\s+from|insert\s+into|update\s+\w
 SYMPTOM_SAFE_TOPICS = {"smoking in the vehicle", "pets in the vehicle"}
 # Being in an accident: general safety steps, not company procedures.
 ACCIDENT = re.compile(r"\b(?:accident|accidents|crash|crashed|collision|collided|fender bender|naaksidente|aksidente|nabangga|bumangga|banggaan|hit (?:a|an|the|another) \w+)\b")
+# A model name that is also an ordinary word ("Ranger", "Mirage", "City") is the vehicle in these phrasings.
+FLEET_CONDITION_SIGNAL = re.compile(
+    r"\b(?:condition (?:report|of)|report (?:on|of|for)|worth (?:keeping|fixing|repairing|it)|retire|sell (?:the|it|our)|(?:problems?|issues?) with"
+    r"|wrong with|needs? (?:service|repair|maintenance|work|fixing)|overdue|due for|assessments? (?:of|for)|in (?:bad|good|poor) (?:shape|condition))\b")
+# Maintenance questions answered from vehicle assessments (administrators).
+MAINTENANCE_RETIRE = re.compile(
+    r"\b(?:retire|retiring|retirement|sell (?:it|the|this|that|our)|dispose|phase (?:it )?out|decommission\w*|end of (?:its )?(?:life|service)"
+    r"|worth (?:keeping|fixing|repairing|it)|keep or (?:sell|replace|retire)|repair or (?:replace|retire|sell)|replace (?:the|this|that) (?:car|vehicle|unit)"
+    r"|ibenta|itapon)\b")
+MAINTENANCE_PRIORITY = re.compile(
+    r"\b(?:first|priorit\w*|most urgent|urgently|urgent|which (?:car|vehicle|unit)s? (?:should|to) (?:we |i )?(?:service|fix|repair|check)"
+    r"|what (?:should|do) (?:we|i) (?:service|fix|repair|check|do)|this week|today|top (?:\d+|three|five)|unahin|uunahin)\b")
+MAINTENANCE_CONDITION = re.compile(
+    r"\b(?:predict\w*|risk\w*|at[- ]risk|forecast\w*|break\s?downs?|breaks? down|fail\w*|likely|weakest|worst|component\w*|systems?|parts?"
+    r"|condition|health|healthy|worsen\w*|getting worse|deteriorat\w*|declin\w*|wear\w*|assess\w*|screening|red flags?|warning signs?"
+    r"|bad shape|poor shape|bad condition|sira|sirang|may sira)\b")
 RENTAL_DAMAGE = re.compile(r"\b(?:damage|damaged|damaging|scratch|scratched|dent|dented|nasira|masira|gasgas|nagasgas)\b"
                            r"(?=.*\b(?:car|rental|vehicle|unit|it|sasakyan|kotse)\b)")
 # Someone's password or other credentials (not "how do I change my password?").
@@ -447,7 +464,7 @@ class Understanding:
             if _names_word(make, self.tokens, joined):
                 self.makes.append(make)
         for entry in vocabulary.get("models", []):
-            if _names_word(entry.get("model", ""), self.tokens, joined) or _names_first_word(entry.get("model", ""), self.tokens):
+            if _names_word(entry.get("model", ""), self.tokens, joined) or _names_first_word(entry.get("model", ""), self.tokens, self.text):
                 self.models.append(entry)
         listed_makes = {str(make).casefold() for make in vocabulary.get("makes", [])}
         self.unlisted_brands = []
@@ -485,7 +502,7 @@ class Understanding:
         signal = (self.makes or self.has("price", "deposit", "availability", "specs", "vehicle_noun", "booking", "status", "maintenance")
                   or len(self.tokens) <= 3 or self.start_date or self.rental_days or len(self.models) >= 2
                   or self.equipment or self.attribute or self.colors or self.fuel_types or self.transmissions
-                  or self.stock_question or self.min_seats or ABOUT_VEHICLE.search(self.text)
+                  or self.stock_question or self.min_seats or ABOUT_VEHICLE.search(self.text) or FLEET_CONDITION_SIGNAL.search(self.text)
                   or re.match(r"(?:and|what about|how about|eh|yung|e ang|paano ang)\b", self.text))
         if self.models and re.search(r"\b(?:open|taken)\b", self.text):
             self.concepts.add("availability")
@@ -582,7 +599,9 @@ class Understanding:
         self._dates()
         self.vehicle_ids = [int(value) for value in re.findall(r"\b(?:vehicle|car|unit)\s*(?:id)?\s*#?\s*(\d{1,6})\b", text)][:5]
         self.vehicle_statuses = sorted({status for word, status in VEHICLE_STATUS_WORDS.items()
-                                        if re.search(rf"\b{word}\b", re.sub(r"\b(?:i|we) rented\b", "", text)) and word != "available"}
+                                        # "Which cars can be rented?" asks what is available, not which cars are out on rent.
+                                        if re.search(rf"\b{word}\b", re.sub(r"\b(?:(?:i|we) rented|(?:can|could|to|will|may) be rented)\b", "", text))
+                                        and word != "available"}
                                        | ({"rented"} if re.search(r"\b(?:on rent|out on rent|currently rented|nirentahan|rented out|on hire|out right now|units? out|(?:is|are) out|currently out|what'?s out|naka-rent)\b", text)
                                           and not re.search(r"\bthe [\w-]+ out\b", text) else set())
                                        | ({"maintenance"} if re.search(r"\b(?:(?:in|at) the (?:shop|garage)|being (?:repaired|serviced|fixed)|under repair"
@@ -670,10 +689,13 @@ def _names_word(name, tokens, joined):
         for token in tokens if len(token) >= 4 and token not in NAME_FUZZY_SKIP)
 
 
-def _names_first_word(name, tokens):
-    """The first word of a longer model name ("montero" for "Montero Sport"), unless it is an ordinary word."""
+def _names_first_word(name, tokens, text=""):
+    """The first word of a longer model name ("montero" for "Montero Sport"), unless it is an ordinary word; an ordinary
+    word counts too when the message is plainly about a vehicle's condition ("condition report of the mirage")."""
     words = TOKEN.findall(str(name).casefold())
-    return len(words) > 1 and len(words[0]) >= 4 and words[0] not in ORDINARY_MODEL_WORDS and words[0] in tokens
+    ordinary_ok = words and words[0] in ORDINARY_MODEL_WORDS and bool(FLEET_CONDITION_SIGNAL.search(text)) \
+        and re.search(rf"\bthe {re.escape(words[0])}\b", text)
+    return len(words) > 1 and len(words[0]) >= 4 and (words[0] not in ORDINARY_MODEL_WORDS or bool(ordinary_ok)) and words[0] in tokens
 
 
 def plan(message, role, vocabulary=None, memory=None):
@@ -691,6 +713,8 @@ def plan(message, role, vocabulary=None, memory=None):
     other_person = OTHER_PERSON_RECORDS.search(u.text) and not re.search(r"\b(?:my|mine|ko)\b", u.text)
     if ABOUT_ASSISTANT.search(u.text) or OFF_TOPIC.search(u.text):
         return None
+    if (MODEL_QUESTION.search(u.text) or GENERAL_REASSESSMENT.search(u.text)) and not (u.makes or u.models or u.vehicle_ids):
+        return None  # how the models work, or what a reassessment is: the assistant explains, no records needed
     if not admin and COMPANY_REVENUE.search(u.text) and not u.has("own"):
         return _direct("admin_only", u)
     if DEPOSIT_REFUND.search(u.text) and not (u.makes or u.models or u.reservation_id):
@@ -738,9 +762,12 @@ def plan(message, role, vocabulary=None, memory=None):
         result = _plan("vehicles", u, [("vehicles.search", _vehicle_filters(u))], purpose="listing")
         result["count_question"] = True
         return result
+    if admin and _fleet_maintenance_question(u):
+        return _maintenance_plan(u)
     if admin:
         status_all = STATUS_ALL.search(u.text)
-        if status_all and not (u.models or u.makes):
+        # With dates ("are they available tomorrow?") it is a booking check of the cars just discussed, not the fleet totals.
+        if status_all and not (u.models or u.makes or u.start_date or u.single_date):
             # "Are they all rented?" after a list: the fleet's totals, with a yes or no first.
             result = _plan("fleet_status", u, [("fleet.status_counts", {})])
             result["asked_status"] = (status_all.group("status") or status_all.group("status2")).replace("under ", "in ")
@@ -859,7 +886,8 @@ def plan(message, role, vocabulary=None, memory=None):
 
     # Fleet and maintenance records.
     records_question = u.has("maintenance") or (u.has("status") and (u.vehicle_statuses or u.has("listing")) and not u.has("availability"))
-    general_advice = re.search(r"\b(?:how often|should i|when should|what is a|what does|tips?)\b", u.text)
+    general_advice = re.search(r"\b(?:how often|should i|when should|what is a|what does|tips?)\b", u.text) \
+        or GENERAL_MAINTENANCE_QUESTION.search(u.text)
     if records_question and not general_advice and not u.has("explain") and not HOW_TO_DO.search(u.text):
         if not admin:
             if u.has("maintenance", "status") and (asks_vehicle or u.has("listing", "vehicle_noun", "status")):
@@ -903,6 +931,11 @@ def plan(message, role, vocabulary=None, memory=None):
         # "How much?" or "Can you calculate the total?": neither the vehicle nor the days are known yet.
         return _direct("clarify_quote", u)
 
+    # "I want to rent a car tomorrow until Sunday": dates and wanting a car is an availability check.
+    wants_car_on_dates = bool(u.start_date) and bool(re.search(r"\b(?:rent|renting|book|booking|reserve|need|want|hire|rentahan|magrent|mag-rent)\b", u.text)) \
+        and (u.has("vehicle_noun") or re.search(r"\b(?:rent|renting|rentahan|magrent|mag-rent)\b", u.text))
+    if wants_car_on_dates:
+        u.concepts.add("availability")
     if not (asks_vehicle or follow_up or u.has("price", "deposit", "availability") or u.rental_days
             or u.has("vehicle_noun") and u.has("listing", "specs") or u.equipment and u.has("vehicle_noun", "listing")
             or re.search(r"^(?:show me |so )?what (?:do )?you have(?: available| for rent)?\W*$", u.text)
@@ -982,6 +1015,12 @@ def plan(message, role, vocabulary=None, memory=None):
         result["rank_by"] = "seats"
     if purpose == "quote" and u.has("deposit"):
         result["include_deposit"] = True
+    if purpose == "deposit":
+        # "Which car has the biggest deposit?": the answer first, then the list from highest to lowest.
+        if re.search(r"\b(?:biggest|highest|largest|most|max(?:imum)?|pinakamalaki|pinakamataas)\b", u.text):
+            result["deposit_rank"] = "desc"
+        elif re.search(r"\b(?:smallest|lowest|least|min(?:imum)?|cheapest|pinakamaliit|pinakamababa)\b", u.text):
+            result["deposit_rank"] = "asc"
     if purpose in ("price", "listing") and u.rate_period:
         result["rate_period"] = True
     if u.hourly and not u.rental_days:
@@ -1109,17 +1148,93 @@ def _report_period(text):
     return {}
 
 
+def _fleet_maintenance_question(u):
+    """An administrator asking about the fleet's condition, priorities or retirement, not a general explanation
+    ("what is predictive maintenance?" is answered from the knowledge base)."""
+    text = u.text
+    if GENERAL_MAINTENANCE_QUESTION.search(text) or MODEL_QUESTION.search(text) or REASSESSMENT.search(text) \
+            or HOW_TO_DO.search(text) or re.search(r"\b[0-9]{5}[a-z0-9]{3,7}\b", text):
+        # Explanations, the models themselves, the reassessment schedule, how-to questions (the guide) and part numbers
+        # (the parts list) are answered elsewhere.
+        return False
+    named = bool(u.vehicle_ids or u.makes or u.models)
+    if named and NAMED_CAR_NEEDS.search(text) and not u.has("price", "deposit", "booking", "availability") \
+            and not re.search(r"\b(?:rent|renting|book|license|licence|requirements?)\b", text):
+        return True
+    scope = named or re.search(
+        r"\b(?:cars?|vehicles?|units?|fleet|we|our|ours|component\w*|systems?|parts?|sasakyan|kotse)\b", text)
+    if not scope:
+        return False
+    work = re.search(r"\b(?:service\w*|maint\w*|fix\w*|repair\w*|check\w*|inspect\w*|attention|work|shop|garage|mechanic|talyer"
+                     r"|ipaayos|paayos|ayusin|ipagawa|pagawa)\b", text)
+    return bool(MAINTENANCE_RETIRE.search(text) or MAINTENANCE_CONDITION.search(text) and not u.has("price", "booking", "availability")
+                or MAINTENANCE_PRIORITY.search(text) and work)
+
+
+# "What does the Hiace need?", "what's wrong with the Vios?", "any problems with the Innova?"
+NAMED_CAR_NEEDS = re.compile(r"\b(?:needs?|needed|wrong|issues?|problems?|condition|health|check on|report|fix|repair)\b")
+# Questions about the prediction models themselves: answered from the model registry, not from fleet records.
+MODEL_QUESTION = re.compile(
+    r"\b(?:how (?:accurate|reliable|good|well)|accuracy|precision|recall|(?:how|what) (?:does|do) (?:the |your )?(?:prediction|maintenance|predictive|ml|ai)? ?(?:model|models|ai|system) (?:work|use|learn)"
+    r"|what data (?:do|does|did) (?:you|it|the models?)|trained on|training data|is the model (?:approved|accepted|trained|working|ready|reliable)"
+    r"|why (?:are|is) (?:the )?(?:model|predictions?)\b.*\b(?:unavailable|not available|off|disabled|not approved|not working)"
+    r"|model (?:status|accuracy|performance|evaluation)|machine learning"
+    r"|(?:prediction|predictive|maintenance|fault) models?\b.*\b(?:approved|accepted|ready|in use|working|trained|active)"
+    r"|(?:are|is) (?:the |your )?(?:models?|predictions?) (?:approved|accepted|ready|in use|working|trained|active|reliable|accurate))\b")
+# "What is a reassessment?": the guide, not the reassessment list.
+GENERAL_REASSESSMENT = re.compile(r"^(?:what(?:'s| is| are) (?:a |the )?reassessments?|what does reassessment mean|explain (?:the )?reassessments?"
+                                  r"|how (?:do|does) (?:the )?reassessments? work|why (?:do|does) .*reassess)")
+# "What is predictive maintenance?", "how long do brake pads last?": knowledge, not fleet records.
+GENERAL_MAINTENANCE_QUESTION = re.compile(
+    r"^(?:what(?:'s| is| are) (?:a |an |the )?(?:predictive|preventive|preventative|condition[- ]based|reactive|corrective|proactive|planned|scheduled)\b"
+    r"|what (?:is|are) (?:the )?difference|difference between|explain|define|what does .* mean|how (?:long|often) (?:do|does|should|can)"
+    r"|how (?:do|does|can|should) (?:fleets?|companies|you|i|we) (?:predict|prioriti[sz]e|plan|reduce|decide)|why (?:do|does|is|are) .*(?:predictive|preventive)"
+    r"|what are (?:the )?(?:signs|warning signs|early signs|symptoms)|tips?\b|best practices?)")
+
+
 def _maintenance_plan(u):
     filters = {"vehicle_ids": u.vehicle_ids, **{k: v for k, v in _vehicle_filters(u).items() if k in ("makes", "models")}}
     text = u.text
+    named = bool(u.vehicle_ids or filters.get("makes") or filters.get("models"))
     if re.search(r"\b(?:recurring|repeated|repeat|again and again|keeps? (?:coming|happening)|same (?:issue|problem))\b", text):
         return _plan("maintenance_recurring", u, [("maintenance.recurring", dict(filters))])
-    if re.search(r"\b(?:predict\w*|risk\w*|forecast\w*|break\s?downs?|breaks down|fail\w*)\b", text):
-        return _plan("maintenance_prediction", u, [("maintenance.model_inputs", {}), ("maintenance.due", dict(filters))])
+    # "Should we retire the Hiace?", "is it worth fixing?": the facts that decide repair or replace.
+    if MAINTENANCE_RETIRE.search(text):
+        return _plan("maintenance_retire", u, [("assessments.condition", dict(filters)), ("maintenance.costs", dict(filters)),
+                                                ("maintenance.due", dict(filters))])
+    # "Any vehicle with poor condition in inspections?": the component-inspection records, which are their own records.
+    if re.search(r"\b(?:component )?inspections?\b|\binspected\b", text) and not re.search(r"\bassess\w*\b", text):
+        return _plan("maintenance_inspections", u, [("maintenance.inspections", dict(filters))])
+    # "What should we service first this week?": one ranked list from assessments and the service schedule.
+    if MAINTENANCE_PRIORITY.search(text):
+        return _plan("maintenance_priority", u, [("assessments.condition", dict(filters)), ("maintenance.due", dict(filters))])
+    # "Which component is most likely to fail?", "which cars are at risk?": the latest assessments, their trend and the
+    # verified fault history, plus the registered model when one is accepted.
+    if MAINTENANCE_CONDITION.search(text) and not u.dtc_codes:
+        purpose = "vehicle" if named else "fleet"
+        result = _plan("maintenance_condition", u, [("assessments.condition", dict(filters)), ("maintenance.due", dict(filters)),
+                                                     ("maintenance.model_inputs", {})], purpose=purpose)
+        # What the question is about decides what comes first: systems, the trend, or the vehicles at risk.
+        if re.search(r"\b(?:worsen\w*|getting worse|deteriorat\w*|declin\w*|trend\w*|dropp\w*)\b", text):
+            result["focus"] = "trend"
+        elif re.search(r"\b(?:component\w*|systems?|parts?|weakest|weak spots?)\b", text):
+            result["focus"] = "systems"
+        return result
+    # "What does the Hiace need?", "what's wrong with the Vios?": one car's condition, service status and recent work.
+    if named and NAMED_CAR_NEEDS.search(text) and not re.search(r"\b(?:records?|history|logs?|cost\w*|spent)\b", text):
+        return _plan("maintenance_condition", u, [("assessments.condition", dict(filters)), ("maintenance.due", dict(filters)),
+                                                   ("maintenance.records", {"limit": 5, **filters})], purpose="vehicle")
     if u.dtc_codes or re.search(r"\b(?:dtc|trouble codes?|fault codes?|diagnostic\w*|inspection\w*|inspected|condition)\b", text):
         return _plan("maintenance_inspections", u, [("maintenance.inspections", dict(filters))])
     if re.search(r"\b(?:due|overdue|need\w*|upcoming|soon|schedule\w*|next service)\b", text):
-        return _plan("maintenance_due", u, [("maintenance.due", dict(filters))])
+        retrievals = [("maintenance.due", dict(filters))]
+        if re.search(r"\b(?:need\w*|attention|work)\b", text):
+            # "Which cars need maintenance?": the schedule alone misses what the assessments found.
+            retrievals.append(("assessments.condition", dict(filters)))
+        result = _plan("maintenance_due", u, retrievals)
+        if re.search(r"\boverdue\b", text) and named:
+            result["asked_overdue"] = True  # "Why is the Hilux overdue?" is answered yes or no first
+        return result
     if re.search(r"\b(?:records?|history|histories|logs?|latest|last|recent|activit\w+|cost\w*|spent|serviced|repaired|done)\b", text):
         return _plan("maintenance_records", u, [("maintenance.records", {"limit": 20, **filters})])
     if u.vehicle_statuses or u.has("status"):
@@ -1175,7 +1290,7 @@ def _unknown_names(u):
 
 
 def _plan(intent, u, retrievals, purpose=None, follow_up=False, guide=False):
-    return {
+    plan = {
         "version": 1,
         "intent": intent,
         "purpose": purpose,
@@ -1184,6 +1299,9 @@ def _plan(intent, u, retrievals, purpose=None, follow_up=False, guide=False):
         "follow_up": follow_up,
         "guide": guide,
     }
+    if intent == "vehicles" and re.search(r"\b(?:why|bakit)\b", u.text) and u.vehicle_statuses:
+        plan["asks_why_status"] = True  # "Why are the sample cars unavailable?": no reason is stored; say so first
+    return plan
 
 
 def _direct(kind, u):
