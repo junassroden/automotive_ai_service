@@ -60,7 +60,17 @@
         "book for today",
         "can i book today",
         "how early should i book",
-        "last minute booking"
+        "last minute booking",
+        "how to rent",
+        "how to rent a car",
+        "how do i rent",
+        "how can i rent a car",
+        "paano mag rent",
+        "paano umupa",
+        "rent a vehicle",
+        "how do i rent a vehicle",
+        "process to rent",
+        "steps to rent"
       ],
       "text": "Open Vehicles (/users/vehicles), choose a vehicle, and select Reserve to open the reservation form (/users/reservations/create). Pick a pickup date (today or any later date; there is no advance-booking limit) and a return date, and a colour if the vehicle offers several. Rentals must be at least 3 days (or the vehicle's own minimum, if longer) and at most 7 days; 8 to 21 days must be sent as a special-duration request, and longer rentals are not accepted. You must accept the rental agreement before submitting. The system checks that the vehicle is available and that no pending or confirmed reservation overlaps the dates. The new reservation is pending until you pay the rental total online from My Reservations (/users/reservations); it is confirmed automatically once the payment provider verifies the payment. The total is the stored daily rate multiplied by the number of rental days.",
       "code_references": [
