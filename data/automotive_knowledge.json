@@ -355,7 +355,7 @@
         "what does engine oil do",
         "what does an oil filter do"
       ],
-      "overview": "Engine oil change timing depends on the exact engine, oil specification, operating conditions, and manufacturer schedule or oil-life monitoring system. There is no single interval that applies to every vehicle.",
+      "overview": "For most cars, change the engine oil and filter every 5,000 to 10,000 km or every 6 months, whichever comes first. City traffic, short trips and heat count as severe service, so for a car driven in Metro Manila plan on about every 5,000 km; go longer only if the owner's manual or the oil-life monitor allows it.",
       "component_functions": [
         "Engine oil forms a lubricating film and helps manage friction and heat within the engine.",
         "The oil filter removes contaminants from circulating oil within its designed capacity."
@@ -384,7 +384,7 @@
       ],
       "system": "engine lubrication",
       "component": "engine oil",
-      "answer": "Oil change intervals depend on the engine, the oil type and how the car is driven, so follow the schedule in the owner's manual or the car's oil-life monitor.",
+      "answer": "For most cars, change the engine oil and filter every 5,000 to 10,000 km or every 6 months, whichever comes first. City traffic, short trips and heat count as severe service, so for a car driven in Metro Manila plan on about every 5,000 km; go longer only if the owner's manual or the oil-life monitor allows it.",
       "key_causes": [],
       "actions": [
         "Use whichever comes first in the schedule: the distance or the time since the last change.",
@@ -928,7 +928,7 @@
         "how much psi",
         "air pressure for my tires"
       ],
-      "overview": "Tires affect grip, handling, and stopping. Use the vehicle placard and owner's manual for recommended cold pressure and rotation guidance; the maximum pressure on a tire sidewall is not the vehicle's target pressure.",
+      "overview": "Check the pressures at least once a month with the tires cold (before driving, or after a few minutes parked), using the figures on the sticker in the driver's door jamb or in the owner's manual for your exact car. Front and rear can differ, and many cars list a higher figure for a full load. Don't use the maximum printed on the tire: that's the tire's limit, not the car's setting.",
       "possible_causes": [
         "Pressure loss, wear, alignment or suspension condition, loading, and usage can affect tire condition."
       ],
@@ -958,7 +958,7 @@
       ],
       "system": "tires and wheels",
       "component": "tires",
-      "answer": "Correct tire pressure and enough tread are essential for grip, braking and steering. Check the pressures at least once a month with the tires cold, using the figures on the door-jamb sticker or in the owner's manual.",
+      "answer": "Check the pressures at least once a month with the tires cold (before driving, or after a few minutes parked), using the figures on the sticker in the driver's door jamb or in the owner's manual for your exact car. Front and rear can differ, and many cars list a higher figure for a full load. Don't use the maximum printed on the tire: that's the tire's limit, not the car's setting.",
       "key_causes": [
         "slow leaks from punctures or valves",
         "temperature changes",
@@ -1062,7 +1062,11 @@
         "battery won't hold a charge",
         "battery not holding charge",
         "battery does not hold charge",
-        "battery keeps going flat"
+        "battery keeps going flat",
+        "engine won't start",
+        "vehicle won't start",
+        "it won't start",
+        "won't start"
       ],
       "overview": "Starting and charging symptoms can involve the battery, starter, alternator, wiring, connections, or another electrical load. A symptom alone cannot identify which part has failed.",
       "component_functions": [
@@ -2768,7 +2772,15 @@
         "tires are flat",
         "all tires are flat",
         "flat na ang gulong",
-        "flat ang gulong"
+        "flat ang gulong",
+        "tire keeps losing pressure",
+        "tire losing pressure",
+        "losing tire pressure",
+        "keeps losing air",
+        "tire keeps going flat",
+        "tire goes flat overnight",
+        "tire deflates",
+        "nawawalan ng hangin ang gulong"
       ],
       "overview": "If a tire is flat or losing air, slow down, move to a safe place away from traffic, switch on the hazard lights and stop. Driving on a flat tire quickly destroys it and can damage the wheel and make the car hard to control.",
       "possible_causes": [
@@ -4142,7 +4154,7 @@
         "how often rotate tires",
         "swap tires front to back"
       ],
-      "overview": "Rotating the tires means moving them between positions so they wear evenly. Follow the interval and pattern in the owner's manual, because some tires and cars need a specific pattern.",
+      "overview": "Rotate the tires about every 8,000 to 10,000 km, conveniently at every second oil change, so they wear evenly and last longer. Follow the pattern in the owner's manual: some tires and cars need a specific one.",
       "possible_causes": [
         "Not applicable: this entry is general guidance."
       ],
@@ -4163,7 +4175,7 @@
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
       ],
-      "answer": "Rotating the tires means moving them between positions so they wear evenly. Follow the interval and pattern in the owner's manual, because some tires and cars need a specific pattern.",
+      "answer": "Rotate the tires about every 8,000 to 10,000 km, conveniently at every second oil change, so they wear evenly and last longer. Follow the pattern in the owner's manual: some tires and cars need a specific one.",
       "key_causes": [],
       "actions": [
         "Combine rotation with a pressure and tread check."
@@ -6118,7 +6130,13 @@
         "matagal mag start",
         "hard starting",
         "difficult to start",
-        "starts after several tries"
+        "starts after several tries",
+        "car is hard to start",
+        "it is hard to start",
+        "engine is hard to start",
+        "not starting right away",
+        "takes a while to start",
+        "takes a few tries to start"
       ],
       "overview": "A car that cranks a long time before starting usually has a weak battery, fuel pressure that drains away overnight, or (on a diesel) worn glow plugs. In the morning a cold engine needs more from all of them.",
       "possible_causes": [
