@@ -97,7 +97,10 @@ CONCEPTS = {
                           "tire", "tires", "tyre", "tyres", "battery", "alternator", "starter", "misfire", "misfiring", "stall",
                           "stalls", "stalling", "vibration", "vibrates", "vibrating", "shake", "shakes", "shaking", "pulls",
                           "pulling", "drifts", "steering", "wobble", "coolant", "transmission", "exhaust", "clunk", "rattle",
-                          "smell", "smells", "flashing", "blinking", "warning", "aircon", "hesitates", "jerks", "knocking", "clicks", "clicking", "wobbles"},
+                          "smell", "smells", "flashing", "blinking", "warning", "aircon", "hesitates", "jerks", "knocking", "clicks", "clicking", "wobbles",
+                          # Found by fresh questions on 2026-11-13: "water dripping after using AC" is a car problem, not an aircon search.
+                          "dripping", "drips", "drip", "rattling", "rattles", "whining", "whine", "humming", "clunking", "bounces",
+                          "flicker", "flickers", "dying", "dies", "loud", "squeaky", "burning"},
                 "phrases": ["won't start", "wont start", "check engine", "warning light", "does not start", "doesn't start"]},
 }
 # Words that are numbers in English or Tagalog.
@@ -158,6 +161,9 @@ UNRECORDED_TOPICS = [
     ("additional drivers", re.compile(r"\b(?:someone else|another person|another driver|additional drivers?|second driver|other drivers?|my (?:friend|wife|husband|brother|sister|kapatid|asawa)|ibang (?:tao|driver))\b.*\b(?:drive|driver|magmaneho|mag-drive)\b|\badditional drivers?\b")),
     ("insurance", re.compile(r"\b(?:insurance|insured|insure|seguro)\b")),
     ("travel outside the area", re.compile(r"\b(?:drive|take|bring) (?:it|the car|the vehicle|the unit) to (?!my\b|me\b|our\b|the\b|a\b|your\b)[a-z]+\b|"
+                                           # "Can I drive to Baguio?", "pwede ba dalhin sa Batangas?", "biyahe papuntang Ilocos"
+                                           r"\b(?:can|may|could) (?:i|we) (?:drive|go|travel|take a trip) (?:up )?to (?!the\b|a\b|my\b|your\b|work\b|school\b)[a-z]+\b|"
+                                           r"\b(?:biyahe|byahe|dalhin|gamitin)\b.*\b(?:papunta|papuntang|hanggang|sa probinsya)\b|"
                                            r"\bdrive\b.*\b(?:province|provinces|probinsya)\b|\b(?:another|other|ibang) (?:province|provinces|city|region|island|probinsya)\b|"
                                            r"\b(?:out of town|outside (?:the )?(?:city|metro manila|province|area|region)|cross[- ]country|road trip)\b")),
     ("mileage or distance limits", re.compile(r"\b(?:mileage|distance|km|kilometer|kilometre)s? (?:limit|cap|restriction|allowance)s?\b"
@@ -174,6 +180,16 @@ UNRECORDED_TOPICS = [
     ("fuel-consumption figures for its vehicles", re.compile(
         r"^(?!.*\bmy\b).*\b(?:fuel (?:economy|consumption|efficiency)|km ?(?:per|/) ?(?:liter|litre|l)\b|kmpl|mpg|matipid(?: sa)?(?: gas| gasolina)?"
         r"|tipid sa (?:gas|gasolina|fuel)|fuel[- ]efficient|most economical|least fuel|uses less fuel)")),
+    # The system guide: no pickup location and no fuel or handover rules are stored.
+    ("the pickup and return location", re.compile(
+        r"\b(?:pickup|return|drop[- ]?off)\s+(?:location|place|point|address|branch|area|site)\b"
+        r"|\bwhere (?:do|can|will|should|would) (?:i|we) (?:pickup|pick up|get|collect|claim|return|drop off)\b"
+        r"|\bwhere (?:is|are) (?:the |your )?(?:pickup|office|branch|garage|shop)\b|\bsaan (?:kukunin|ang pickup|ibabalik|isasauli)\b")),
+    ("fuel rules when returning the car", re.compile(
+        r"\b(?:refill|refuel|full tank|fill (?:it |the tank )?up|fill the tank|gas|fuel|gasoline|gasolina)\b.*\b(?:before|when|upon|after) "
+        r"(?:i |we )?(?:return|returning|give it back|bring it back|ibalik|isauli)\b"
+        r"|\bfuel (?:policy|rules?)\b|\bfull[- ]to[- ]full\b"
+        r"|\breturn\w*\b.*\b(?:empty|full|half|low)(?: a)? (?:tank|gas|fuel)\b|\b(?:empty|full|half|low) (?:tank|gas|fuel)\b.*\breturn\w*\b")),
     ("contact details", re.compile(r"\b(?:contact (?:you|the rental team|number|details|info)|your (?:phone|number|email|address)|how (?:do|can) i (?:contact|reach|call)|hotline|where are you located|your location)\b")),
 ]
 VEHICLE_STATUS_WORDS = {"rented": "rented", "maintenance": "maintenance", "repair": "maintenance", "unavailable": "unavailable",
@@ -200,7 +216,19 @@ YES_NO = re.compile(r"^(?:does|do|is|are|has|have|may|meron|can|would|could|with
                     r"|\b(?:gps|navigation|aircon|a/c|ac|automatic|manual|diesel|gasoline)\s*\?"
                     r"|\b(?:has|have|with|got)\s+(?:a |an )?(?:gps|navigation|nav|ac|a/c|aircon|air ?con\w*|air[- ]?condition\w*)\b")
 # Words that ask for a broader list, so the question is not about the vehicle discussed before.
-BROADER_LIST = re.compile(r"\b(?:all|list|lahat|options|others?|every|any other|ibang|mga)\b")
+BROADER_LIST = re.compile(r"\b(?:all|list|lahat|options|others?|every|any other|ibang|mga)\b"
+                          # "Available cars" after a list asks about the fleet, not the cars just shown ("are they available?" does).
+                          r"|^(?!.*\b(?:they|them|these|those|it|sila)\b).*\b(?:cars|vehicles|units)\b")
+# "Suggest a car", "what's the best car for 4 people", "which car should I rent", "anong magandang sasakyan".
+RECOMMEND = re.compile(r"\b(?:suggest\w*|recommend\w*|irekomenda)\b"
+                       r"|\b(?:best|ideal|perfect|suitable|good) (?:car|cars|vehicle|vehicles|unit|units|sasakyan|kotse|option|choice)\b"
+                       r"|\bwhich (?:car|vehicle|unit|one) (?:should|would|do you think) i\b|\bwhat (?:car|vehicle) should i (?:rent|get|choose|take)\b"
+                       r"|\b(?:ano|anong|alin|what|which)(?: ang| the)? (?:magandang|maganda|best|pinakamagandang?) (?:sasakyan|kotse|car|unit)\b"
+                       r"|\b(?:magandang|maganda|pinakamagandang?) (?:sasakyan|kotse|car|unit)\b")
+# "Are they all rented?", "is everything available?" (administrators): the fleet's status totals, answered yes or no.
+STATUS_ALL = re.compile(r"\b(?:are|is) (?:they|these|those|all|all of them|the cars|the vehicles|everything|every car|lahat)\b.*?"
+                        r"\b(?P<status>rented|available|unavailable|in maintenance|under maintenance|booked)\b"
+                        r"|\b(?:all|lahat) (?:of them |ng sasakyan )?(?:are|ay) (?P<status2>rented|available|unavailable|booked)\b")
 ELLIPTICAL = re.compile(r"^(?:and|what about|how about|eh|yung|paano yung|e di|so)\b")
 # "Compare them", "which one is cheaper?", "alin ang mas mura?": a comparison of the vehicles shown in the previous answer.
 CROSS_TURN_COMPARE = re.compile(
@@ -216,7 +244,8 @@ PRONOUN = re.compile(r"\b(?:it(?! (?:true|possible|ok|okay|allowed|safe|normal|r
 ABOUT_ASSISTANT = re.compile(r"\bcan (?:the )?(?:chatbot|assistant|bot|ai|you) (?:see|access|view|read|show)\b(?!.*\b(?:my|mine|ko|cars?|vehicles?|units?)\b)")
 # Price questions about repairs or services, not rentals.
 SERVICE_COST = re.compile(r"\b(?:oil change|repair|repairs|servicing|replacement|replace|parts?|tune[- ]?up|alignment|labou?r|fix|fixing)\b")
-OFF_TOPIC = re.compile(r"\b(?:stock|shares?|stock market|net worth|ceo|founder|headquarters|weather|news|election|joke|jokes|poem|poems|song|songs"
+OFF_TOPIC = re.compile(r"\b(?:stock|shares?|stock market|net worth|ceo|founder|headquarters|weather|forecast|typhoon|bagyo|uulan|going to rain|will it rain"
+                       r"|news|election|joke|jokes|poem|poems|song|songs"
                        r"|sing|movie|movies|bitcoin|crypto\w*|recipe|cook|cooking|bake|baking|basketball|football|lotto|horoscope|nba|laptop|ulam|president"
                        r"|capital of|essay|love letter)\b")
 BARE_ATTRIBUTES = [
@@ -282,6 +311,8 @@ SQL_TEXT = re.compile(r"\b(?:select\s+[\w*,\s]+\s+from|insert\s+into|update\s+\w
 SYMPTOM_SAFE_TOPICS = {"smoking in the vehicle", "pets in the vehicle"}
 # Being in an accident: general safety steps, not company procedures.
 ACCIDENT = re.compile(r"\b(?:accident|accidents|crash|crashed|collision|collided|fender bender|naaksidente|aksidente|nabangga|bumangga|banggaan|hit (?:a|an|the|another) \w+)\b")
+RENTAL_DAMAGE = re.compile(r"\b(?:damage|damaged|damaging|scratch|scratched|dent|dented|nasira|masira|gasgas|nagasgas)\b"
+                           r"(?=.*\b(?:car|rental|vehicle|unit|it|sasakyan|kotse)\b)")
 # Someone's password or other credentials (not "how do I change my password?").
 CREDENTIALS = re.compile(r"\b(?:password|passwords|passcode|credentials?|login details|api key|secret key|access token)\b")
 OWN_CREDENTIAL_HELP = re.compile(r"\b(?:my|change|reset|forgot|forgotten|update|new)\b")
@@ -331,7 +362,9 @@ PAST_RENTAL = re.compile(r"\b(?:did i|have i|i have|i've)\s+(?:rent|rented|book|
                          r"|\bi (?:rented|booked|reserved|used)\b|\blast time\b"
                          r"|\b(?:past|previous|last|recent|huling|dati) (?:rentals?|bookings?|reservations?|trips?)\b|\brental history\b|\bnirentahan ko\b")
 # The rental car breaking down: safety steps and the rental team, not records.
-BREAKDOWN = re.compile(r"\b(?:breaks? down|broke down|broken down|breakdown|stalled on the (?:road|highway)|tumirik|nasiraan|(?:rental|rented) (?:car |unit |vehicle )?(?:stopped working|isn't working|not working)|stopped working)\b")
+BREAKDOWN = re.compile(r"\b(?:breaks? down|broke down|broken down|breakdown|stalled on the (?:road|highway)|tumirik|nasiraan|(?:rental|rented) (?:car |unit |vehicle )?(?:stopped working|isn't working|not working)"
+                       # "The car stopped working" is a breakdown; "my power windows stopped working" is a part, answered as a car problem.
+                       r"|(?:car|vehicle|unit|engine|it) (?:just |suddenly )?stopped working|^stopped working)\b")
 # The customer's own booking of a named vehicle ("how much did I pay for the Honda City rental?").
 OWN_VEHICLE_RECORD = re.compile(r"\b(?:did i pay|i paid|did i spend|did \w+ .*\bcost me|did (?:my|the) .*\b(?:rental|booking|reservation) cost"
                                 r"|my (?:\w+ ){0,3}(?:rental|booking|reservation)s?\b)")
@@ -668,6 +701,8 @@ def plan(message, role, vocabulary=None, memory=None):
         return _direct("refuse_credentials", u)
     if ACCIDENT.search(u.text) and not u.has("maintenance"):
         return _direct("accident_guidance", u)
+    if not admin and RENTAL_DAMAGE.search(u.text) and not (u.makes or u.models or u.reservation_id or u.has("deposit", "price")):
+        return None  # "what if I damage the car?": the damage-reporting guidance, not a vehicle listing
     if not admin and BREAKDOWN.search(u.text) and not re.search(r"\b(?:predict\w*|risk\w*|forecast\w*|will)\b", u.text):
         return _direct("breakdown_guidance", u)
     if not admin and WHO_BOOKED.search(u.text) and not u.has("own"):
@@ -678,6 +713,7 @@ def plan(message, role, vocabulary=None, memory=None):
         u.makes or u.models or set(TOKEN.findall(named.group(0).casefold())) & CAR_BRANDS)
     # "What's your phone number?" asks for the rental company's contact details (not recorded), not a person's.
     business_contact = re.search(r"\byour (?:phone|number|email|address|contact)", u.text) and not u.has("booking") \
+        or re.search(r"\b(?:contact|reach|call|message|email) (?:you|u|us|the rental team|driverent)\b", u.text) \
         or re.search(r"\bdrive\b", u.text) and not contact  # "can someone else drive the rental?" is a driver policy
     if u.has("other_people") and (contact or u.has("booking")) and not business_contact or other_person or named_person or ACCOUNT_ID.search(u.text):
         if not admin or contact:
@@ -697,13 +733,28 @@ def plan(message, role, vocabulary=None, memory=None):
 
     if not admin and REASSESSMENT.search(u.text) and not HOW_TO_DO.search(u.text):
         return _direct("admin_only", u)  # vehicle assessments are fleet records
+    if not admin and re.search(r"\bhow many (?:cars|vehicles|units|sasakyan)\b(?!.*\b(?:rented|maintenance|repair|broken|booked)\b)", u.text):
+        # "How many cars do you have?": public, answered with the cars a customer can rent.
+        result = _plan("vehicles", u, [("vehicles.search", _vehicle_filters(u))], purpose="listing")
+        result["count_question"] = True
+        return result
     if admin:
+        status_all = STATUS_ALL.search(u.text)
+        if status_all and not (u.models or u.makes):
+            # "Are they all rented?" after a list: the fleet's totals, with a yes or no first.
+            result = _plan("fleet_status", u, [("fleet.status_counts", {})])
+            result["asked_status"] = (status_all.group("status") or status_all.group("status2")).replace("under ", "in ")
+            return result
         admin_plan = _admin_lookup_plan(u)
         if admin_plan:
             return admin_plan
 
     known_vehicle = bool(u.makes or u.models or u.categories or u.min_seats or u.max_daily_rate is not None or u.sort or u.seats_ranking
-                         or ((u.fuel_types or u.transmissions or u.has_gps is not None) and u.has("vehicle_noun", "listing")))
+                         or ((u.fuel_types or u.transmissions or u.has_gps is not None) and u.has("vehicle_noun", "listing"))
+                         # "Is GPS included?", "kasama ba ang dash cam?": which rentable cars have that equipment.
+                         or ((u.has_gps is not None or u.has_aircon is not None or u.equipment)
+                             and re.search(r"\b(?:included|include|includes|kasama|come with|comes with|equipped)\b", u.text)
+                             and not u.has("symptom")))
     unlisted = bool(u.unlisted_brands or u.unlisted_categories)
     rental_question = u.has("price", "deposit", "availability") or known_vehicle
     # A brand or type the fleet does not have is only a rental question when renting is asked about.
@@ -905,6 +956,11 @@ def plan(message, role, vocabulary=None, memory=None):
         purpose = "deposit"
     elif u.rental_days or u.start_date:
         purpose = "quote" if (u.rental_days and not u.start_date) or u.has("price", "deposit") else "availability"
+    elif RECOMMEND.search(u.text) and len(u.models) < 2 and not u.sort:
+        # "What car can you suggest?", "best car for 4 people": a recommendation from what can be rented now.
+        purpose = "recommend"
+        if admin and not filters.get("statuses"):
+            filters["statuses"] = ["available"]
     elif u.sort in ("mileage_desc", "mileage_asc", "year_desc", "year_asc") or (u.seats_ranking and len(u.models) < 2 and not u.min_seats):
         purpose = "ranking"
     elif u.has("price") or u.sort in ("price_asc", "price_desc"):
