@@ -27,7 +27,7 @@ from . import chatbot_service as core
 from . import grounded_answers as grounded
 from . import planner
 from .automotive_knowledge import (
-    _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, mentions, retrieve_knowledge,
+    _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, mentions, retrieve_knowledge, triage_reply,
 )
 from .fleet_service import analyze_fleet
 from .language import correct_typos, normalize_message
@@ -62,7 +62,8 @@ NAMED_VEHICLE_SPEC = re.compile(
 # Follow-ups about the car problem being discussed ("what if the coolant is full?", "is it safe to drive?").
 TOPIC_FOLLOW_UP = re.compile(
     r"^(?:and|but|so|then|ok(?:ay)?|hmm+)?[\s,]*(?:what if|what about|how about|and if|if it|if the|if my|even if|is it|is that|is this|can i|could i|should i"
-    r"|could it|could that|would it|what else|anything else|tell me more|more details?|more info|explain more|why|what causes|what caused|what could cause"
+    r"|could it|could that|would it|what else|anything else|any ?more|more\W*$|tell me more|more details?|more info|explain more|ano pa|iba pa|meron pa|go on|continue"
+    r"|why|what causes|what caused|what could cause"
     r"|how (?:do|can|should) i|how much|i (?:already|just|have) |it'?s not|it is not|not the |what (?:should|do|can) i do|what now|now what"
     r"|the [a-z ]{2,30} (?:is|are|was|were|works?|seems?|looks?) )",
     re.IGNORECASE,
@@ -264,6 +265,15 @@ OUT_OF_SCOPE_ANSWER = (
 )
 
 
+# "Who are you?", "Are you a real person?", "What can you do?", "Sino ka?"
+ABOUT_YOU = re.compile(
+    r"^(?:(?:hi|hello|hey)[\s,!.]*)?(?:who|what) (?:are|r) (?:you|u)\b|^are (?:you|u) (?:a |an )?(?:real|human|person|bot|robot|ai|chatbot|machine)\b"
+    r"|^am i (?:talking|chatting) (?:to|with) (?:a )?(?:real |human|person|bot|robot|ai)|^what (?:can|do) (?:you|u) do\b"
+    r"|^what (?:can|could) (?:you|u) help (?:me )?with\b|^(?:sino|who) ka\b|^ano(?:ng)? (?:kaya|magagawa) mo\b|^tao ka ba\b|^bot ka ba\b",
+    re.IGNORECASE)
+# An off-topic word in a message that names no vehicle ("is it going to rain tomorrow?") is not a car question.
+CAR_NOUN = re.compile(r"\b(?:car|cars|vehicle|vehicles|kotse|sasakyan|unit|rental|windshield|sunroof|wipers?|cabin)\b", re.IGNORECASE)
+ABOUT_YOU_ANSWER = "I'm DriveRent's virtual assistant, an automated chatbot rather than a person. "
 ACK_ANSWER = "You're welcome! Is there anything else I can help you with?"
 OKAY_ANSWER = "Alright! Is there anything else I can help you with?"
 GOODBYE_ANSWER = "Goodbye, and thank you! Message me anytime you need help with a rental."
@@ -451,6 +461,15 @@ def _route(message, entities, role, vehicle, vehicles, rental_context, diagnosti
         # Both use the existing "goodbye" intent, which the rest of the service already treats as small talk.
         return _with_evidence(core.build_response("goodbye", 1.0, GOODBYE_ANSWER if closing == "goodbye" else ACK_ANSWER if re.search(
             r"\b(?:thanks?|thx|tnx|ty|salamat)\b", message, re.IGNORECASE) else OKAY_ANSWER), "general_guidance", [])
+    if not isinstance(database_context, dict) and not diagnostic_context and ABOUT_YOU.match(message.strip()):
+        return _with_evidence(core.build_response("capabilities", 1.0, ABOUT_YOU_ANSWER + GREETING_ANSWERS[role].replace("Hello! ", "", 1)),
+                              "general_guidance", [])
+    if not isinstance(database_context, dict) and not diagnostic_context and planner.OFF_TOPIC.search(message.casefold()) \
+            and not MECHANICAL.search(message) and (not CAR_NOUN.search(message) or retrieve_knowledge(message) is None):
+        # "What's the weather today?" shares words with the booking guide ("today") but is not about this system.
+        abstained = _with_evidence(core.build_response("unknown", 0.0, OUT_OF_SCOPE_ANSWER), "none", [])
+        abstained["data"].update(abstained=True, abstain_reason="off_topic")
+        return abstained
     help_request = HELP_REQUEST.match(message.strip()) if not isinstance(database_context, dict) else None
     if help_request:
         topic = (help_request.group("topic") or "").casefold()
@@ -879,10 +898,22 @@ def _topic_follow_up(message, entities, memory):
     if not isinstance(topic, dict) or not topic.get("id") or entities["dtc_codes"]:
         return None
     text = message.strip()
-    if len(re.findall(r"[a-z0-9']+", text.casefold())) > 16 or not TOPIC_FOLLOW_UP.search(text):
-        return None
     document = knowledge_document(topic["id"])
     if document is None or not has_chat_fields(document):
+        return None
+    if len(re.findall(r"[a-z0-9']+", text.casefold())) <= 12:
+        # A short reply to the narrowing question just asked ("in traffic", "the coolant is low", "oo, umiikot").
+        other = retrieve_knowledge(text)
+        if other is None or other["document"]["id"] == document["id"] or other.get("phrase_length", 0) == 0:
+            reply = triage_reply(document, normalize_message(text), topic.get("shown"))
+            if reply is not None:
+                answer, shown = reply
+                response = core.build_response(document["category"], 1.0, answer,
+                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "triage"})
+                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
+                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
+                return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
+    if len(re.findall(r"[a-z0-9']+", text.casefold())) > 16 or not TOPIC_FOLLOW_UP.search(text):
         return None
     document_text = " ".join([document["answer"], document["title"], " ".join(document.get("key_causes") or []),
                               " ".join(document.get("actions") or []), " ".join(document.get("keywords") or []),
@@ -918,7 +949,8 @@ def _topic_follow_up(message, entities, memory):
         kind = "causes"
     elif ASKS_FIX.search(text):
         kind = "fix"
-    elif re.search(r"\b(?:what else|anything else|tell me more|more details?|more info|explain more)\b", text, re.IGNORECASE):
+    elif re.search(r"\b(?:what else|anything else|any ?more|more|tell me more|more details?|more info|explain more|ano pa|iba pa|meron pa|go on|continue)\b",
+                   text, re.IGNORECASE):
         kind = "more"
     if kind is None:
         return None
