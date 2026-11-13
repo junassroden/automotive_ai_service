@@ -658,6 +658,10 @@ ASKS_DRIVE = re.compile(
 # "How much does it cost to fix?", "magkano ipagawa?"
 ASKS_PRICE = re.compile(r"\b(?:how much (?:does|do|will|would|is|to|for)|cost|costs|price|magkano|expensive|mahal ba)\b", re.IGNORECASE)
 COST_TIP = "Get a written quote before the work starts."
+ASKS_ADVICE = re.compile(
+    # The message reaches this normalised, sometimes without the "I" ("when should change the timing belt").
+    r"^\s*(?:what|which|how much|how often|how many|when)\b.*\b(?:should|do (?:i|we) need|is (?:the )?(?:correct|right|recommended|best|ideal))\b"
+    r"|^\s*how often\b|^\s*what(?:'s| is) the (?:correct|right|recommended|ideal|normal)\b", re.IGNORECASE)
 # Words in "how often should X be replaced" that don't name the component.
 INTERVAL_FILLER = {"often", "long", "last", "lasts", "replace", "replaced", "replacing", "change", "changed", "should", "be", "interval",
                    "intervals", "life", "lifespan", "typical", "every", "when", "much", "km", "car", "parts", "part"}
@@ -693,7 +697,9 @@ def compose_chat_answer(document, query=""):
     emergency = bool(stop) and bool(EMERGENCY.search(query))
     wants_action = bool(ASKS_ACTION.search(query))
     wants_cause = bool(ASKS_CAUSE.search(query))
-    definition = bool(ASKS_DEFINITION.search(query)) and not wants_cause and not wants_action
+    # "What tire pressure should I use?", "how often should I change oil?": advice, not a problem, so no list of causes.
+    advice = bool(ASKS_ADVICE.search(query)) and not re.search(r"\bwhat (?:should|do|can|must) (?:i|we) do\b", query, re.IGNORECASE)
+    definition = (bool(ASKS_DEFINITION.search(query)) and not wants_action or advice) and not wants_cause
 
     if document.get("interval_items"):
         # "How often should brake pads be replaced?": the item asked about, not the whole table.
@@ -754,6 +760,24 @@ def compose_chat_answer(document, query=""):
 
 
 TRIAGE_CLOSING = "If that doesn't settle it, have a mechanic test those parts before replacing anything."
+# Yes/no words only make sense as the reply to a question that was put to the user: "not" in "engine not
+# starting" is no answer to "does the radiator fan run?".
+GENERIC_REPLY_WORDS = {"no", "nope", "not", "never", "yes", "yeah", "yep", "yup", "ok", "okay", "fine", "correct", "it", "does", "doesn",
+                       "doesnt", "t", "is", "isn", "isnt", "on", "only", "also", "always", "oo", "opo", "hindi", "wala", "walang", "tama",
+                       "meron", "mayroon", "normal", "enough", "just", "when"}
+REPLY_FUNCTION_WORDS = {"the", "and", "are", "what", "when", "where", "which", "with", "your", "you", "this", "that", "have", "has", "from",
+                        "mostly", "there", "how", "for", "was", "were", "but", "any", "can", "did", "its", "then", "than", "one", "all"}
+
+
+def asks_about(question, message):
+    """True when the message names something the narrowing question asks about ("fan" for "does the radiator fan run?")."""
+    # Not QUERY_STOP_WORDS: words like "traffic" are noise for search but are exactly what a narrowing question asks about.
+    def content(text):
+        return [word for word in _normalize(text).split() if len(word) > 2 and word not in REPLY_FUNCTION_WORDS
+                and word not in GENERIC_QUERY_TERMS and word not in GENERIC_REPLY_WORDS]
+    subject = content(question)
+    words = content(message)
+    return any(_terms_match(word, term) for word in words for term in subject)
 
 
 def triage_reply(document, message, shown=()):
@@ -775,6 +799,9 @@ def triage_reply(document, message, shown=()):
         hits = [(option_position, match.group(0))
                 for option_position, option in enumerate(triage[index]["answers"])
                 for match in re.finditer(option["match"], text, re.IGNORECASE)]
+        if index not in asked and not asks_about(triage[index]["ask"], text):
+            # A question nobody asked yet is answered only by a specific word ("in traffic", "green"), not by a bare yes or no.
+            hits = [(position, found) for position, found in hits if set(_normalize(found).split()) - GENERIC_REPLY_WORDS]
         if not hits:
             continue
         # The most specific answer wins: "cold while driving but warm in traffic" hits the traffic answer twice.
