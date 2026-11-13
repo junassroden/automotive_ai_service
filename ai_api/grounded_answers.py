@@ -90,6 +90,11 @@ def _join(items):
     return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1] if items else ""
 
 
+def _upper_first(text):
+    """Capitalises only the first letter ("GPS-equipped" stays "GPS-equipped"; str.capitalize would give "Gps-equipped")."""
+    return text[:1].upper() + text[1:] if text else text
+
+
 def compose(plan, results, role, vocabulary=None, guide=None, fleet_risk=None, shown_notes=()):
     """(answer, data). guide() -> (text, sources) | None; fleet_risk(vehicles) -> answer text."""
     results = results if isinstance(results, list) else []
@@ -207,6 +212,10 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
     for unknown in requested.get("unknown_names") or []:
         lines.append(f"I couldn't find a {unknown} {scope}.")
 
+    if not vehicles and purpose == "recommend":
+        need = f" for {args['min_seats']} or more people" if args.get("min_seats") else ""
+        return (f"No vehicle{need} can be rented right now, so I can't recommend one. "
+                "Ask me about other dates, or about a smaller group, and I'll check again.")
     if not vehicles:
         asked = requested.get("models") or requested.get("makes") or requested.get("categories") or requested.get("unknown_names")
         wanted = _join(asked) if asked else "a vehicle matching that"
@@ -228,6 +237,9 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
                      + _join(label[id(v)] for v in vehicles) + ". Ask me about any of them for prices and details.")
         return "\n".join(lines)
 
+    if purpose == "recommend":
+        lines += _recommend_lines(vehicles, args, label)
+        return "\n".join(lines)
     if purpose == "attribute":
         lines += _attribute_lines(plan.get("attribute"), vehicles, label, role)
     elif purpose == "ranking" and plan.get("rank_by") == "seats":
@@ -294,7 +306,7 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
         else:
             heading = "Vehicles that seat at least {} people".format(args["min_seats"]) if args.get("min_seats") else None
             if heading or _feature_words(args):
-                lines.append(f"{heading or _feature_words(args).capitalize() + ' vehicles'} {scope}:")
+                lines.append(f"{heading or _upper_first(_feature_words(args)) + ' vehicles'} {scope}:")
             lines += [f"- {label[id(v)]}: {_specs(v)}" for v in vehicles]
     else:
         if plan.get("hourly"):
@@ -302,7 +314,8 @@ def _vehicles(plan, by_tool, role, vocabulary, guide, fleet_risk, notes):
         if plan.get("rate_period"):
             lines.append("Only daily rates are recorded; the system has no weekly or monthly rates or discounts. "
                          "A longer rental is the daily rate times the number of days.")
-        lines += _price_lines(vehicles, args, label, role, scope)
+        count = max(int(data.get("total_matching") or 0), len(vehicles)) if plan.get("count_question") else None
+        lines += _price_lines(vehicles, {**args, "_count": count}, label, role, scope)
         if purpose == "price" and len(vehicles) > 0:
             notes.add(lines, "price_rule")
     if data.get("truncated"):
@@ -341,7 +354,11 @@ def _price_lines(vehicles, args, label, role, scope):
             lines.append(f"The {label[id(v)]} is {money(v['daily_rental_price'])} per day, with a {money(v['security_deposit'])} deposit.")
         return lines
     features = _feature_words(args)
-    lines.append(f"{features.capitalize()} vehicles {scope}:" if features else ("Vehicles in the fleet:" if role == "admin" else "Daily rates:"))
+    if args.get("_count"):
+        total = args["_count"]  # "How many cars do you have?"
+        lines.append(f"There {'is' if total == 1 else 'are'} {total} vehicle{'s' if total != 1 else ''} {scope}:")
+    else:
+        lines.append(f"{_upper_first(features)} vehicles {scope}:" if features else ("Vehicles in the fleet:" if role == "admin" else "Daily rates:"))
     lines += [f"- {label[id(v)]} ({v.get('category') or 'vehicle'}, {v.get('seating_capacity')} seats): "
               f"{money(v['daily_rental_price'])} per day, {money(v['security_deposit'])} deposit"
               + (f", status {v['status']}" if role == "admin" and v.get("status") else "") for v in vehicles]
@@ -534,6 +551,57 @@ def _quote_lines(vehicles, data, label):
     return lines
 
 
+def _recommend_lines(vehicles, args, label, limit=3):
+    """Up to three rentable vehicles that fit, each with why, then what would narrow it down.
+
+    With a group size, the closest fit comes first (enough seats without paying for a much bigger car); otherwise
+    the cheapest, the roomiest and the best equipped are picked so the choices differ."""
+    need = args.get("min_seats")
+    seats = lambda v: v.get("seating_capacity") or 0  # noqa: E731
+    price = lambda v: float(v.get("daily_rental_price") or 0)  # noqa: E731
+    if need:
+        ranked = sorted(vehicles, key=lambda v: (seats(v) - need, price(v)))
+    else:
+        cheapest = min(vehicles, key=price)
+        roomiest = max(vehicles, key=lambda v: (seats(v), -price(v)))
+        equipped = max(vehicles, key=lambda v: (bool(v.get("gps_navigation")) + bool(v.get("air_conditioning"))
+                                              + len(v.get("additional_features") or []), -price(v)))
+        ranked = list(dict.fromkeys([id(cheapest), id(roomiest), id(equipped)] + [id(v) for v in sorted(vehicles, key=price)]))
+        ranked = [next(v for v in vehicles if id(v) == key) for key in ranked]
+    picks = ranked[:limit]
+    cheapest_price = min(price(v) for v in vehicles)
+    most_seats = max(seats(v) for v in vehicles)
+
+    def reasons(v):
+        why = []
+        if need and seats(v) - need <= 1:
+            why.append(f"fits {need} with {seats(v)} seats")
+        elif seats(v) == most_seats and len(vehicles) > 1:
+            why.append(f"the roomiest, {seats(v)} seats")
+        else:
+            why.append(f"{seats(v)} seats")
+        if price(v) == cheapest_price and len(vehicles) > 1:
+            why.append("the lowest daily rate")
+        extras = [name for name, present in (("automatic", str(v.get("transmission") or "").casefold() in ("automatic", "cvt")),
+                                             ("GPS", v.get("gps_navigation")), ("diesel", str(v.get("fuel_type") or "").casefold() == "diesel"))
+                  if present]
+        if extras:
+            why.append(", ".join(extras))
+        return "; ".join(why)
+
+    lead = (f"For {need} people, here's what you can rent now, closest fit first:" if need
+            else f"Here {'are' if len(picks) > 1 else 'is'} {len(picks)} good {'options' if len(picks) > 1 else 'option'} you can rent now:")
+    lines = [lead]
+    lines += [f"- {label[id(v)]}: {money(price(v))} per day ({reasons(v)})" for v in picks]
+    if len(vehicles) > len(picks):
+        lines.append(f"{len(vehicles) - len(picks)} more {'is' if len(vehicles) - len(picks) == 1 else 'are'} available; ask to see all of them.")
+    missing = [text for key, text in (("min_seats", "how many people"), ("max_daily_rate", "your daily budget"), ("rental_days", "how many days"))
+               if not args.get(key)]
+    if missing:
+        lines.append(f"Tell me {_join(missing)}, and I'll narrow it down.")
+    return lines
+
+
 def _availability_lines(vehicles, data, role, purpose, label):
     period = data.get("period")
     if period:
@@ -555,10 +623,18 @@ def _availability_lines(vehicles, data, role, purpose, label):
         for v in vehicles:
             if v.get("status") != "available":
                 others[v.get("status") or "unknown"] = others.get(v.get("status") or "unknown", 0) + 1
-        lines = ["Available now: " + (_join(f"{label[id(v)]} ({money(v['daily_rental_price'])}/day)" for v in available) if available else "none") + "."]
-        if others:
-            lines.append("Not available now: " + ", ".join(f"{count} {status}" for status, count in sorted(others.items()))
-                         + " (ask which cars are rented or in maintenance for their names).")
+        total = max(int(data.get("total_matching") or 0), len(vehicles))  # every match, not only the rows returned
+        unseen = total - len(vehicles)
+        lines = [(f"{len(available)} of the {total} vehicles {'is' if len(available) == 1 else 'are'} available now: "
+                  + _join(f"{label[id(v)]} ({money(v['daily_rental_price'])}/day)" for v in available) + ".") if available
+                 else f"None of the {total} vehicles is available now."]
+        if unseen:
+            # Available cars are listed first, so every vehicle past the limit is one that can't be rented now.
+            lines.append(f"The other {total - len(available)} can't be rented right now. Ask \"fleet status\" for the totals by status.")
+        elif others:
+            statuses = sorted(others)
+            lines.append("The others: " + ", ".join(f"{count} {status}" for status, count in sorted(others.items()))
+                         + f". Ask \"which cars are {statuses[0]}?\" for their names.")
         return lines
     return ["Available for rent right now: " + _join(f"{label[id(v)]} ({money(v['daily_rental_price'])}/day)" for v in vehicles) + "."]
 
@@ -945,8 +1021,20 @@ def _utilization(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None)
 def _fleet_status(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
     data = by_tool["fleet.status_counts"].get("data") or {}
     counts = data.get("counts") or {}
-    return (f"The fleet has {data.get('total', 0)} vehicle(s): "
-            + (", ".join(f"{status} {count}" for status, count in sorted(counts.items())) if counts else "no status counts recorded") + ".")
+    total = data.get("total", 0)
+    summary = (f"The fleet has {total} vehicle(s): "
+               + (", ".join(f"{status} {count}" for status, count in sorted(counts.items())) if counts else "no status counts recorded") + ".")
+    asked = plan.get("asked_status")
+    if asked and total:
+        # "Are they all rented?": yes or no first, then the totals.
+        key = {"in maintenance": "maintenance", "booked": "rented"}.get(asked, asked)
+        matching = counts.get(key, 0)
+        lead = (f"Yes, all {total} are {asked}." if matching == total
+                else f"No, none of the {total} vehicles is {asked}." if matching == 0
+                else f"No, {matching} of the {total} vehicles {'is' if matching == 1 else 'are'} {asked}.")
+        notes = " Vehicles marked unavailable can't be booked until an administrator changes their status." if counts.get("unavailable") else ""
+        return f"{lead} {summary}{notes}"
+    return summary
 
 
 def _maintenance_due(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
