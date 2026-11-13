@@ -84,7 +84,8 @@
             }
           ]
         }
-      ]
+      ],
+      "cost_note": "Spark plugs are cheap; an ignition coil is a moderate part, and a good shop swaps coils between cylinders to prove which one is bad before replacing. Injector or compression problems cost much more."
     },
     {
       "id": "engine_overheating",
@@ -253,7 +254,8 @@
             }
           ]
         }
-      ]
+      ],
+      "cost_note": "A cap, hose or thermostat is a small job; a fan motor or water pump costs more; a head gasket is a big job, so stop driving as soon as it overheats."
     },
     {
       "id": "oil_pressure_leak",
@@ -330,7 +332,8 @@
       ],
       "stop": "If the red oil-pressure light comes on while driving, stop safely and switch off the engine as soon as possible. Don't restart it until the oil level has been checked.",
       "professional": "If the level is correct and the light stays on, have the car towed to a workshop.",
-      "drive_safety": "No, not with the red oil-pressure light on. Running the engine without oil pressure can destroy it in minutes; switch it off and check the oil level."
+      "drive_safety": "No, not with the red oil-pressure light on. Running the engine without oil pressure can destroy it in minutes; switch it off and check the oil level.",
+      "cost_note": "Topping up oil costs little. A drain-plug washer or filter seal is a small job; a valve-cover gasket is moderate; a rear main seal is a big job because the gearbox comes out."
     },
     {
       "id": "oil_change_schedule",
@@ -446,7 +449,8 @@
         "Have the diagnostic codes read before replacing parts."
       ],
       "stop": "A strong fuel smell is different: it can mean a leak and is a fire risk, so don't keep the engine running and keep away from sparks and flames.",
-      "professional": "Fuel-pressure and sensor tests need workshop equipment."
+      "professional": "Fuel-pressure and sensor tests need workshop equipment.",
+      "drive_safety": "Usually yes for a short distance if it still drives smoothly enough, but avoid highways and heavy loads. If it stalls, misfires hard or the check-engine light flashes, stop driving and have it checked."
     },
     {
       "id": "timing_engine_wear",
@@ -497,7 +501,8 @@
       ],
       "stop": "If the engine suddenly cuts out and won't restart, don't keep cranking it; have it towed and inspected.",
       "professional": "Timing components can only be inspected properly by a technician.",
-      "drive_safety": "If the timing belt is overdue, have it replaced before long trips; if it breaks, the engine stops and can be badly damaged."
+      "drive_safety": "If the timing belt is overdue, have it replaced before long trips; if it breaks, the engine stops and can be badly damaged.",
+      "cost_note": "A timing belt replacement is a planned, moderate-to-big job (do the water pump and tensioner at the same time). If the belt breaks first on an interference engine, the repair can cost many times more."
     },
     {
       "id": "brake_wear",
@@ -570,7 +575,8 @@
       ],
       "stop": "If braking feels weaker, the pedal goes soft or you hear grinding, stop driving when it's safe and have the brakes inspected before using the car again.",
       "professional": "Brake repairs should be done by a qualified technician.",
-      "drive_safety": "Not for long. Worn brakes stop the car less well; if you hear grinding or the pedal feels different, stop driving and have them inspected."
+      "drive_safety": "Not for long. Worn brakes stop the car less well; if you hear grinding or the pedal feels different, stop driving and have them inspected.",
+      "cost_note": "Pads alone are one of the cheaper brake jobs. If the discs are scored or too thin they have to be resurfaced or replaced too, which roughly doubles it, so don't wait until you hear grinding."
     },
     {
       "id": "brake_noise",
@@ -667,7 +673,8 @@
             }
           ]
         }
-      ]
+      ],
+      "cost_note": "If it's only moisture or dust, a clean-up costs little or nothing. Worn pads are a routine job; it gets more expensive once the discs are damaged too."
     },
     {
       "id": "brake_warning_abs",
@@ -841,7 +848,8 @@
             }
           ]
         }
-      ]
+      ],
+      "cost_note": "Start with the fluid level and condition, which is cheap to check. A fluid service is moderate; a solenoid or valve-body repair costs more; a rebuild or replacement is the most expensive repair on most cars."
     },
     {
       "id": "clutch_drivetrain_vibration",
@@ -1024,7 +1032,8 @@
       ],
       "stop": "If the steering feels loose or unpredictable, or there's a sudden loud noise, stop driving and have it inspected.",
       "professional": "Steering and suspension joints need to be checked on a lift by a technician.",
-      "drive_safety": "If the steering feels loose or unpredictable, no. Clunks or noises without a change in steering feel should still be inspected soon."
+      "drive_safety": "If the steering feels loose or unpredictable, no. Clunks or noises without a change in steering feel should still be inspected soon.",
+      "cost_note": "Bushings and sway-bar links are cheap parts; ball joints and tie-rod ends are moderate; a steering rack is the expensive end. A check on a lift shows which it is."
     },
     {
       "id": "battery_charging_starting",
@@ -1140,7 +1149,8 @@
             }
           ]
         }
-      ]
+      ],
+      "cost_note": "A battery test is usually free at battery shops. If it's only the terminals, it's a cleaning job. A new battery is a moderate cost; an alternator or starter costs more, so test before buying anything."
     },
     {
       "id": "dashboard_warning_obd",
@@ -1222,7 +1232,9 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "A steady check-engine light: yes, you can usually keep driving normally, but have the codes read within the next few days. A flashing light: no, slow down and stop as soon as it's safe, because a severe misfire can ruin the catalytic converter. Any red warning light: stop and check before going further.",
+      "cost_note": "Reading the codes costs little and many shops or parts stores do it for free. The repair depends entirely on the code and what the tests show; a loose fuel cap costs nothing."
     },
     {
       "id": "coolant_leaks_fluids",
@@ -1274,7 +1286,8 @@
         "Check the fluid levels with the engine off and cool."
       ],
       "stop": "A brake-fluid or fuel leak, or any leak with a warning light, means don't drive the car; arrange a tow.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Only if you know which fluid it is. Water from the A/C is harmless. A coolant leak is fine for a short trip if you watch the temperature gauge; brake fluid leaking means don't drive until it's fixed."
     },
     {
       "id": "filters_routine_service",
@@ -1506,7 +1519,6 @@
         "model recommendation",
         "what does prediction mean",
         "low model score prove vehicle is safe",
-        "predictive maintenance",
         "predictive maintenance model",
         "model flagged",
         "why was this vehicle flagged"
@@ -1792,6 +1804,10 @@
           "ask": "Is the air warm all the time, or cold at first and then warm, or cold only while driving?",
           "answers": [
             {
+              "match": "\\b(?:weak|mahina|low airflow|little air|not much air|barely blowing|no air|hina)\\b",
+              "narrow": "Weak airflow from the vents is usually not the refrigerant: it's a clogged cabin air filter, the most common and cheapest fix, or a blower motor or blower resistor fault. If only some fan speeds work, it's the resistor. Check the cabin filter first."
+            },
+            {
               "match": "\\b(?:all the time|always|never cold|lagi|palagi|warm all|mainit lagi)\\b",
               "narrow": "Warm air all the time usually means low refrigerant from a leak, or the compressor not engaging. Check whether the compressor clutch at the front of the engine spins when the A/C is on."
             },
@@ -1805,7 +1821,9 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Yes, a weak or warm A/C doesn't affect how the car drives. Just switch it off if you hear a grinding or squealing from the compressor, so a seizing compressor doesn't take the drive belt with it.",
+      "cost_note": "A cabin filter is cheap and quick. A recharge is moderate, but if there's a leak it will just leak out again, so ask for a leak test. A compressor is the expensive end."
     },
     {
       "id": "exhaust_emissions_dpf",
@@ -1887,7 +1905,8 @@
       ],
       "stop": "If you smell exhaust fumes inside the car, open the windows, stop and get out; carbon monoxide is dangerous.",
       "professional": null,
-      "drive_safety": "If you smell exhaust fumes inside the car, no. A DPF or emissions warning usually allows careful driving to a workshop; follow the owner's manual."
+      "drive_safety": "If you smell exhaust fumes inside the car, no. A DPF or emissions warning usually allows careful driving to a workshop; follow the owner's manual.",
+      "cost_note": "An exhaust leak at a gasket or clamp is a small job; a new section of pipe is moderate. A catalytic converter or DPF is expensive, so have the sensors and leaks checked first."
     },
     {
       "id": "exhaust_smoke_color",
@@ -2079,7 +2098,8 @@
       ],
       "stop": "Grinding brakes can lose stopping power and quickly damage the rotors: stop using the car and have it inspected or towed.",
       "professional": null,
-      "drive_safety": "No. Grinding brakes can lose stopping power and damage the rotors quickly; have the car inspected or towed."
+      "drive_safety": "No. Grinding brakes can lose stopping power and damage the rotors quickly; have the car inspected or towed.",
+      "cost_note": "Grinding usually means the discs are already damaged, so expect pads plus discs (or resurfacing), not pads only. Stopping now keeps it from reaching the calipers."
     },
     {
       "id": "brake_vibration",
@@ -2287,7 +2307,8 @@
       ],
       "stop": "Reduce speed and load, stop in a safe place as soon as you can, and avoid continued driving until the vehicle is inspected or towed.",
       "professional": null,
-      "drive_safety": "No. A flashing check-engine light means a severe misfire that can damage the catalytic converter; stop when it's safe and arrange an inspection or a tow."
+      "drive_safety": "No. A flashing check-engine light means a severe misfire that can damage the catalytic converter; stop when it's safe and arrange an inspection or a tow.",
+      "cost_note": "Usually a spark plug or coil, which is a moderate repair. Ignoring it is what gets expensive: a damaged catalytic converter costs far more than the coil."
     },
     {
       "id": "exhaust_blue_smoke",
@@ -2406,7 +2427,8 @@
         "Have the codes read and the fuel system checked."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes for short trips, but it's burning extra fuel and can foul the spark plugs and catalytic converter. Have it checked soon, sooner if the check-engine light is on or it loses power."
     },
     {
       "id": "high_speed_vibration",
@@ -2716,7 +2738,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Depends on the colour: clear water from the A/C is normal; green, pink or orange (coolant) is OK for a short trip while watching the temperature gauge; clear-yellow or brown brake fluid means don't drive until it's checked."
     },
     {
       "id": "tire_puncture",
@@ -3712,7 +3735,8 @@
         "Very dark or burnt-smelling fluid should be checked by a technician."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "If the gearbox shifts normally, yes. If it slips, shifts late or harshly, or smells burnt, drive as little as possible: driving on low or burnt fluid turns a cheap fluid service into a gearbox repair."
     },
     {
       "id": "gear_shifting_difficulty",
@@ -3773,7 +3797,8 @@
         "On an automatic, a gear that won't engage points to low transmission fluid or a transmission fault; have it checked before driving."
       ],
       "stop": "If you can't select a gear or the clutch pedal stays down, stop and arrange assistance.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Short distances only, and avoid traffic where you need to change gear often. If it pops out of gear or won't go into gear at all, don't drive it."
     },
     {
       "id": "transmission_noise",
@@ -3830,7 +3855,8 @@
         "Look for fluid leaks under the car."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "A faint whine can wait for an inspection; a grinding or clunking noise, or one that changes with every gear, should be checked before driving far."
     },
     {
       "id": "shock_absorbers",
@@ -3888,7 +3914,8 @@
       ],
       "stop": null,
       "professional": null,
-      "drive_safety": "You can usually drive carefully, but worn shock absorbers increase stopping distances and reduce grip, so have them replaced soon."
+      "drive_safety": "You can usually drive carefully, but worn shock absorbers increase stopping distances and reduce grip, so have them replaced soon.",
+      "cost_note": "Shocks are replaced in pairs per axle. It's a moderate job; doing it with an alignment check is good practice."
     },
     {
       "id": "wheel_alignment",
@@ -3941,7 +3968,8 @@
         "Have the alignment checked after a hard impact or when fitting new tires."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes, a slight pull is safe to drive on; it just wears the tires faster. Have the alignment done soon so you don't ruin a set of tires."
     },
     {
       "id": "power_steering_noise",
@@ -4097,7 +4125,8 @@
         "Have the wheels balanced when fitting new tires, after a puncture repair, or if vibration appears."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes, it's safe at normal speeds. The vibration wears tires and suspension parts over time, so have the wheels balanced at a tire shop soon."
     },
     {
       "id": "tire_rotation",
@@ -4764,7 +4793,8 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "drive_safety": "Yes for now, but have it checked soon. If the smell comes with the check-engine light, overheating or loss of power, stop driving: the catalytic converter may be overheating."
     },
     {
       "id": "tpms_light",
@@ -5208,7 +5238,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Usually yes. If the check-engine light is flashing, or the shaking gets much worse when you accelerate, stop driving and have it checked."
     },
     {
       "id": "diesel_vs_gasoline",
@@ -5412,7 +5443,8 @@
         "If the dimming changes with engine speed or the battery light comes on, have the battery and alternator tested."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "In daylight, yes. At night, only if you can see well enough; if the lights also flicker or the battery light comes on, it's the charging system and the car may stop."
     },
     {
       "id": "high_fuel_consumption",
@@ -5476,7 +5508,9 @@
         "If one wheel is much hotter than the others after a drive, a brake may be dragging; have it checked."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes, it's safe to drive. Check the tire pressures first, it's the cheapest fix; if consumption is still high, have it scanned.",
+      "cost_note": "Tire pressure and an air filter cost little. A sensor or spark plugs are moderate. Have it scanned before replacing parts."
     },
     {
       "id": "hybrid_operation",
@@ -5688,7 +5722,9 @@
         "Have it checked soon: a badly slipping clutch can leave you unable to drive the car."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "For now, yes, gently: avoid hard acceleration, hills and heavy loads. A slipping clutch only gets worse, and when it goes completely the car won't move.",
+      "cost_note": "A clutch replacement is mostly labour, because the gearbox comes out. Replace the clutch kit (plate, pressure plate and release bearing) together so you don't pay that labour twice."
     },
     {
       "id": "horn_not_working",
@@ -5883,7 +5919,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Depends on the smell. Burning plastic or smoke: stop now and switch off. Hot brakes after a long downhill: let them cool. Burnt oil from the engine bay: drive gently to a workshop and check the oil level first."
     },
     {
       "id": "engine_stalling",
@@ -5969,7 +6006,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Drive carefully and avoid heavy traffic and highways until it's fixed: a car that stalls loses power steering and brake assist, and can stop in an unsafe place."
     },
     {
       "id": "hesitation_jerking",
@@ -6060,7 +6098,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Usually yes at normal speeds, but leave more room when overtaking or merging, because it may not pull when you need it. If the check-engine light flashes, stop driving."
     },
     {
       "id": "hard_starting_cold",
@@ -6146,7 +6185,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Yes, once it starts it's fine to drive. The risk is being stranded, so get the battery tested soon and keep jumper cables in the car."
     },
     {
       "id": "rattle_underneath",
@@ -6216,7 +6256,8 @@
             }
           ]
         }
-      ]
+      ],
+      "drive_safety": "Usually yes, but look underneath for anything hanging loose. A loose heat shield is harmless; a loose exhaust or suspension part needs fixing before a long drive."
     },
     {
       "id": "wipers_problem",
@@ -6324,7 +6365,8 @@
         "If the oil looks milky or smells of fuel, don't keep driving: have the engine checked."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Black oil is normal: yes. Milky or foamy oil, or oil that smells of fuel, means don't drive until it's checked; it can point to coolant or fuel getting into the oil."
     },
     {
       "id": "idle_surging",
@@ -6379,7 +6421,8 @@
         "Have the throttle body cleaned and the codes read."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Usually yes, but take care when stopping in traffic: the idle can push the car forward. Have it checked soon."
     },
     {
       "id": "ac_power_loss",
@@ -6431,7 +6474,8 @@
         "If it's more than a slight drop, have the idle control, spark plugs and the A/C compressor checked."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes. Switching the A/C off when you need full power, for example uphill or when overtaking, is a normal workaround while it's checked."
     },
     {
       "id": "temperature_gauge_low",
@@ -6482,7 +6526,8 @@
         "If the heater also blows cool, the thermostat is the likely cause; if the heater is hot but the gauge stays low, suspect the sensor."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes, it's safe to drive. The engine just runs less efficiently when it stays cold, so have the thermostat checked at your next service."
     },
     {
       "id": "power_windows",
@@ -6687,7 +6732,8 @@
         "Note whether the noise gets louder when turning left or right: a bearing usually gets louder on the opposite side from the turn."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Short trips at normal speeds, yes, but have it checked soon. A bearing that's left to wear can overheat and in the worst case let the wheel wobble or seize."
     },
     {
       "id": "abs_system",
@@ -6799,7 +6845,8 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "drive_safety": "Yes, the car drives normally, but the airbags may not deploy in a crash. Get it scanned soon, and keep children out of the front seat until it's fixed."
     },
     {
       "id": "eps_light",
@@ -6856,7 +6903,8 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "drive_safety": "Only carefully and at low speed: steering may suddenly get very heavy, especially when parking. Restart the engine once; if the light stays on, have it checked before a long drive."
     },
     {
       "id": "battery_weak_signs",
@@ -6928,7 +6976,9 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "drive_safety": "Yes, once it's running. The risk is not restarting, so avoid stopping somewhere you'd be stuck, and get the battery tested within the week.",
+      "cost_note": "Have it load-tested first, often free at battery shops. If the battery is fine, the alternator or a parasitic drain is next; only replace what the test points to."
     },
     {
       "id": "engine_oil_type",
@@ -7042,7 +7092,8 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "cost_note": "A basic PMS (oil, filter and checks) is the cheapest; the bigger services at 20,000 or 40,000 km add filters, plugs and fluids and cost more. Ask for the checklist and a quote before the work starts."
     },
     {
       "id": "flooded_car",
@@ -7214,6 +7265,1112 @@
         {
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "cost_note": "Tires are priced per size and brand; replacing in pairs per axle is normal. Add a wheel alignment when you fit new front tires so they don't wear unevenly."
+    },
+    {
+      "id": "pm_what_is_predictive",
+      "title": "What predictive maintenance is",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "predictive maintenance",
+        "what is predictive maintenance",
+        "define predictive maintenance",
+        "predictive maintenance meaning",
+        "how does predictive maintenance work",
+        "benefits of predictive maintenance",
+        "why use predictive maintenance"
+      ],
+      "answer": "Predictive maintenance means servicing a part when its condition data says it's heading for failure, instead of on a fixed calendar or after it breaks. You measure or inspect the car regularly, watch the trend, and act when the trend crosses a limit.",
+      "key_causes": [],
+      "actions": [
+        "For a rental fleet the data is the regular assessments (ratings and measurements such as pad thickness or tread depth), warning lights and fault codes, and the history of what actually failed.",
+        "The payoff is fewer breakdowns during rentals and less money spent replacing parts that still had life in them."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Predictive maintenance means servicing a part when its condition data says it's heading for failure, instead of on a fixed calendar or after it breaks. You measure or inspect the car regularly, watch the trend, and act when the trend crosses a limit.",
+      "possible_causes": [],
+      "symptoms": [
+        "What predictive maintenance is."
+      ],
+      "checks": [
+        "For a rental fleet the data is the regular assessments (ratings and measurements such as pad thickness or tread depth), warning lights and fault codes, and the history of what actually failed.",
+        "The payoff is fewer breakdowns during rentals and less money spent replacing parts that still had life in them."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_preventive_vs_predictive",
+      "title": "Preventive vs predictive vs reactive maintenance",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "difference between preventive and predictive maintenance",
+        "preventive vs predictive",
+        "preventive and predictive maintenance",
+        "predictive vs preventive",
+        "preventive maintenance vs predictive maintenance",
+        "reactive maintenance",
+        "run to failure",
+        "corrective maintenance",
+        "types of maintenance",
+        "maintenance strategies",
+        "condition based vs time based"
+      ],
+      "answer": "Reactive maintenance fixes things after they break. Preventive maintenance services on a fixed schedule (every 5,000 or 10,000 km or every 6 months), whether the part needs it or not. Predictive (condition-based) maintenance services when inspections or data show the part is wearing out.",
+      "key_causes": [],
+      "actions": [
+        "Most fleets mix them: preventive for cheap, critical items like oil, filters and brake fluid; predictive for expensive wear parts like brakes, tires, suspension and the clutch; reactive only for cheap, non-safety items like a bulb or a wiper.",
+        "Never run safety items (brakes, tires, steering) to failure."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Reactive maintenance fixes things after they break. Preventive maintenance services on a fixed schedule (every 5,000 or 10,000 km or every 6 months), whether the part needs it or not. Predictive (condition-based) maintenance services when inspections or data show the part is wearing out.",
+      "possible_causes": [],
+      "symptoms": [
+        "Preventive vs predictive vs reactive maintenance."
+      ],
+      "checks": [
+        "Most fleets mix them: preventive for cheap, critical items like oil, filters and brake fluid; predictive for expensive wear parts like brakes, tires, suspension and the clutch; reactive only for cheap, non-safety items like a bulb or a wiper.",
+        "Never run safety items (brakes, tires, steering) to failure."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_condition_based",
+      "title": "Condition-based maintenance and vehicle assessments",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "condition based maintenance",
+        "condition-based maintenance",
+        "condition monitoring",
+        "vehicle assessment",
+        "what is a vehicle assessment",
+        "why assess vehicles",
+        "assessment ratings",
+        "how do assessments work"
+      ],
+      "answer": "Condition-based maintenance acts on what an inspection finds. Each assessment rates every system (engine, brakes, tires and so on) and records measurements and warning lights; a rating that drops between assessments is the earliest warning you get.",
+      "key_causes": [],
+      "actions": [
+        "In this system each vehicle is reassessed every 30 days. A Fair rating means wear or a defect was seen that doesn't need immediate work: monitor it. Poor means a defect that needs repair: schedule it. Critical means unsafe or unfit: take the car out of rental until a mechanic clears it.",
+        "Record measurements, not just ratings: pad thickness in mm, tread depth in mm, battery test result. Numbers show a trend long before a rating changes."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Condition-based maintenance acts on what an inspection finds. Each assessment rates every system (engine, brakes, tires and so on) and records measurements and warning lights; a rating that drops between assessments is the earliest warning you get.",
+      "possible_causes": [],
+      "symptoms": [
+        "Condition-based maintenance and vehicle assessments."
+      ],
+      "checks": [
+        "In this system each vehicle is reassessed every 30 days. A Fair rating means wear or a defect was seen that doesn't need immediate work: monitor it. Poor means a defect that needs repair: schedule it. Critical means unsafe or unfit: take the car out of rental until a mechanic clears it.",
+        "Record measurements, not just ratings: pad thickness in mm, tread depth in mm, battery test result. Numbers show a trend long before a rating changes."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_reassessment",
+      "title": "Monthly vehicle reassessment",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "what is a reassessment",
+        "reassessment meaning",
+        "what does reassessment mean",
+        "why reassess",
+        "monthly reassessment",
+        "how often to reassess",
+        "reassessment interval",
+        "explain reassessment"
+      ],
+      "answer": "A reassessment is the regular repeat inspection of a vehicle. In this system every vehicle is reassessed 30 days after its latest assessment; it shows as due soon within 7 days of that date and overdue after it.",
+      "key_causes": [],
+      "actions": [
+        "Comparing each reassessment with the one before is what turns inspections into predictions: a system going from good to fair is the cue to plan work before it reaches poor or critical.",
+        "Ask \"which cars need reassessment\" for the vehicles that are due or overdue."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "A reassessment is the regular repeat inspection of a vehicle. In this system every vehicle is reassessed 30 days after its latest assessment; it shows as due soon within 7 days of that date and overdue after it.",
+      "possible_causes": [],
+      "symptoms": [
+        "Monthly vehicle reassessment."
+      ],
+      "checks": [
+        "Comparing each reassessment with the one before is what turns inspections into predictions: a system going from good to fair is the cue to plan work before it reaches poor or critical.",
+        "Ask \"which cars need reassessment\" for the vehicles that are due or overdue."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_component_life",
+      "title": "Typical service life and intervals of car components",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "component life expectancy",
+        "how long do car parts last",
+        "typical service intervals",
+        "replacement intervals",
+        "maintenance intervals table",
+        "service life of parts",
+        "parts lifespan",
+        "when to replace parts",
+        "brake pad life",
+        "how long does a timing belt last",
+        "how long does a clutch last",
+        "how long do shocks last",
+        "how long does transmission fluid last",
+        "how long does coolant last",
+        "how often should brake pads be replaced",
+        "how often to replace brake pads",
+        "brake pad replacement interval",
+        "how often should tires be replaced",
+        "how often should i replace my battery",
+        "how often to replace timing belt"
+      ],
+      "answer": "Typical ranges (the owner's manual decides for each car): engine oil 5,000 to 10,000 km; air filter 20,000 to 40,000 km; cabin filter 15,000 to 20,000 km; spark plugs 40,000 km (copper) to 100,000 km (iridium); brake pads 30,000 to 70,000 km; brake fluid every 2 years; coolant 2 to 5 years; automatic or CVT fluid 40,000 to 80,000 km; timing belt 60,000 to 100,000 km; battery 2 to 4 years; tires 40,000 to 80,000 km or 5 to 6 years; shock absorbers 80,000 to 100,000 km; clutch 80,000 to 150,000 km.",
+      "key_causes": [],
+      "actions": [
+        "City traffic, heat, heavy loads and many short trips wear parts faster, so rental cars in Metro Manila usually sit at the short end of each range.",
+        "Use the range to plan, and the assessments and measurements to decide."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Typical ranges (the owner's manual decides for each car): engine oil 5,000 to 10,000 km; air filter 20,000 to 40,000 km; cabin filter 15,000 to 20,000 km; spark plugs 40,000 km (copper) to 100,000 km (iridium); brake pads 30,000 to 70,000 km; brake fluid every 2 years; coolant 2 to 5 years; automatic or CVT fluid 40,000 to 80,000 km; timing belt 60,000 to 100,000 km; battery 2 to 4 years; tires 40,000 to 80,000 km or 5 to 6 years; shock absorbers 80,000 to 100,000 km; clutch 80,000 to 150,000 km.",
+      "possible_causes": [],
+      "symptoms": [
+        "Typical service life and intervals of car components."
+      ],
+      "checks": [
+        "City traffic, heat, heavy loads and many short trips wear parts faster, so rental cars in Metro Manila usually sit at the short end of each range.",
+        "Use the range to plan, and the assessments and measurements to decide."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ],
+      "interval_items": [
+        "engine oil and filter: every 5,000 to 10,000 km (use the shorter interval for city traffic)",
+        "engine air filter: every 20,000 to 40,000 km",
+        "cabin air filter: every 15,000 to 20,000 km",
+        "spark plugs: about 40,000 km for copper plugs, up to 100,000 km for iridium",
+        "brake pads: usually 30,000 to 70,000 km; replace at about 3 mm of pad left",
+        "brake fluid: every 2 years",
+        "coolant: every 2 to 5 years depending on the type",
+        "automatic or CVT transmission fluid: every 40,000 to 80,000 km",
+        "timing belt: every 60,000 to 100,000 km (chains usually last the engine's life)",
+        "battery: 2 to 4 years in a hot climate",
+        "tires: 40,000 to 80,000 km, or 5 to 6 years whatever the tread",
+        "shock absorbers: about 80,000 to 100,000 km",
+        "clutch: about 80,000 to 150,000 km, much less with heavy traffic or riding the clutch"
+      ]
+    },
+    {
+      "id": "pm_warning_signs",
+      "title": "Early warning signs before a failure, by system",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "early warning signs",
+        "warning signs before failure",
+        "signs a part is failing",
+        "signs of failure",
+        "early signs of car problems",
+        "what to look for before breakdown",
+        "how to know a part will fail",
+        "predict a breakdown",
+        "signs before breakdown"
+      ],
+      "answer": "Most failures give warning first. Engine: rough idle, hesitation, a check-engine light, oil use. Brakes: squeal, longer stops, a soft or pulsing pedal. Transmission: late or harsh shifts, slipping, dark or burnt fluid. Cooling: the gauge creeping up, coolant dropping, a sweet smell. Battery and charging: slow cranking, dim lights. Suspension and steering: clunks, wandering, uneven tire wear. Tires: tread under 3 mm, bulges, slow leaks.",
+      "key_causes": [],
+      "actions": [
+        "Ask drivers to report these at return, and check them at every assessment.",
+        "One sign is a reason to inspect; two signs in the same system, or a sign that keeps coming back, is a reason to repair."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Most failures give warning first. Engine: rough idle, hesitation, a check-engine light, oil use. Brakes: squeal, longer stops, a soft or pulsing pedal. Transmission: late or harsh shifts, slipping, dark or burnt fluid. Cooling: the gauge creeping up, coolant dropping, a sweet smell. Battery and charging: slow cranking, dim lights. Suspension and steering: clunks, wandering, uneven tire wear. Tires: tread under 3 mm, bulges, slow leaks.",
+      "possible_causes": [],
+      "symptoms": [
+        "Early warning signs before a failure, by system."
+      ],
+      "checks": [
+        "Ask drivers to report these at return, and check them at every assessment.",
+        "One sign is a reason to inspect; two signs in the same system, or a sign that keeps coming back, is a reason to repair."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_fleet_prioritization",
+      "title": "How to prioritise fleet maintenance",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "how to prioritize maintenance",
+        "how do fleets prioritize maintenance",
+        "maintenance priority rules",
+        "what to fix first",
+        "triage fleet repairs",
+        "maintenance priority order",
+        "which repairs come first"
+      ],
+      "answer": "Fix in this order: safety first (brakes, tires, steering, anything rated critical), then anything that can cause a bigger failure if left (overheating, low oil pressure, a slipping transmission), then overdue scheduled service, then wear items trending down, then comfort items like the A/C.",
+      "key_causes": [],
+      "actions": [
+        "Take any car with a critical or safety finding out of rental until it's cleared.",
+        "Group small jobs per car so it's off the road once, and schedule work around bookings.",
+        "Ask \"what should we service first this week\" for the ranked list from your fleet's records."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Fix in this order: safety first (brakes, tires, steering, anything rated critical), then anything that can cause a bigger failure if left (overheating, low oil pressure, a slipping transmission), then overdue scheduled service, then wear items trending down, then comfort items like the A/C.",
+      "possible_causes": [],
+      "symptoms": [
+        "How to prioritise fleet maintenance."
+      ],
+      "checks": [
+        "Take any car with a critical or safety finding out of rental until it's cleared.",
+        "Group small jobs per car so it's off the road once, and schedule work around bookings.",
+        "Ask \"what should we service first this week\" for the ranked list from your fleet's records."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_downtime_cost",
+      "title": "The cost of downtime in a rental fleet",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "cost of downtime",
+        "downtime cost",
+        "vehicle downtime",
+        "lost rental days",
+        "breakdown cost rental",
+        "unplanned downtime",
+        "how much does a breakdown cost"
+      ],
+      "answer": "In a rental fleet a breakdown costs far more than the repair: the lost rental days, the replacement car or refund for the customer, towing, rushed parts, and the customer you may not see again. A planned repair on a day with no booking costs only the repair.",
+      "key_causes": [],
+      "actions": [
+        "Count downtime per car in days per month; a car that's off the road often costs more than its repair bills show.",
+        "Planned maintenance is cheaper mainly because it's planned: the car is serviced between bookings, not during one."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "In a rental fleet a breakdown costs far more than the repair: the lost rental days, the replacement car or refund for the customer, towing, rushed parts, and the customer you may not see again. A planned repair on a day with no booking costs only the repair.",
+      "possible_causes": [],
+      "symptoms": [
+        "The cost of downtime in a rental fleet."
+      ],
+      "checks": [
+        "Count downtime per car in days per month; a car that's off the road often costs more than its repair bills show.",
+        "Planned maintenance is cheaper mainly because it's planned: the car is serviced between bookings, not during one."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_repair_vs_replace",
+      "title": "Repair or replace (retire) a vehicle",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "repair or replace",
+        "repair or retire",
+        "when to retire a car",
+        "when to replace a fleet vehicle",
+        "when to sell a car",
+        "vehicle replacement policy",
+        "retire a vehicle",
+        "fleet replacement cycle",
+        "50 percent rule"
+      ],
+      "answer": "Rules of thumb: replace a car when a single repair would cost more than about half its resale value, when repair and downtime costs per kilometre keep rising while its value falls, or when the same safety system keeps failing. Many rental fleets rotate cars after about 3 to 5 years or 100,000 to 150,000 km, before major repairs start and while resale value is still good.",
+      "key_causes": [],
+      "actions": [
+        "Compare the next 12 months of expected repairs plus lost rental days with the car's resale value and the cost of a replacement.",
+        "Ask \"should we retire the <car>\" for the facts from your records: age, mileage, spend, ratings and repeat failures."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Rules of thumb: replace a car when a single repair would cost more than about half its resale value, when repair and downtime costs per kilometre keep rising while its value falls, or when the same safety system keeps failing. Many rental fleets rotate cars after about 3 to 5 years or 100,000 to 150,000 km, before major repairs start and while resale value is still good.",
+      "possible_causes": [],
+      "symptoms": [
+        "Repair or replace (retire) a vehicle."
+      ],
+      "checks": [
+        "Compare the next 12 months of expected repairs plus lost rental days with the car's resale value and the cost of a replacement.",
+        "Ask \"should we retire the <car>\" for the facts from your records: age, mileage, spend, ratings and repeat failures."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_fleet_kpis",
+      "title": "Fleet maintenance measures to track",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "fleet kpis",
+        "maintenance kpis",
+        "maintenance metrics",
+        "fleet metrics",
+        "mean time between failures",
+        "mtbf",
+        "fleet availability",
+        "maintenance cost per km",
+        "how to measure maintenance performance"
+      ],
+      "answer": "Track a few numbers per car and for the fleet: availability (days rentable out of days owned), breakdowns per 10,000 km, maintenance cost per km, scheduled-service compliance (services done on time), and repeat repairs (the same fault fixed twice within 90 days).",
+      "key_causes": [],
+      "actions": [
+        "Rising cost per km or repeat repairs on one car are the clearest signs it's nearing the end of its useful life.",
+        "Record the cost and odometer on every maintenance record, or none of these can be calculated."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Track a few numbers per car and for the fleet: availability (days rentable out of days owned), breakdowns per 10,000 km, maintenance cost per km, scheduled-service compliance (services done on time), and repeat repairs (the same fault fixed twice within 90 days).",
+      "possible_causes": [],
+      "symptoms": [
+        "Fleet maintenance measures to track."
+      ],
+      "checks": [
+        "Rising cost per km or repeat repairs on one car are the clearest signs it's nearing the end of its useful life.",
+        "Record the cost and odometer on every maintenance record, or none of these can be calculated."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_data_needed",
+      "title": "What data predictive maintenance needs",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "what data is needed for predictive maintenance",
+        "data for predictive maintenance",
+        "how to improve predictions",
+        "how to make predictions accurate",
+        "what should we record",
+        "maintenance data to record",
+        "improve the maintenance model"
+      ],
+      "answer": "Predictions are only as good as the history behind them. For every car record: regular assessments with ratings and measurements, the odometer and date of every service, what was found and what was replaced, the cost, and the verified outcome of each recommendation (fault confirmed, repaired, or no fault found).",
+      "key_causes": [],
+      "actions": [
+        "The outcomes matter most: a model learns which ratings and readings came before real failures only if failures are recorded.",
+        "A few hundred verified outcomes from the real fleet are a realistic minimum before a fault model can be trusted."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Predictions are only as good as the history behind them. For every car record: regular assessments with ratings and measurements, the odometer and date of every service, what was found and what was replaced, the cost, and the verified outcome of each recommendation (fault confirmed, repaired, or no fault found).",
+      "possible_causes": [],
+      "symptoms": [
+        "What data predictive maintenance needs."
+      ],
+      "checks": [
+        "The outcomes matter most: a model learns which ratings and readings came before real failures only if failures are recorded.",
+        "A few hundred verified outcomes from the real fleet are a realistic minimum before a fault model can be trusted."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_false_alarms",
+      "title": "False alarms and missed faults in predictions",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "false alarms",
+        "false positives",
+        "missed faults",
+        "false negatives",
+        "precision and recall",
+        "what is recall",
+        "what is precision",
+        "why does the model flag healthy cars",
+        "model accuracy meaning"
+      ],
+      "answer": "Every prediction trades two errors: a false alarm (inspecting a car that was fine) and a missed fault (a car that fails without warning). For safety systems a missed fault is the costly one, so models are tuned to catch most faults (high recall) and accept some false alarms; an inspection settles each alert.",
+      "key_causes": [],
+      "actions": [
+        "Recall: the share of real faults the model catches. Precision: the share of its alerts that turn out to be real.",
+        "Ask \"how accurate is the maintenance model\" for the current figures of each model."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Every prediction trades two errors: a false alarm (inspecting a car that was fine) and a missed fault (a car that fails without warning). For safety systems a missed fault is the costly one, so models are tuned to catch most faults (high recall) and accept some false alarms; an inspection settles each alert.",
+      "possible_causes": [],
+      "symptoms": [
+        "False alarms and missed faults in predictions."
+      ],
+      "checks": [
+        "Recall: the share of real faults the model catches. Precision: the share of its alerts that turn out to be real.",
+        "Ask \"how accurate is the maintenance model\" for the current figures of each model."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_severe_service",
+      "title": "Severe-service conditions and maintenance intervals",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "severe service",
+        "severe driving conditions",
+        "severe service schedule",
+        "stop and go traffic maintenance",
+        "maintenance in hot climate",
+        "short trips maintenance",
+        "rental car maintenance schedule"
+      ],
+      "answer": "Most owner's manuals have a severe-service schedule with shorter intervals, for stop-and-go traffic, short trips, heat, dust, heavy loads or flooded roads. Rental cars in city traffic in the Philippines usually qualify, so plan by the severe schedule.",
+      "key_causes": [],
+      "actions": [
+        "In practice that often means oil every 5,000 km instead of 10,000 km, and more frequent checks of brakes, filters and coolant."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Most owner's manuals have a severe-service schedule with shorter intervals, for stop-and-go traffic, short trips, heat, dust, heavy loads or flooded roads. Rental cars in city traffic in the Philippines usually qualify, so plan by the severe schedule.",
+      "possible_causes": [],
+      "symptoms": [
+        "Severe-service conditions and maintenance intervals."
+      ],
+      "checks": [
+        "In practice that often means oil every 5,000 km instead of 10,000 km, and more frequent checks of brakes, filters and coolant."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_repeat_failures",
+      "title": "Repeat failures and root causes",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "repeat failures",
+        "same problem keeps coming back",
+        "recurring breakdowns",
+        "root cause",
+        "root cause analysis",
+        "why does the same part keep failing",
+        "comeback repairs"
+      ],
+      "answer": "A part that fails again soon after repair usually means the cause wasn't fixed, only the symptom: a battery that keeps dying with a bad alternator or a drain, pads that wear fast because a caliper sticks, a radiator hose that keeps bursting because the cap or thermostat is bad.",
+      "key_causes": [],
+      "actions": [
+        "When a repair comes back within 90 days, ask the mechanic what caused it, not just what failed.",
+        "Several systems failing repeatedly on one car is a retirement sign rather than a repair problem."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "A part that fails again soon after repair usually means the cause wasn't fixed, only the symptom: a battery that keeps dying with a bad alternator or a drain, pads that wear fast because a caliper sticks, a radiator hose that keeps bursting because the cap or thermostat is bad.",
+      "possible_causes": [],
+      "symptoms": [
+        "Repeat failures and root causes."
+      ],
+      "checks": [
+        "When a repair comes back within 90 days, ask the mechanic what caused it, not just what failed.",
+        "Several systems failing repeatedly on one car is a retirement sign rather than a repair problem."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_records_best_practice",
+      "title": "Keeping useful maintenance records",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "maintenance records best practice",
+        "how to record maintenance",
+        "service records",
+        "maintenance log",
+        "good maintenance records",
+        "what should a maintenance record include"
+      ],
+      "answer": "A useful record has the date, the odometer, what was checked, what was found, what was replaced (part and brand), the cost, who did it, and the next due date or km. Without the odometer and cost, no schedule or cost comparison can be calculated.",
+      "key_causes": [],
+      "actions": [
+        "Keep receipts and photos of worn parts; they settle warranty claims and support resale value."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "A useful record has the date, the odometer, what was checked, what was found, what was replaced (part and brand), the cost, who did it, and the next due date or km. Without the odometer and cost, no schedule or cost comparison can be calculated.",
+      "possible_causes": [],
+      "symptoms": [
+        "Keeping useful maintenance records."
+      ],
+      "checks": [
+        "Keep receipts and photos of worn parts; they settle warranty claims and support resale value."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_telematics_obd",
+      "title": "Telematics and OBD data for predictive maintenance",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "telematics",
+        "obd monitoring",
+        "obd data",
+        "sensor data",
+        "real time monitoring",
+        "gps tracker maintenance",
+        "connected car data",
+        "obd scanner fleet"
+      ],
+      "answer": "An OBD-II reader or telematics unit reports fault codes, coolant temperature, battery voltage, engine load and mileage automatically. Trends in those readings (a battery voltage that drops week by week, a coolant temperature that runs higher) warn of failures before a driver notices anything.",
+      "key_causes": [],
+      "actions": [
+        "Start simple: read and log fault codes at every assessment; it costs little and catches problems the driver didn't report."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "An OBD-II reader or telematics unit reports fault codes, coolant temperature, battery voltage, engine load and mileage automatically. Trends in those readings (a battery voltage that drops week by week, a coolant temperature that runs higher) warn of failures before a driver notices anything.",
+      "possible_causes": [],
+      "symptoms": [
+        "Telematics and OBD data for predictive maintenance."
+      ],
+      "checks": [
+        "Start simple: read and log fault codes at every assessment; it costs little and catches problems the driver didn't report."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_spare_parts",
+      "title": "Spare parts to keep for a rental fleet",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "spare parts",
+        "parts inventory",
+        "which spare parts to keep",
+        "fleet spare parts",
+        "stock parts"
+      ],
+      "answer": "Keep the fast-moving parts for your most common models: oil and filters, brake pads, wiper blades, bulbs and fuses, a battery for the most common size, and a good spare tire per car. Order slow-moving parts (clutches, alternators) when an assessment shows them trending down.",
+      "key_causes": [],
+      "actions": [
+        "Standardising on a few models keeps the parts list short and repairs fast."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Keep the fast-moving parts for your most common models: oil and filters, brake pads, wiper blades, bulbs and fuses, a battery for the most common size, and a good spare tire per car. Order slow-moving parts (clutches, alternators) when an assessment shows them trending down.",
+      "possible_causes": [],
+      "symptoms": [
+        "Spare parts to keep for a rental fleet."
+      ],
+      "checks": [
+        "Standardising on a few models keeps the parts list short and repairs fast."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_pms_vs_inspection",
+      "title": "Scheduled service (PMS) vs condition assessment",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "pms vs assessment",
+        "service vs inspection",
+        "difference between service and assessment",
+        "do we still need pms",
+        "is assessment enough"
+      ],
+      "answer": "You need both. The PMS replaces fluids and filters on schedule because their wear can't be seen; the assessment finds wear and defects in parts that wear unevenly, like brakes, tires and suspension. An assessment never replaces an oil change.",
+      "key_causes": [],
+      "actions": [
+        "Do an assessment at every PMS visit, so the car is inspected and serviced in one trip."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "You need both. The PMS replaces fluids and filters on schedule because their wear can't be seen; the assessment finds wear and defects in parts that wear unevenly, like brakes, tires and suspension. An assessment never replaces an oil change.",
+      "possible_causes": [],
+      "symptoms": [
+        "Scheduled service (PMS) vs condition assessment."
+      ],
+      "checks": [
+        "Do an assessment at every PMS visit, so the car is inspected and serviced in one trip."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_brake_wear_prediction",
+      "title": "Predicting brake wear",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "predict brake wear",
+        "brake pad thickness",
+        "how much brake pad is left",
+        "minimum brake pad thickness",
+        "brake pad wear rate",
+        "when will brakes need replacing"
+      ],
+      "answer": "Measure pad thickness at each assessment. New pads are about 10 to 12 mm; plan replacement at 3 mm and don't go below 2 mm. From two measurements you get a wear rate: for example 1 mm per 4,000 km at 5 mm left means about 8,000 km before the 3 mm limit.",
+      "key_causes": [],
+      "actions": [
+        "Front pads usually wear about twice as fast as rear ones.",
+        "Uneven wear between left and right means a sticking caliper or slide pin; fix that too."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Measure pad thickness at each assessment. New pads are about 10 to 12 mm; plan replacement at 3 mm and don't go below 2 mm. From two measurements you get a wear rate: for example 1 mm per 4,000 km at 5 mm left means about 8,000 km before the 3 mm limit.",
+      "possible_causes": [],
+      "symptoms": [
+        "Predicting brake wear."
+      ],
+      "checks": [
+        "Front pads usually wear about twice as fast as rear ones.",
+        "Uneven wear between left and right means a sticking caliper or slide pin; fix that too."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_tire_wear_prediction",
+      "title": "Predicting tire replacement",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "predict tire wear",
+        "tread depth measurement",
+        "tire wear rate",
+        "when will tires need replacing",
+        "minimum tread depth"
+      ],
+      "answer": "Measure tread depth at each assessment. New tires have about 8 mm; 1.6 mm is the legal-style minimum, but grip in the wet drops sharply below 3 mm, so plan replacement there. Two measurements give a wear rate and a replacement date.",
+      "key_causes": [],
+      "actions": [
+        "Wear on one edge means alignment; wear in the centre or on both edges means wrong pressure. Fix the cause before fitting new tires."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Measure tread depth at each assessment. New tires have about 8 mm; 1.6 mm is the legal-style minimum, but grip in the wet drops sharply below 3 mm, so plan replacement there. Two measurements give a wear rate and a replacement date.",
+      "possible_causes": [],
+      "symptoms": [
+        "Predicting tire replacement."
+      ],
+      "checks": [
+        "Wear on one edge means alignment; wear in the centre or on both edges means wrong pressure. Fix the cause before fitting new tires."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_battery_prediction",
+      "title": "Predicting battery failure",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "predict battery failure",
+        "battery test",
+        "battery voltage reading",
+        "battery health check",
+        "cold cranking test"
+      ],
+      "answer": "A battery tester's health or CCA result is the best predictor: plan replacement below about 60 to 70% health. A resting voltage under about 12.4 V after a night parked, slow cranking, or an age over 3 years in a hot climate are the other warnings.",
+      "key_causes": [],
+      "actions": [
+        "Test at each assessment; many battery shops test for free."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "A battery tester's health or CCA result is the best predictor: plan replacement below about 60 to 70% health. A resting voltage under about 12.4 V after a night parked, slow cranking, or an age over 3 years in a hot climate are the other warnings.",
+      "possible_causes": [],
+      "symptoms": [
+        "Predicting battery failure."
+      ],
+      "checks": [
+        "Test at each assessment; many battery shops test for free."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_fluid_analysis",
+      "title": "Fluid checks as an early warning",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "fluid analysis",
+        "oil analysis",
+        "fluid condition check",
+        "check fluids for problems",
+        "coolant condition",
+        "transmission fluid color"
+      ],
+      "answer": "Fluids show trouble early: engine oil that's milky (coolant getting in) or smells of fuel; coolant that's rusty or oily; transmission fluid that's dark or smells burnt; brake fluid that's dark (it absorbs moisture). Check level and condition at every assessment.",
+      "key_causes": [],
+      "actions": [
+        "A level that keeps dropping between checks is a leak or burning; find it before it causes damage."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Fluids show trouble early: engine oil that's milky (coolant getting in) or smells of fuel; coolant that's rusty or oily; transmission fluid that's dark or smells burnt; brake fluid that's dark (it absorbs moisture). Check level and condition at every assessment.",
+      "possible_causes": [],
+      "symptoms": [
+        "Fluid checks as an early warning."
+      ],
+      "checks": [
+        "A level that keeps dropping between checks is a leak or burning; find it before it causes damage."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_rental_turnaround_checks",
+      "title": "Quick checks between rentals",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "checks between rentals",
+        "turnaround inspection",
+        "quick inspection between rentals",
+        "return inspection checklist"
+      ],
+      "answer": "Between rentals, a five-minute check catches most problems early: walk-around for damage, tire condition and pressure, all lights, dashboard warning lights at start-up, fluid levels, and the odometer. Ask the returning customer if anything felt wrong.",
+      "key_causes": [],
+      "actions": [
+        "Log the odometer at every return; it keeps the service schedule accurate."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Between rentals, a five-minute check catches most problems early: walk-around for damage, tire condition and pressure, all lights, dashboard warning lights at start-up, fluid levels, and the odometer. Ask the returning customer if anything felt wrong.",
+      "possible_causes": [],
+      "symptoms": [
+        "Quick checks between rentals."
+      ],
+      "checks": [
+        "Log the odometer at every return; it keeps the service schedule accurate."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_budgeting",
+      "title": "Budgeting maintenance for a fleet",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "maintenance budget",
+        "how much to budget for maintenance",
+        "fleet maintenance budget",
+        "maintenance cost planning",
+        "plan maintenance costs"
+      ],
+      "answer": "Budget per car from its own history: last year's maintenance cost per km times the km you expect, plus the big scheduled items coming due (timing belt, tires, brakes, battery) by their intervals. Costs rise with age and mileage, so older cars need a bigger share.",
+      "key_causes": [],
+      "actions": [
+        "Enter the cost on every maintenance record; ask \"which car has the highest maintenance cost\" to compare."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Budget per car from its own history: last year's maintenance cost per km times the km you expect, plus the big scheduled items coming due (timing belt, tires, brakes, battery) by their intervals. Costs rise with age and mileage, so older cars need a bigger share.",
+      "possible_causes": [],
+      "symptoms": [
+        "Budgeting maintenance for a fleet."
+      ],
+      "checks": [
+        "Enter the cost on every maintenance record; ask \"which car has the highest maintenance cost\" to compare."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
+        }
+      ]
+    },
+    {
+      "id": "pm_mileage_vs_time",
+      "title": "Mileage and time-based service intervals",
+      "category": "fleet_maintenance",
+      "system": "fleet maintenance",
+      "component": "maintenance planning",
+      "keywords": [
+        "whichever comes first",
+        "mileage or time based",
+        "service by date or km",
+        "low mileage car service",
+        "car not driven much maintenance"
+      ],
+      "answer": "Service intervals are by distance and time, whichever comes first, because oil, fluids, rubber and batteries age even when the car sits. A car that sits for weeks still needs its time-based service, and its battery and tires checked.",
+      "key_causes": [],
+      "actions": [
+        "This system marks a car due after 5,000 km or 180 days since its last completed service, or when a recorded next-service date passes."
+      ],
+      "stop": null,
+      "professional": null,
+      "safety_critical": false,
+      "overview": "Service intervals are by distance and time, whichever comes first, because oil, fluids, rubber and batteries age even when the car sits. A car that sits for weeks still needs its time-based service, and its battery and tires checked.",
+      "possible_causes": [],
+      "symptoms": [
+        "Mileage and time-based service intervals."
+      ],
+      "checks": [
+        "This system marks a car due after 5,000 km or 180 days since its last completed service, or when a recorded next-service date passes."
+      ],
+      "urgency": "Plan it into the maintenance schedule.",
+      "needed_information": [
+        "The vehicle, its odometer reading and its service and assessment history."
+      ],
+      "sources": [
+        {
+          "name": "Fleet maintenance practice and vehicle-maker service schedules",
+          "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
         }
       ]
     }
