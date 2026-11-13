@@ -623,6 +623,31 @@ def category_registry():
     return registry.get("category_models") or {} if isinstance(registry, dict) else {}
 
 
+def models_overview():
+    """The registered per-system fault models for explaining them in chat: one entry per category with its status
+    (in_use, rejected, not_trained), training data and held-out metrics. Read from the registry only."""
+    overview = []
+    for category, section in sorted(category_registry().items()):
+        versions = section.get("versions") or []
+        active = section.get("active_version")
+        entry = _find_version(section, active) if active else (versions[-1] if versions else None)
+        if entry is None:
+            overview.append({"category": category, "status": "not_trained"})
+            continue
+        report = entry.get("report") or {}
+        metrics = report.get("metrics") or {}
+        status = "in_use" if active and entry.get("status") == STATUS_ACCEPTED else (
+            "rejected" if entry.get("status") == STATUS_REJECTED else "pending" if entry.get("status") == STATUS_PENDING else entry.get("status"))
+        overview.append({
+            "category": category, "name": report.get("category_name") or category.replace("_", " ").title(),
+            "status": status, "horizon_days": report.get("horizon_days"),
+            "training_source": (entry.get("training_data") or {}).get("source"), "rows": (report.get("dataset") or {}).get("rows"),
+            "vehicles": (report.get("dataset") or {}).get("vehicles"), "recall": metrics.get("recall"), "precision": metrics.get("precision"),
+            "reasons": [reason for reason in report.get("decision_reasons") or [] if status == "rejected"],
+        })
+    return overview
+
+
 def _find_version(section, version):
     for entry in section.get("versions", []):
         if entry["model_version"] == version:
