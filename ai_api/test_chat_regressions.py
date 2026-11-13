@@ -874,3 +874,164 @@ class GapFixTests(TestCase):
         for message, topic in expected.items():
             response = answer_chat(message, viewer_role="customer", retrieval_protocol=1)
             self.assertEqual((response.get("data") or {}).get("knowledge_id"), topic, message)
+
+
+class LiveScreenshotTests(TestCase):
+    """Problems the user found in the live chat on 2026-11-13, with the real fleet (3 available cars, 20 marked unavailable)."""
+
+    MEMORY = {"last_vehicles": [{"make": "Mitsubishi", "model": "Xpander"}, {"make": "Toyota", "model": "Hilux"}]}
+
+    def test_are_they_all_rented_gives_the_fleet_totals_with_yes_or_no(self):
+        from . import grounded_answers as grounded
+        plan = plan_message("are they all rented?", "admin", FLEET_VOCABULARY, self.MEMORY)
+        self.assertEqual((plan["intent"], plan["asked_status"]), ("fleet_status", "rented"))
+        data = {"counts": {"available": 3, "unavailable": 20}, "total": 23}
+        text = grounded.compose(plan, [{"tool": "fleet.status_counts", "status": "ok", "data": data}], "admin")[0]
+        self.assertTrue(text.startswith("No, none of the 23 vehicles is rented."), text)
+
+    def test_available_cars_after_a_list_asks_about_the_whole_fleet(self):
+        plan = plan_message("available cars", "admin", FLEET_VOCABULARY, self.MEMORY)
+        self.assertFalse(plan.get("follow_up"))
+        self.assertNotIn("models", plan["retrievals"][0]["args"])
+
+    def test_admin_availability_counts_every_vehicle(self):
+        from . import grounded_answers as grounded
+        plan = plan_message("available cars", "admin", FLEET_VOCABULARY, {})
+        vehicles = [{"make": "Toyota", "model": "Vios", "status": "available", "daily_rental_price": 1500.0}] + [
+            {"make": "Demo", "model": f"Car {i}", "status": "unavailable", "daily_rental_price": 1000.0} for i in range(19)]
+        data = {"vehicles": vehicles, "total_matching": 23}
+        text = grounded.compose(plan, [{"tool": "vehicles.search", "status": "ok", "data": data}], "admin")[0]
+        self.assertTrue(text.startswith("1 of the 23 vehicles is available now: Toyota Vios"), text)
+        self.assertIn("The other 22 can't be rented right now.", text)
+
+    def test_suggestions_recommend_rentable_cars_with_reasons(self):
+        from . import grounded_answers as grounded
+        for message in ("what car can you suggest to me", "what are the best car for 4 poeple", "anong magandang sasakyan"):
+            self.assertEqual(plan_message(correct_typos(message), "customer", FLEET_VOCABULARY, {})["purpose"], "recommend", message)
+        admin = plan_message("what car can you suggest to me", "admin", FLEET_VOCABULARY, {})
+        self.assertEqual(admin["retrievals"][0]["args"]["statuses"], ["available"])
+        plan = plan_message("best car for 4 people", "customer", FLEET_VOCABULARY, {})
+        vehicles = [{"make": "Toyota", "model": "Fortuner", "seating_capacity": 7, "daily_rental_price": 3500.0, "transmission": "Automatic"},
+                    {"make": "Toyota", "model": "Vios", "seating_capacity": 5, "daily_rental_price": 1500.0, "transmission": "Automatic"}]
+        text = grounded.compose(plan, [{"tool": "vehicles.search", "status": "ok", "data": {"vehicles": vehicles}}], "customer")[0]
+        self.assertTrue(text.startswith("For 4 people, here's what you can rent now, closest fit first:\n- Toyota Vios"), text)
+        self.assertIn("Tell me your daily budget and how many days", text)
+
+    @skipUnless(INDEX_BUILT, "knowledge index not built")
+    def test_anymore_gives_more_instead_of_repeating(self):
+        conversation = "7a4c2a1e-0000-4000-8000-000000000101"
+        ask = lambda message: answer_chat(message, viewer_role="customer", conversation_id=conversation,  # noqa: E731
+                                          conversation_scope="customer:screenshot-test", retrieval_protocol=1)
+        first = ask("my engine is overheating, what are the cause")["answer"]
+        more = ask("anymore")["answer"]
+        self.assertNotEqual(first.split("\n")[0], more.split("\n")[0])
+        self.assertIn("radiator cap", more)
+
+    @skipUnless(INDEX_BUILT, "knowledge index not built")
+    def test_flat_wheels_are_a_flat_tire(self):
+        self.assertEqual(answer_chat("the wheels are now flat", viewer_role="customer", retrieval_protocol=1)["data"]["knowledge_id"], "tire_puncture")
+
+
+@skipUnless(INDEX_BUILT, "knowledge index not built")
+class MechanicTriageTests(TestCase):
+    """A narrowing question after the first answer, and the cause narrowed down from each reply (2026-11-13)."""
+
+    def conversation(self, *messages):
+        conversation = f"7a4c2a1e-0000-4000-8000-{abs(hash(messages)) % 10**12:012d}"
+        return [answer_chat(message, viewer_role="customer", conversation_id=conversation, conversation_scope="customer:triage-test",
+                            retrieval_protocol=1)["answer"] for message in messages]
+
+    def test_overheating_is_narrowed_step_by_step(self):
+        first, traffic, coolant, fan = self.conversation("my car is overheating", "only in traffic", "the coolant is full", "no the fan doesn't spin")
+        self.assertIn("To narrow it down: Does it overheat mostly in slow traffic", first)
+        self.assertIn("points to the radiator fan", traffic)
+        self.assertIn("Next: With the engine cold, is the coolant reservoir low", traffic)
+        self.assertIn("thermostat", coolant)
+        self.assertIn("fan that doesn't run", fan)
+
+    def test_taglish_replies_are_understood(self):
+        _, traffic, coolant = self.conversation("umiinit ang makina", "sa traffic lang", "puno naman ang coolant")
+        self.assertIn("radiator fan", traffic)
+        self.assertIn("With the coolant full", coolant)
+
+    def test_the_most_specific_reply_wins(self):
+        _, reply = self.conversation("my aircon is blowing warm air", "cold while driving but warm in traffic")
+        self.assertIn("condenser isn't getting air at low speed", reply)
+
+    def test_a_first_message_with_the_clue_is_narrowed_at_once(self):
+        answer = answer_chat("there's green fluid leaking near the front of my car", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertIn("Green, pink or orange fluid near the front is coolant", answer)
+
+    def test_no_start_and_brake_noise(self):
+        _, clicking = self.conversation("car won't start", "it's clicking fast")
+        self.assertIn("flat battery or a poor connection", clicking)
+        _, grinding = self.conversation("my brakes are making noise", "it's grinding")
+        self.assertIn("worn to the metal backing", grinding)
+
+    def test_fresh_question_topics(self):
+        expected = {
+            "my car jerks when i accelerate": "hesitation_jerking", "my car is losing power going uphill": "hesitation_jerking",
+            "my car stalls at red lights": "engine_stalling", "my car takes long to start in the morning": "hard_starting_cold",
+            "hirap mag start ng sasakyan sa umaga": "hard_starting_cold", "may amoy sunog ang sasakyan": "burning_smell",
+            "my car smells like burning when i drive": "burning_smell", "the battery light is on": "battery_charging_light",
+            "umuusok ang tambutso ng itim": "exhaust_black_smoke", "lumalakas ang konsumo ng gasolina": "high_fuel_consumption",
+            "maingay ang gulong pag lumiliko": "cv_joint_clicking", "there is a rattling sound under the car": "rattle_underneath",
+            "my car overheats on long drives": "engine_overheating", "the temperature light is red": "engine_overheating",
+            "my wipers are slow": "wipers_problem", "engine oil is black": "oil_colour", "my exhaust is very loud": "exhaust_emissions_dpf",
+            "may kalabog sa ilalim pag may lubak": "steering_suspension", "umuusog ang manibela pakaliwa": "vehicle_pulling",
+            "the car makes a whining noise when accelerating": "transmission_noise",
+        }
+        for message, topic in expected.items():
+            response = answer_chat(message, viewer_role="customer", retrieval_protocol=1)
+            self.assertEqual((response.get("data") or {}).get("knowledge_id"), topic, message)
+
+    def test_rental_side_fresh_questions(self):
+        self.assertEqual(plan_message("can i drive to baguio", "customer", FLEET_VOCABULARY, {})["topic"], "travel outside the area")
+        gps = plan_message("is gps included", "customer", FLEET_VOCABULARY, {})
+        self.assertEqual(gps["retrievals"][0]["args"].get("has_gps"), True)
+        self.assertIsNone(plan_message("water dripping from under the car after using ac", "customer", FLEET_VOCABULARY, {}))
+
+
+@skipUnless(INDEX_BUILT, "knowledge index not built")
+class EverydayQuestionTests(TestCase):
+    """Everyday questions that got a wrong or missing answer in a 157-question review (2026-11-13)."""
+
+    def test_car_questions_reach_the_right_topic(self):
+        expected = {
+            "what does the airbag light mean": "airbag_light", "SRS light on dashboard": "airbag_light",
+            "what does EPS light mean": "eps_light", "what is ABS": "abs_system", "What does ABS mean?": "abs_system",
+            "what does the ABS light mean": "brake_warning_abs", "what is the ABS light": "brake_warning_abs",
+            "signs of a weak battery": "battery_weak_signs", "is my battery going bad": "battery_weak_signs",
+            "what type of oil should I use": "engine_oil_type", "what is included in a PMS": "service_schedule_pms",
+            "how often should I service my car": "service_schedule_pms", "my car got flooded, what should I do": "flooded_car",
+            "how do I save fuel": "fuel_saving", "how do I know if I need new tires": "tire_replacement",
+            "I smell gas in my car": "fuel_leak_smell", "smells like gasoline in the cabin": "fuel_leak_smell",
+            "my car stalls at stop lights": "engine_stalling", "what if I damage the car": "rental_damage_reporting",
+            "I hear a humming noise that gets louder with speed": "wheel_bearing",
+        }
+        for message, topic in expected.items():
+            response = answer_chat(message, viewer_role="customer", retrieval_protocol=1)
+            self.assertEqual((response.get("data") or {}).get("knowledge_id"), topic, message)
+
+    def test_unrecorded_rental_policies_say_so(self):
+        expected = {
+            "where is the pickup location": "the pickup and return location", "where do I pick up the car": "the pickup and return location",
+            "do I need to refill the gas before returning": "fuel rules when returning the car",
+            "can I return it with an empty tank": "fuel rules when returning the car", "how do I contact you": "contact details",
+        }
+        for message, topic in expected.items():
+            self.assertEqual(plan_message(message, "customer", FLEET_VOCABULARY, {}).get("topic"), topic, message)
+
+    def test_questions_about_the_assistant_and_off_topic(self):
+        for message in ("who are you", "are you a real person", "what can you do", "sino ka"):
+            response = answer_chat(message, viewer_role="customer", retrieval_protocol=1)
+            self.assertIn("virtual assistant", response["answer"], message)
+        for message in ("what is the weather today", "is it going to rain tomorrow"):
+            response = answer_chat(message, viewer_role="customer", retrieval_protocol=1)
+            self.assertEqual(response["intent"], "unknown", message)
+        leak = answer_chat("my car leaks when it rains", viewer_role="customer", retrieval_protocol=1)
+        self.assertEqual((leak.get("data") or {}).get("knowledge_id"), "water_in_cabin")
+
+    def test_how_to_rent_is_the_booking_guide(self):
+        response = answer_chat("how to rent a car", viewer_role="customer", retrieval_protocol=1)
+        self.assertIn("select Reserve", response["answer"])
