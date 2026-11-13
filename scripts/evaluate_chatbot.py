@@ -60,6 +60,7 @@ TOOL_KINDS = {"vehicles.search": "inventory", "vehicles.quote": "inventory", "bo
               "reservations.summary": "reservations", "fleet.status_counts": "fleet", "maintenance.records": "maintenance",
               "maintenance.inspections": "maintenance", "maintenance.recurring": "maintenance",
               "maintenance.due": "fleet_risk", "maintenance.model_inputs": "fleet_risk", "maintenance.costs": "maintenance",
+              "assessments.condition": "fleet_risk",
               "vehicles.status": "fleet", "reservations.revenue": "reservations", "fleet.utilization": "fleet"}
 ABSTAIN_INTENTS = {"unknown", "out_of_scope", "clarification_needed", "permission_denied"}
 TOKEN = re.compile(r"[a-z0-9]+")

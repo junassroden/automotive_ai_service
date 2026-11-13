@@ -2477,14 +2477,15 @@
         ],
         "must_contain": [
           "4,500.00",
-          "earlier"
+          "Toyota Vios"
         ],
         "must_not_contain": [
           "Fortuner"
         ]
       },
       "critical": true,
-      "conversation": "db-vios"
+      "conversation": "db-vios",
+      "note": "Updated 2026-11-13: the \"(About the ... from earlier.)\" lead was removed as confusing; the follow-up names the vehicle instead."
     },
     {
       "id": "db-f-003",
@@ -3941,11 +3942,11 @@
           "database_record"
         ],
         "must_contain": [
-          "free from",
+          "free on",
           "at least 3 days"
         ]
       },
-      "note": "From the 2026-10-31 unseen round (fresh_probe_v4); expected behaviour written from the fixture data. Updated 2026-11-12: online payment (Xendit) and the 3-day minimum since Back-End commit 22b829f."
+      "note": "From the 2026-10-31 unseen round (fresh_probe_v4); expected behaviour written from the fixture data. Updated 2026-11-12: online payment (Xendit) and the 3-day minimum since Back-End commit 22b829f. Updated 2026-11-13: a period shorter than the minimum now says the cars are free on the pickup day and gives the shortest bookable period."
     },
     {
       "id": "g-b01",
