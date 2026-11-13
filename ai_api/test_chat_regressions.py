@@ -949,6 +949,17 @@ class MechanicTriageTests(TestCase):
         self.assertIn("thermostat", coolant)
         self.assertIn("fan that doesn't run", fan)
 
+    def test_a_new_problem_is_not_read_as_a_reply(self):
+        # "not" in "engine not starting" once answered "does the radiator fan run?" with "no" (2026-11-14).
+        _, new_problem = self.conversation("engine is overheating", "engine not starting")
+        self.assertIn("won't start", new_problem)
+        self.assertNotIn("fan", new_problem)
+
+    def test_a_bare_no_to_an_either_or_question_is_asked_again(self):
+        _, _, bare = self.conversation("my engine is overheating", "in traffic", "no")
+        self.assertIn("is the coolant reservoir low or empty", bare)
+        self.assertNotIn("fan that doesn't run", bare)
+
     def test_taglish_replies_are_understood(self):
         _, traffic, coolant = self.conversation("umiinit ang makina", "sa traffic lang", "puno naman ang coolant")
         self.assertIn("radiator fan", traffic)
