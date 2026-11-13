@@ -447,6 +447,13 @@ def _price_lines(vehicles, args, label, role, scope):
         if rentable is not None:
             lines.append(f"The {'cheapest' if sort == 'price_asc' else 'most expensive'} rentable one is the {label[id(rentable)]} "
                          f"at {money(rentable['daily_rental_price'])} per day.")
+    available = [v for v in vehicles if v.get("status") == "available"]
+    if role == "admin" and not sort and (args.get("models") or args.get("makes")) and available and len(available) < len(vehicles):
+        # "How much is the Vios per day?" with three Vios, one rentable: that one first, then the others.
+        others = len(vehicles) - len(available)
+        lines.append(f"The {_join(label[id(v)] for v in available)} {'is' if len(available) == 1 else 'are'} rentable at "
+                     + _join(money(v['daily_rental_price']) for v in available) + " per day; the other "
+                     + (f"{others} {'is' if others == 1 else 'are'}" if others > 1 else "one is") + " not available right now.")
     features = _feature_words(args)
     if args.get("_count"):
         total = args["_count"]  # "How many cars do you have?"
