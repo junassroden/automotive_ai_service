@@ -1974,7 +1974,8 @@
           "message": "I hear a humming noise that gets louder with speed",
           "expect": "answer",
           "topics": [
-            "steering_suspension"
+            "steering_suspension",
+            "wheel_bearing"
           ],
           "include": [
             [
