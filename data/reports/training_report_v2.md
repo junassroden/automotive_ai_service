@@ -166,18 +166,18 @@ Status evaluated_experiment; evaluation `trained_models\experiments\nasa_battery
 
 ## Chatbot
 
-Evaluation set `data\evaluation\chatbot_eval_v2.json`: 221 author-written cases + 15 external DTC questions (review status: author_checked_against_sources). Full results: `chatbot_evaluation_v2.md`.
+Evaluation set `data\evaluation\chatbot_eval_v2.json`: 220 author-written cases + 15 external DTC questions (review status: author_checked_against_sources). Full results: `chatbot_evaluation_v2.md`.
 
 | Metric | Router | Previous core |
 |---|---:|---:|
-| Pass rate | 1.0 | 0.1525 |
+| Pass rate | 1.0 | 0.1574 |
 | Critical cases | 1.0 | 0.2 |
 | Permission leaks | 0/27 | 1/27 |
-| Latency p50/p95 ms | 167.9/251.8 | 93.1/313.7 |
+| Latency p50/p95 ms | 397.4/582.5 | 114.2/377.1 |
 
-Retrieval on labelled cases: recall@3 0.931, precision@3 0.3966, MRR 0.9483.
+Retrieval on labelled cases: recall@3 0.931, precision@3 0.4023, MRR 0.9483.
 
 | Role | Router pass | Previous core |
 |---|---:|---:|
-| admin | 1.0 | 0.1091 |
-| customer | 1.0 | 0.1657 |
+| admin | 1.0 | 0.1111 |
+| customer | 1.0 | 0.1713 |
