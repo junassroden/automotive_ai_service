@@ -93,6 +93,8 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:ayaw|hindi|di)\s+(?:na\s+)?(?:umandar|mag[- ]?start|magstart|mag[- ]?andar|nag[- ]?start|nag[- ]?aandar)\b", "won't start"),
     (r"\b(?:won'?t|wont|doesn'?t|does not|will not|can'?t|cannot|ayaw)\s+(?:turn|switch|mag)\s*on\b", "won't start"),
     (r"\b(?:flat|butas|pumutok)\s+(?:ang\s+)?gulong\b", "flat tire"),
+    # "Puno naman ang coolant": the coolant is full.
+    (r"\bpuno\b", "full"),
     (r"\b(?:sa\s+)?(?:mataas na takbo|mabilis na takbo|high speed)\b", "at high speed"),
     (r"\b(?:may\s+)?(?:tulo|tumulo|tumutulo|natutulo|tagas|tumatagas)\b", "leaking"),
     (r"\b(?:amoy|naaamoy|maamoy)\s+(?:na\s+)?(?:sunog|nasusunog|nasunog)\b", "burning smell"),

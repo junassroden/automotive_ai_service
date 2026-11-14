@@ -27,7 +27,8 @@ from . import chatbot_service as core
 from . import grounded_answers as grounded
 from . import planner
 from .automotive_knowledge import (
-    GENERIC_REPLY_WORDS, _terms_match, asks_about, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, mentions, retrieve_knowledge, triage_reply,
+    _content_terms, _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, knowledge_statements, mentions,
+    retrieve_knowledge,
 )
 from .fleet_service import analyze_fleet
 from .language import correct_typos, normalize_message
@@ -80,9 +81,10 @@ CHECKED = re.compile(r"\bi (?:already |just |have )?(?P<verb>checked|replaced|ch
 NOT_THE = re.compile(r"\b(?:it'?s|it is|that'?s|that is)?\s*not (?:the |my )(?P<subject>[a-z][a-z -]{1,40}?)[.?!]*$", re.IGNORECASE)
 ASKS_SAFE = re.compile(r"\b(?:safe|ok(?:ay)? to drive|still drive|keep driving|drive it|drive with it|drive like this|dangerous|serious|urgent|emergency)\b", re.IGNORECASE)
 ASKS_COST = re.compile(r"\b(?:how much|cost|costs|price|expensive|cheap)\b", re.IGNORECASE)
-ASKS_FIX = re.compile(r"\b(?:fix|repair|what (?:should|do|can) i do|what now|how (?:do|can|should) i)\b", re.IGNORECASE)
 ASKS_WHY = re.compile(r"\b(?:why|cause|causes|caused|reason)\b", re.IGNORECASE)
-TOPIC_SWITCH = re.compile(r"^(?:what|how) about (?:the |my )?(?P<subject>[a-z][a-z -]{1,40}?)[.?!]*$", re.IGNORECASE)
+# Words that say what state a part is in, not which part or problem.
+STATE_WORDS = {"fine", "work", "works", "working", "good", "normal", "full", "ok", "okay", "low", "empty", "new", "replaced", "checked",
+               "changed", "bad", "broken", "dead", "weak", "strong", "bright", "dim", "fast", "slow", "loud", "hot", "cold"}
 # A message made only of these words names a kind of symptom but nothing specific about it.
 VAGUE_WORDS = {
     "my", "car", "the", "a", "an", "is", "it", "its", "it's", "makes", "making", "made", "has", "have", "having", "had", "there", "weird", "strange",
@@ -359,7 +361,8 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
     if "last_topic" not in memory_updates:
         # The car problem being discussed, so a follow-up can build on it; anything else ends that topic.
         topic_id = response["data"].get("knowledge_id")
-        memory_updates["last_topic"] = {"id": topic_id, "shown": response["data"].get("shown_parts", [])} if topic_id else None
+        memory_updates["last_topic"] = {"id": topic_id, "shown": response["data"].get("shown_parts", []),
+                                        "query": normalize_message(message)} if topic_id else None
     _save_memory(conversation_id, conversation_scope, memory, entities, response.get("intent"), grounded_vehicles, memory_updates)
     logger.info("chat intent=%s evidence=%s role=%s latency_ms=%s", response.get("intent"),
                 response["data"]["evidence"].get("evidence_type"), role, response["data"]["latency_ms"])
@@ -1024,102 +1027,60 @@ def _resolve_follow_up(message, entities, memory):
 def _topic_follow_up(message, entities, memory):
     """(response, memory updates) when the message follows up on the car problem just discussed, else None.
 
-    Only short follow-ups are handled here; a message that clearly names another topic, a
-    trouble code, or anything not covered below goes through normal routing."""
+    The follow-up is answered from that topic's knowledge: the statements that best match what the message
+    says or asks, read in the light of the earlier question and leaving out what was already said. A message
+    that names another problem, a trouble code, or words this topic's knowledge doesn't hold is routed as a
+    new question."""
     topic = memory.get("last_topic") if isinstance(memory, dict) else None
     if not isinstance(topic, dict) or not topic.get("id") or entities["dtc_codes"]:
         return None
     text = message.strip()
     document = knowledge_document(topic["id"])
-    if document is None or not has_chat_fields(document):
+    if document is None or not has_chat_fields(document) or _is_greeting(text) or _small_talk_close(text):
         return None
-    # Searched the way a first question is ("engine not starting" reads as "engine won't start"), so a new
-    # problem is recognised as one instead of being read as a reply to the question just asked.
+    word_count = len(re.findall(r"[a-z0-9']+", text.casefold()))
+    if word_count > 16:
+        return None
+    # Read the way a first question is ("engine not starting" reads as "engine won't start"), so a new problem
+    # is recognised as one.
     normalized = normalize_message(text)
-    if len(re.findall(r"[a-z0-9']+", text.casefold())) <= 12:
-        # A short reply to the narrowing question just asked ("in traffic", "the coolant is low", "oo, umiikot").
-        other = retrieve_knowledge(normalized)
-        last_asked = max((int(str(part).split(":")[1]) for part in topic.get("shown") or [] if str(part).startswith("triage_asked:")),
-                         default=None)
-        triage = document.get("triage") or []
-        about_question = last_asked is not None and last_asked < len(triage) and asks_about(triage[last_asked]["ask"], normalized)
-        if other is None or other["document"]["id"] == document["id"] or (other.get("phrase_length", 0) == 0 and about_question):
-            reply = triage_reply(document, normalized, topic.get("shown"))
-            if reply is not None:
-                answer, shown = reply
-                response = core.build_response(document["category"], 1.0, answer,
-                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "triage"})
-                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
-                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
-                return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
-            asked = any(str(part).startswith("triage_asked:") for part in topic.get("shown") or [])
-            if asked and other is not None and other["document"]["id"] == document["id"] and not TOPIC_FOLLOW_UP.search(text):
-                # A reply about the same problem that none of the narrowing answers covers: carry on from what was
-                # said instead of repeating the first answer.
-                answer, shown = compose_follow_up(document, "more", topic.get("shown"))
-                response = core.build_response(document["category"], 1.0, answer,
-                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "more"})
-                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
-                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
-                return response, {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
-            words = set(re.findall(r"[a-z]+", normalized.casefold()))
-            if other is None and last_asked is not None and last_asked < len(triage) and words and words <= GENERIC_REPLY_WORDS:
-                # A bare "yes" or "no" to an either-or question ("low or empty?") doesn't say which; ask for the detail
-                # instead of guessing or dropping the conversation.
-                answer = f"I couldn't tell which one from that. {triage[last_asked]['ask']}"
-                response = core.build_response(document["category"], 1.0, answer,
-                                               {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "clarify"})
-                response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
-                response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
-                return response, {"last_topic": {"id": document["id"], "shown": sorted(topic.get("shown") or [])}}
-    if len(re.findall(r"[a-z0-9']+", text.casefold())) > 16 or not TOPIC_FOLLOW_UP.search(text):
-        return None
-    document_text = " ".join([document["answer"], document["title"], " ".join(document.get("key_causes") or []),
-                              " ".join(document.get("actions") or []), " ".join(document.get("keywords") or []),
-                              " ".join(document.get("condition_hints") or {})])
+    terms = set(_content_terms(normalized))
+    statements = knowledge_statements(document)
+    names = " ".join([document["title"]] + list(document.get("keywords") or []))
+    known = {term for term in terms if mentions(names, [term]) or any(_terms_match(term, word) for item in statements for word in item["terms"])}
     ruled_out = CONDITION.search(text) or CHECKED.search(text) or NOT_THE.search(text)
-    about_this_topic = ruled_out is not None and mentions(document_text, [
-        term for term in re.findall(r"[a-z]+", ruled_out.group("subject").casefold()) if term not in {"the", "my", "a", "an", "it", "that", "this"}])
     other = retrieve_knowledge(normalized)
-    if not about_this_topic and other is not None and other["document"]["id"] != document["id"] and other.get("phrase_length", 0) > 0:
-        return None  # "what about a flat tire?" after overheating: a new topic. "I replaced the spark plugs" after a misfire is not.
-    switch = TOPIC_SWITCH.match(text)
-    if switch:
-        subject_terms = [term for term in re.findall(r"[a-z]+", switch.group("subject").casefold()) if term not in {"the", "my", "a", "an", "if", "it"}]
-        if not subject_terms or not mentions(document_text, subject_terms):
+    if other is not None and other["document"]["id"] != document["id"]:
+        # Whichever topic's knowledge covers more of what was said: "what about a flat tire?" after overheating is
+        # a new topic; "it's clicking fast" after "won't start" stays on it. A tie goes to the conversation.
+        other_statements = knowledge_statements(other["document"])
+        other_names = " ".join([other["document"]["title"]] + list(other["document"].get("keywords") or []))
+        other_known = {term for term in terms if mentions(other_names, [term])
+                       or any(_terms_match(term, word) for item in other_statements for word in item["terms"])}
+        if len(other_known) > len(known):
             return None
-
-    kind, subject, lead = None, None, None
-    condition, checked, not_the = CONDITION.search(text), CHECKED.search(text), NOT_THE.search(text)
-    if ASKS_SAFE.search(text) and not condition:
-        kind = "safety"
-    elif ASKS_COST.search(text):
-        kind = "cost"
-    elif condition and condition.group("subject").casefold() not in {"it", "that", "this"}:
-        kind, subject = "condition", condition.group("subject")
-        lead = f"If the {subject} {condition.group('verb')} {condition.group('state')}"
-    elif checked:
-        kind, subject = "condition", checked.group("subject")
-        lead = f"With the {subject} already {checked.group('verb')}"
-    elif not_the:
-        kind, subject = "condition", not_the.group("subject")
-        lead = f"If it isn't the {subject}"
-    elif ASKS_WHY.search(text):
-        kind = "causes"
-    elif ASKS_FIX.search(text):
-        kind = "fix"
-    elif re.search(r"\b(?:what else|anything else|any ?more|more|tell me more|more details?|more info|explain more|ano pa|iba pa|meron pa|go on|continue)\b",
-                   text, re.IGNORECASE):
-        kind = "more"
-    if kind is None:
+    if terms:
+        # Most of what the message says must be something this topic's knowledge talks about; words that only say
+        # how a part is ("the lights work fine") count with the part they describe.
+        named = terms - STATE_WORDS or terms
+        if len(known & named) * 2 < len(named) or (word_count > 12 and not TOPIC_FOLLOW_UP.search(text)):
+            return None
+    elif not TOPIC_FOLLOW_UP.search(text):
         return None
 
-    answer, shown = compose_follow_up(document, kind, topic.get("shown"), subject=subject, lead=lead)
+    earlier = topic.get("query") or ""
+    result = compose_follow_up(document, normalized, topic.get("shown"), earlier)
+    if result is None:
+        answer, shown = ("That's everything my knowledge base holds on this problem; finding the exact cause needs a technician "
+                         "to inspect the car."), []
+    else:
+        answer, shown = result
     response = core.build_response(document["category"], 1.0, answer,
-                                   {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": kind})
+                                   {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "knowledge"})
     response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
     response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
-    updates = {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown))}}
+    query = " ".join((earlier + " " + normalized).split()[-40:])
+    updates = {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown)), "query": query}}
     return response, updates
 
 

@@ -4,10 +4,10 @@
   "case_file": "data\\reports\\chatbot_knowledge_eval_questions.json",
   "case_count": 126,
   "metrics": {
-    "top1_expected_topic_or_abstention_accuracy": 1.0,
-    "expected_topic_recall_at_6_or_abstention_accuracy": 1.0,
-    "unsupported_query_abstention_accuracy": 1.0,
-    "safety_term_check_accuracy": 1.0,
+    "top1_expected_topic_or_abstention_accuracy": 0.881,
+    "expected_topic_recall_at_6_or_abstention_accuracy": 0.9841,
+    "unsupported_query_abstention_accuracy": 0.8667,
+    "safety_term_check_accuracy": 0.8824,
     "safety_term_cases": 17,
     "vehicle_specific_uncertainty_accuracy": 1.0,
     "vehicle_specific_uncertainty_cases": 6
@@ -52,8 +52,8 @@
       "top_ranked_knowledge_ids": [
         "engine_misfire",
         "check_engine_flashing",
+        "engine_stalling",
         "clutch_drivetrain_vibration",
-        "exhaust_emissions_dpf",
         "exhaust_smoke_color",
         "severe_vibration"
       ],
@@ -79,10 +79,10 @@
       "top_ranked_knowledge_ids": [
         "fuel_ignition_air",
         "engine_misfire",
+        "idle_vibration",
         "check_engine_flashing",
         "high_speed_vibration",
-        "severe_vibration",
-        "dtc_code_types"
+        "severe_vibration"
       ],
       "retrieval_score": 0.615,
       "retrieved_passage_count": 6,
@@ -107,9 +107,9 @@
         "check_engine_flashing",
         "engine_misfire",
         "dashboard_warning_obd",
-        "fuel_ignition_air",
         "battery_charging_light",
-        "engine_cranks_no_start"
+        "idle_vibration",
+        "fuel_ignition_air"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -135,11 +135,11 @@
       "retrieved_knowledge_id": "engine_misfire",
       "top_ranked_knowledge_ids": [
         "engine_misfire",
+        "ac_power_loss",
         "fuel_ignition_air",
         "battery_charging_starting",
         "exhaust_smoke_color",
-        "steering_heavy",
-        "power_steering_noise"
+        "battery_charging_light"
       ],
       "retrieval_score": 0.715,
       "retrieved_passage_count": 6,
@@ -193,13 +193,13 @@
       "retrieved_knowledge_id": "engine_overheating",
       "top_ranked_knowledge_ids": [
         "engine_overheating",
+        "temperature_gauge_low",
         "high_speed_vibration",
+        "battery_charging_starting",
         "coolant_leaks_fluids",
-        "exhaust_smoke_color",
-        "exhaust_black_smoke",
-        "electrical_burning_smell"
+        "exhaust_smoke_color"
       ],
-      "retrieval_score": 0.16,
+      "retrieval_score": 0.24,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [
@@ -220,18 +220,18 @@
         "engine_overheating"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "engine_overheating",
+      "retrieved_knowledge_id": "coolant_leaks_fluids",
       "top_ranked_knowledge_ids": [
-        "engine_overheating",
         "coolant_leaks_fluids",
-        "motorcycle_chain_drive",
+        "engine_overheating",
+        "fluid_leak_colors",
         "exhaust_smoke_color",
         "coolant_water",
-        "fluid_leak_colors"
+        "motorcycle_chain_drive"
       ],
       "retrieval_score": 0.615,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -246,27 +246,24 @@
         "engine_overheating"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "engine_overheating",
+      "retrieved_knowledge_id": "temperature_gauge_low",
       "top_ranked_knowledge_ids": [
+        "temperature_gauge_low",
         "engine_overheating",
         "exhaust_smoke_color",
         "hvac_air_conditioning",
         "dashboard_warning_obd",
-        "battery_charging_light",
-        "engine_bay_smoke"
+        "hybrid_ev_high_voltage_safety"
       ],
-      "retrieval_score": 0.2743,
+      "retrieval_score": 0.7007,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [
         "switch off",
         "hot coolant"
       ],
-      "safety_terms_found": [
-        "switch off",
-        "hot coolant"
-      ],
-      "safety_expectation_met": true,
+      "safety_terms_found": [],
+      "safety_expectation_met": false,
       "vehicle_specific_uncertainty_expected": false,
       "vehicle_specific_uncertainty_met": null
     },
@@ -282,8 +279,8 @@
       "top_ranked_knowledge_ids": [
         "oil_pressure_leak",
         "engine_oil_level",
+        "dashboard_warning_obd",
         "tpms_light",
-        "coolant_leaks_fluids",
         "engine_noises",
         "battery_charging_light"
       ],
@@ -311,11 +308,11 @@
       "retrieved_knowledge_id": "oil_pressure_leak",
       "top_ranked_knowledge_ids": [
         "oil_pressure_leak",
+        "burning_smell",
         "electrical_burning_smell",
         "exhaust_blue_smoke",
         "engine_bay_smoke",
-        "exhaust_smoke_color",
-        "fluid_leak_colors"
+        "pm_warning_signs"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -339,11 +336,11 @@
         "oil_pressure_leak",
         "engine_oil_level",
         "exhaust_blue_smoke",
+        "oil_colour",
         "engine_noises",
-        "oil_change_schedule",
-        "engine_overheating"
+        "oil_change_schedule"
       ],
-      "retrieval_score": 0.3238,
+      "retrieval_score": 0.3044,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -365,11 +362,11 @@
         "oil_pressure_leak",
         "oil_change_schedule",
         "engine_oil_level",
-        "engine_overheating",
-        "timing_engine_wear",
-        "coolant_water"
+        "coolant_water",
+        "fluid_leak_colors",
+        "engine_cranks_no_start"
       ],
-      "retrieval_score": 0.2233,
+      "retrieval_score": 0.2057,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -389,11 +386,11 @@
       "retrieved_knowledge_id": "oil_change_schedule",
       "top_ranked_knowledge_ids": [
         "oil_change_schedule",
+        "oil_colour",
         "engine_oil_level",
         "exhaust_blue_smoke",
-        "oil_pressure_leak",
-        "filters_routine_service",
-        "engine_overheating"
+        "fluid_leak_colors",
+        "service_schedule_pms"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -416,11 +413,11 @@
       "retrieved_knowledge_id": "maintenance_schedule_overdue",
       "top_ranked_knowledge_ids": [
         "maintenance_schedule_overdue",
+        "engine_oil_type",
         "oil_change_schedule",
-        "filters_routine_service",
-        "oil_pressure_leak",
-        "engine_oil_level",
-        "pre_rental_inspection"
+        "pm_component_life",
+        "pm_severe_service",
+        "pm_mileage_vs_time"
       ],
       "retrieval_score": 0.5721,
       "retrieved_passage_count": 6,
@@ -469,9 +466,9 @@
       "retrieved_knowledge_id": "oil_change_schedule",
       "top_ranked_knowledge_ids": [
         "oil_change_schedule",
-        "exhaust_emissions_dpf",
+        "engine_oil_type",
         "exhaust_blue_smoke",
-        "engine_oil_level",
+        "pm_component_life",
         "filters_routine_service",
         "oil_pressure_leak"
       ],
@@ -498,9 +495,9 @@
         "fuel_leak_smell",
         "rotten_egg_smell",
         "fluid_leak_colors",
+        "diesel_vs_gasoline",
         "exhaust_emissions_dpf",
-        "exhaust_smoke_color",
-        "electrical_burning_smell"
+        "exhaust_smoke_color"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -532,8 +529,8 @@
         "fuel_ignition_air",
         "exhaust_black_smoke",
         "engine_misfire",
-        "hvac_air_conditioning",
-        "fuel_leak_smell"
+        "hard_starting_cold",
+        "hvac_air_conditioning"
       ],
       "retrieval_score": 0.715,
       "retrieved_passage_count": 6,
@@ -552,18 +549,18 @@
         "fuel_ignition_air"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "fuel_ignition_air",
+      "retrieved_knowledge_id": "hesitation_jerking",
       "top_ranked_knowledge_ids": [
+        "hesitation_jerking",
         "fuel_ignition_air",
-        "engine_overheating",
+        "pm_warning_signs",
         "engine_misfire",
-        "oil_pressure_leak",
-        "filters_routine_service",
-        "exhaust_emissions_dpf"
+        "engine_overheating",
+        "oil_pressure_leak"
       ],
       "retrieval_score": 0.465,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -583,9 +580,9 @@
         "fuel_ignition_air",
         "engine_misfire",
         "engine_cranks_no_start",
-        "exhaust_smoke_color",
-        "engine_overheating",
-        "filters_routine_service"
+        "engine_stalling",
+        "hard_starting_cold",
+        "exhaust_smoke_color"
       ],
       "retrieval_score": 0.615,
       "retrieved_passage_count": 6,
@@ -607,11 +604,11 @@
       "retrieved_knowledge_id": "timing_engine_wear",
       "top_ranked_knowledge_ids": [
         "timing_engine_wear",
+        "pm_component_life",
         "battery_charging_light",
         "brake_fluid_maintenance",
-        "engine_misfire",
-        "oil_change_schedule",
-        "maintenance_schedule_overdue"
+        "pm_budgeting",
+        "engine_misfire"
       ],
       "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
@@ -630,18 +627,18 @@
         "timing_engine_wear"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "timing_engine_wear",
+      "retrieved_knowledge_id": "engine_noises",
       "top_ranked_knowledge_ids": [
-        "timing_engine_wear",
         "engine_noises",
-        "oil_change_schedule",
+        "timing_engine_wear",
+        "rattle_underneath",
         "motorcycle_chain_drive",
-        "engine_overheating",
-        "oil_pressure_leak"
+        "oil_change_schedule",
+        "hard_starting_cold"
       ],
-      "retrieval_score": 0.54,
+      "retrieval_score": 0.6525,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -661,9 +658,9 @@
         "timing_engine_wear",
         "motorcycle_chain_drive",
         "battery_charging_light",
-        "engine_overheating",
-        "check_engine_flashing",
-        "engine_noises"
+        "hard_starting_cold",
+        "pm_component_life",
+        "check_engine_flashing"
       ],
       "retrieval_score": 0.5721,
       "retrieved_passage_count": 6,
@@ -685,11 +682,11 @@
       "retrieved_knowledge_id": "timing_engine_wear",
       "top_ranked_knowledge_ids": [
         "timing_engine_wear",
+        "clutch_slipping",
+        "hard_starting_cold",
+        "pm_component_life",
         "engine_noises",
-        "engine_overheating",
-        "oil_change_schedule",
-        "filters_routine_service",
-        "oil_pressure_leak"
+        "fuel_grade"
       ],
       "retrieval_score": 0.2743,
       "retrieved_passage_count": 6,
@@ -715,7 +712,7 @@
         "brake_noise",
         "brake_grinding",
         "brake_failure",
-        "steering_suspension"
+        "engine_braking"
       ],
       "retrieval_score": 0.855,
       "retrieved_passage_count": 6,
@@ -742,11 +739,11 @@
       "retrieved_knowledge_id": "brake_grinding",
       "top_ranked_knowledge_ids": [
         "brake_grinding",
+        "regenerative_braking",
         "tire_blowout",
+        "pm_spare_parts",
         "brake_pedal_soft",
-        "gear_shifting_difficulty",
-        "brake_wear",
-        "brake_noise"
+        "gear_shifting_difficulty"
       ],
       "retrieval_score": 0.855,
       "retrieved_passage_count": 6,
@@ -773,7 +770,7 @@
         "brake_noise",
         "brake_grinding",
         "brake_pedal_hard",
-        "brake_warning_abs"
+        "regenerative_braking"
       ],
       "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
@@ -797,18 +794,18 @@
         "brake_noise"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "brake_noise",
+      "retrieved_knowledge_id": "pm_brake_wear_prediction",
       "top_ranked_knowledge_ids": [
+        "pm_brake_wear_prediction",
         "brake_noise",
         "brake_wear",
+        "pm_component_life",
         "brake_grinding",
-        "brake_vibration",
-        "brake_fluid_maintenance",
-        "brake_pedal_hard"
+        "brake_vibration"
       ],
-      "retrieval_score": 0.3619,
+      "retrieval_score": 0.3328,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -826,11 +823,11 @@
       "retrieved_knowledge_id": "brake_warning_abs",
       "top_ranked_knowledge_ids": [
         "brake_warning_abs",
+        "abs_system",
         "dashboard_warning_obd",
         "brake_wear",
-        "brake_pedal_soft",
-        "brake_pedal_hard",
-        "brake_noise"
+        "regenerative_braking",
+        "eps_light"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -852,8 +849,8 @@
       "retrieved_knowledge_id": "brake_warning_abs",
       "top_ranked_knowledge_ids": [
         "brake_warning_abs",
-        "coolant_leaks_fluids",
         "brake_fluid_maintenance",
+        "coolant_leaks_fluids",
         "fluid_leak_colors",
         "brake_failure",
         "transmission_slip"
@@ -882,11 +879,11 @@
       "retrieved_knowledge_id": "brake_warning_abs",
       "top_ranked_knowledge_ids": [
         "brake_warning_abs",
-        "dashboard_warning_obd",
+        "abs_system",
         "symptom_vs_fault",
         "fuel_ignition_air",
-        "exhaust_emissions_dpf",
-        "battery_charging_starting"
+        "hybrid_ev_high_voltage_safety",
+        "exhaust_emissions_dpf"
       ],
       "retrieval_score": 0.615,
       "retrieved_passage_count": 6,
@@ -908,13 +905,13 @@
       "retrieved_knowledge_id": "brake_warning_abs",
       "top_ranked_knowledge_ids": [
         "brake_warning_abs",
+        "abs_system",
         "symptom_vs_fault",
         "dashboard_warning_obd",
         "brake_wear",
-        "brake_noise",
-        "coolant_leaks_fluids"
+        "brake_noise"
       ],
-      "retrieval_score": 0.765,
+      "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -934,11 +931,11 @@
       "retrieved_knowledge_id": "transmission_slip",
       "top_ranked_knowledge_ids": [
         "transmission_slip",
+        "transmission_types",
         "transmission_fluid",
+        "pm_fleet_prioritization",
         "transmission_noise",
-        "engine_overheating",
-        "coolant_leaks_fluids",
-        "symptom_vs_fault"
+        "engine_overheating"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -960,11 +957,11 @@
       "retrieved_knowledge_id": "transmission_slip",
       "top_ranked_knowledge_ids": [
         "transmission_slip",
+        "pm_warning_signs",
         "transmission_fluid",
-        "transmission_noise",
         "engine_overheating",
-        "coolant_leaks_fluids",
-        "dashboard_warning_obd"
+        "transmission_noise",
+        "temperature_gauge_low"
       ],
       "retrieval_score": 0.2743,
       "retrieved_passage_count": 6,
@@ -989,8 +986,8 @@
         "transmission_fluid",
         "gear_shifting_difficulty",
         "transmission_noise",
-        "check_engine_flashing",
-        "coolant_leaks_fluids"
+        "pm_warning_signs",
+        "check_engine_flashing"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1012,11 +1009,11 @@
       "retrieved_knowledge_id": "transmission_slip",
       "top_ranked_knowledge_ids": [
         "transmission_slip",
+        "transmission_types",
+        "pm_component_life",
         "engine_misfire",
         "engine_overheating",
-        "dashboard_warning_obd",
-        "pre_rental_inspection",
-        "hybrid_ev_high_voltage_safety"
+        "tire_pressure_tread"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1065,13 +1062,13 @@
       "retrieved_knowledge_id": "clutch_drivetrain_vibration",
       "top_ranked_knowledge_ids": [
         "clutch_drivetrain_vibration",
-        "motorcycle_chain_drive",
+        "clutch_slipping",
         "fuel_ignition_air",
+        "motorcycle_chain_drive",
         "exhaust_black_smoke",
-        "exhaust_blue_smoke",
-        "transmission_slip"
+        "exhaust_blue_smoke"
       ],
-      "retrieval_score": 0.2085,
+      "retrieval_score": 0.2057,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -1092,10 +1089,10 @@
       "top_ranked_knowledge_ids": [
         "clutch_drivetrain_vibration",
         "transmission_slip",
-        "transmission_noise",
         "engine_overheating",
         "steering_suspension",
-        "symptom_vs_fault"
+        "symptom_vs_fault",
+        "transmission_noise"
       ],
       "retrieval_score": 0.54,
       "retrieved_passage_count": 6,
@@ -1124,7 +1121,7 @@
         "steering_suspension",
         "severe_vibration"
       ],
-      "retrieval_score": 0.2076,
+      "retrieval_score": 0.2229,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -1144,11 +1141,11 @@
       "retrieved_knowledge_id": "tire_pressure_tread",
       "top_ranked_knowledge_ids": [
         "tire_pressure_tread",
+        "high_fuel_consumption",
+        "fuel_saving",
         "tpms_light",
-        "engine_overheating",
         "tire_puncture",
-        "uneven_tire_wear",
-        "tire_rotation"
+        "oil_pressure_leak"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1173,11 +1170,11 @@
         "sidewall_damage",
         "tire_puncture",
         "tire_pressure_tread",
+        "tire_replacement",
         "brake_failure",
-        "tire_blowout",
-        "motorcycle_chain_drive"
+        "tire_blowout"
       ],
-      "retrieval_score": 0.4724,
+      "retrieval_score": 0.4865,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [
@@ -1203,10 +1200,10 @@
       "top_ranked_knowledge_ids": [
         "uneven_tire_wear",
         "tire_rotation",
+        "pm_pms_vs_inspection",
         "tire_pressure_tread",
-        "steering_suspension",
-        "brake_vibration",
-        "vehicle_pulling"
+        "pm_tire_wear_prediction",
+        "tire_replacement"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1228,11 +1225,11 @@
       "retrieved_knowledge_id": "tire_pressure_tread",
       "top_ranked_knowledge_ids": [
         "tire_pressure_tread",
-        "tpms_light",
         "tire_puncture",
+        "tpms_light",
         "uneven_tire_wear",
         "tire_rotation",
-        "steering_suspension"
+        "pm_tire_wear_prediction"
       ],
       "retrieval_score": 0.384,
       "retrieved_passage_count": 6,
@@ -1254,11 +1251,11 @@
       "retrieved_knowledge_id": "steering_suspension",
       "top_ranked_knowledge_ids": [
         "steering_suspension",
+        "brake_warning_abs",
         "brake_vibration",
         "vehicle_pulling",
         "high_speed_vibration",
-        "fluid_leak_colors",
-        "steering_failure"
+        "eps_light"
       ],
       "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
@@ -1284,11 +1281,11 @@
       "retrieved_knowledge_id": "steering_suspension",
       "top_ranked_knowledge_ids": [
         "steering_suspension",
+        "rattle_underneath",
         "shock_absorbers",
         "high_speed_vibration",
         "cv_joint_clicking",
-        "uneven_tire_wear",
-        "transmission_noise"
+        "uneven_tire_wear"
       ],
       "retrieval_score": 0.855,
       "retrieved_passage_count": 6,
@@ -1334,18 +1331,18 @@
         "steering_suspension"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "steering_suspension",
+      "retrieved_knowledge_id": "wheel_bearing",
       "top_ranked_knowledge_ids": [
+        "wheel_bearing",
         "steering_suspension",
         "transmission_noise",
         "high_speed_vibration",
         "cv_joint_clicking",
-        "clutch_drivetrain_vibration",
-        "brake_grinding"
+        "clutch_drivetrain_vibration"
       ],
       "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -1360,18 +1357,18 @@
         "battery_charging_starting"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "battery_charging_starting",
+      "retrieved_knowledge_id": "battery_weak_signs",
       "top_ranked_knowledge_ids": [
+        "battery_weak_signs",
         "battery_charging_starting",
+        "dim_headlights",
+        "engine_stalling",
         "battery_charging_light",
-        "key_fob",
-        "fuel_ignition_air",
-        "engine_cranks_no_start",
-        "rotten_egg_smell"
+        "key_fob"
       ],
-      "retrieval_score": 0.32,
+      "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -1386,18 +1383,18 @@
         "battery_charging_starting"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "battery_charging_starting",
+      "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "power_windows",
+        "tire_pressure_tread",
         "battery_charging_starting",
         "engine_cranks_no_start",
         "blown_fuse",
-        "pre_rental_inspection",
-        "check_engine_flashing",
-        "brake_failure"
+        "pre_rental_inspection"
       ],
-      "retrieval_score": 0.1918,
-      "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_score": null,
+      "retrieved_passage_count": 0,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -1416,11 +1413,11 @@
       "retrieved_knowledge_id": "battery_charging_light",
       "top_ranked_knowledge_ids": [
         "battery_charging_light",
-        "battery_charging_starting",
         "dashboard_warning_obd",
-        "brake_warning_abs",
+        "oil_pressure_leak",
         "rental_fault_reporting",
-        "tpms_light"
+        "tpms_light",
+        "airbag_light"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1442,11 +1439,11 @@
       "retrieved_knowledge_id": "battery_charging_starting",
       "top_ranked_knowledge_ids": [
         "battery_charging_starting",
+        "pm_repeat_failures",
         "engine_overheating",
         "blown_fuse",
-        "hvac_air_conditioning",
-        "brake_vibration",
-        "check_engine_flashing"
+        "hybrid_ev_high_voltage_safety",
+        "hvac_air_conditioning"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1469,10 +1466,10 @@
       "top_ranked_knowledge_ids": [
         "dashboard_warning_obd",
         "dtc_code_types",
+        "pm_telematics_obd",
         "transmission_fluid",
         "maintenance_model_explanation",
-        "vehicle_fire",
-        "steering_failure"
+        "pm_false_alarms"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1495,9 +1492,9 @@
       "top_ranked_knowledge_ids": [
         "dashboard_warning_obd",
         "fuel_ignition_air",
+        "filters_routine_service",
         "symptom_vs_fault",
         "engine_misfire",
-        "filters_routine_service",
         "vehicle_health_data_limits"
       ],
       "retrieval_score": 0.9,
@@ -1523,11 +1520,11 @@
         "exhaust_emissions_dpf",
         "check_engine_flashing",
         "engine_misfire",
-        "engine_overheating",
-        "oil_change_schedule"
+        "pm_telematics_obd",
+        "pm_data_needed"
       ],
       "retrieval_score": 0.4114,
-      "retrieved_passage_count": 1,
+      "retrieved_passage_count": 2,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
       "safety_terms_found": [],
@@ -1574,7 +1571,7 @@
       "top_ranked_knowledge_ids": [
         "fluid_leak_colors",
         "coolant_leaks_fluids",
-        "engine_overheating",
+        "pm_fluid_analysis",
         "brake_warning_abs",
         "engine_bay_smoke",
         "transmission_fluid"
@@ -1597,25 +1594,23 @@
         "engine_overheating"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "engine_overheating",
+      "retrieved_knowledge_id": "coolant_maintenance",
       "top_ranked_knowledge_ids": [
+        "coolant_maintenance",
         "engine_overheating",
         "exhaust_smoke_color",
+        "temperature_gauge_low",
         "exhaust_black_smoke",
-        "battery_charging_light",
-        "engine_bay_smoke",
-        "coolant_leaks_fluids"
+        "battery_charging_light"
       ],
-      "retrieval_score": 0.288,
+      "retrieval_score": 0.855,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [
         "do not continue driving"
       ],
-      "safety_terms_found": [
-        "do not continue driving"
-      ],
-      "safety_expectation_met": true,
+      "safety_terms_found": [],
+      "safety_expectation_met": false,
       "vehicle_specific_uncertainty_expected": false,
       "vehicle_specific_uncertainty_met": null
     },
@@ -1659,8 +1654,8 @@
         "transmission_fluid",
         "transmission_slip",
         "fluid_leak_colors",
-        "transmission_noise",
-        "engine_overheating"
+        "pm_fluid_analysis",
+        "transmission_noise"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1682,11 +1677,11 @@
       "retrieved_knowledge_id": "filters_routine_service",
       "top_ranked_knowledge_ids": [
         "filters_routine_service",
+        "pm_component_life",
         "hvac_air_conditioning",
         "exhaust_emissions_dpf",
         "ac_musty_smell",
-        "exhaust_black_smoke",
-        "oil_change_schedule"
+        "service_schedule_pms"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1711,8 +1706,8 @@
         "hvac_air_conditioning",
         "exhaust_emissions_dpf",
         "ac_musty_smell",
-        "engine_overheating",
-        "exhaust_black_smoke"
+        "service_schedule_pms",
+        "pm_component_life"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1735,10 +1730,10 @@
       "top_ranked_knowledge_ids": [
         "filters_routine_service",
         "fuel_ignition_air",
-        "timing_engine_wear",
-        "engine_misfire",
-        "hybrid_ev_high_voltage_safety",
-        "vehicle_pulling"
+        "pm_component_life",
+        "service_schedule_pms",
+        "idle_vibration",
+        "hesitation_jerking"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1760,11 +1755,11 @@
       "retrieved_knowledge_id": "filters_routine_service",
       "top_ranked_knowledge_ids": [
         "filters_routine_service",
-        "exhaust_emissions_dpf",
+        "engine_stalling",
         "engine_overheating",
-        "check_engine_flashing",
-        "engine_cranks_no_start",
-        "exhaust_black_smoke"
+        "high_fuel_consumption",
+        "exhaust_emissions_dpf",
+        "check_engine_flashing"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1785,14 +1780,14 @@
       "expected_abstention": false,
       "retrieved_knowledge_id": "maintenance_schedule_overdue",
       "top_ranked_knowledge_ids": [
+        "pm_component_life",
         "maintenance_schedule_overdue",
         "fleet_maintenance_prioritization",
-        "filters_routine_service",
-        "rental_damage_reporting",
         "oil_change_schedule",
-        "pre_rental_inspection"
+        "filters_routine_service",
+        "tire_rotation"
       ],
-      "retrieval_score": 0.2578,
+      "retrieval_score": 0.196,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -1813,12 +1808,12 @@
       "top_ranked_knowledge_ids": [
         "maintenance_schedule_overdue",
         "oil_change_schedule",
-        "filters_routine_service",
-        "engine_overheating",
-        "brake_warning_abs",
-        "tire_pressure_tread"
+        "service_schedule_pms",
+        "pm_component_life",
+        "pm_severe_service",
+        "exhaust_emissions_dpf"
       ],
-      "retrieval_score": 0.3636,
+      "retrieval_score": 0.3381,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -1839,10 +1834,10 @@
       "top_ranked_knowledge_ids": [
         "maintenance_schedule_overdue",
         "oil_change_schedule",
+        "pm_severe_service",
+        "pm_pms_vs_inspection",
         "filters_routine_service",
-        "transmission_fluid",
-        "engine_misfire",
-        "steering_suspension"
+        "transmission_fluid"
       ],
       "retrieval_score": 0.675,
       "retrieved_passage_count": 6,
@@ -1863,12 +1858,12 @@
       "expected_abstention": false,
       "retrieved_knowledge_id": "maintenance_schedule_overdue",
       "top_ranked_knowledge_ids": [
+        "pm_mileage_vs_time",
         "maintenance_schedule_overdue",
         "oil_change_schedule",
-        "timing_engine_wear",
-        "filters_routine_service",
-        "vehicle_health_data_limits",
-        "transmission_slip"
+        "pm_component_life",
+        "pm_budgeting",
+        "pm_preventive_vs_predictive"
       ],
       "retrieval_score": 0.5721,
       "retrieved_passage_count": 6,
@@ -1892,9 +1887,9 @@
         "pre_rental_inspection",
         "rental_fault_reporting",
         "rental_damage_reporting",
-        "brake_wear",
-        "tire_puncture",
-        "steering_heavy"
+        "pm_downtime_cost",
+        "pm_severe_service",
+        "pm_spare_parts"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -1922,7 +1917,7 @@
         "brake_noise",
         "dashboard_warning_obd"
       ],
-      "retrieval_score": 0.2746,
+      "retrieval_score": 0.2595,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [
@@ -1947,10 +1942,10 @@
       "top_ranked_knowledge_ids": [
         "pre_rental_inspection",
         "vehicle_health_data_limits",
-        "engine_overheating",
-        "oil_change_schedule",
-        "fuel_ignition_air",
-        "filters_routine_service"
+        "pm_severe_service",
+        "pm_condition_based",
+        "pm_rental_turnaround_checks",
+        "oil_change_schedule"
       ],
       "retrieval_score": 0.32,
       "retrieved_passage_count": 6,
@@ -1970,18 +1965,18 @@
         "maintenance_schedule_overdue"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "maintenance_schedule_overdue",
+      "retrieved_knowledge_id": "pm_pms_vs_inspection",
       "top_ranked_knowledge_ids": [
+        "pm_pms_vs_inspection",
         "maintenance_schedule_overdue",
         "pre_rental_inspection",
-        "filters_routine_service",
-        "timing_engine_wear",
-        "uneven_tire_wear",
-        "vehicle_health_data_limits"
+        "pm_rental_turnaround_checks",
+        "pm_repair_vs_replace",
+        "tire_replacement"
       ],
-      "retrieval_score": 0.192,
-      "retrieved_passage_count": 2,
-      "retrieval_expectation_met": true,
+      "retrieval_score": 0.2122,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -2000,9 +1995,9 @@
       "top_ranked_knowledge_ids": [
         "vehicle_health_data_limits",
         "maintenance_schedule_overdue",
+        "pm_mileage_vs_time",
         "maintenance_model_explanation",
-        "fluid_leak_colors",
-        "engine_overheating",
+        "pm_condition_based",
         "steering_suspension"
       ],
       "retrieval_score": 0.9,
@@ -2028,8 +2023,8 @@
         "engine_overheating",
         "hvac_air_conditioning",
         "motorcycle_chain_drive",
-        "brake_warning_abs",
-        "transmission_slip"
+        "pm_battery_prediction",
+        "brake_warning_abs"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2053,10 +2048,10 @@
       "top_ranked_knowledge_ids": [
         "vehicle_health_data_limits",
         "maintenance_model_explanation",
+        "pm_false_alarms",
         "rental_fault_reporting",
-        "brake_noise",
-        "hybrid_ev_high_voltage_safety",
-        "motorcycle_chain_drive"
+        "pm_data_needed",
+        "brake_noise"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2084,7 +2079,7 @@
         "brake_wear",
         "exhaust_emissions_dpf"
       ],
-      "retrieval_score": 0.4147,
+      "retrieval_score": 0.4323,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2104,11 +2099,11 @@
       "retrieved_knowledge_id": "maintenance_model_explanation",
       "top_ranked_knowledge_ids": [
         "maintenance_model_explanation",
-        "vehicle_health_data_limits",
-        "engine_misfire",
-        "engine_overheating",
-        "oil_change_schedule",
-        "fuel_ignition_air"
+        "pm_what_is_predictive",
+        "pm_data_needed",
+        "pm_false_alarms",
+        "pm_preventive_vs_predictive",
+        "vehicle_health_data_limits"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2130,11 +2125,11 @@
       "retrieved_knowledge_id": "maintenance_model_explanation",
       "top_ranked_knowledge_ids": [
         "maintenance_model_explanation",
+        "hybrid_ev_high_voltage_safety",
         "engine_overheating",
+        "vehicle_health_data_limits",
         "dtc_code_types",
-        "engine_misfire",
-        "battery_charging_light",
-        "brake_pedal_soft"
+        "pm_false_alarms"
       ],
       "retrieval_score": 0.6525,
       "retrieved_passage_count": 6,
@@ -2158,10 +2153,10 @@
       "top_ranked_knowledge_ids": [
         "vehicle_health_data_limits",
         "maintenance_model_explanation",
-        "engine_overheating",
         "fleet_maintenance_prioritization",
-        "hybrid_ev_high_voltage_safety",
-        "brake_grinding"
+        "brake_grinding",
+        "engine_oil_level",
+        "oil_pressure_leak"
       ],
       "retrieval_score": 0.32,
       "retrieved_passage_count": 6,
@@ -2180,18 +2175,18 @@
         "maintenance_model_explanation"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "maintenance_model_explanation",
+      "retrieved_knowledge_id": "pm_data_needed",
       "top_ranked_knowledge_ids": [
+        "pm_data_needed",
         "maintenance_model_explanation",
+        "vehicle_health_data_limits",
         "fleet_maintenance_prioritization",
-        "engine_overheating",
-        "fuel_ignition_air",
-        "battery_charging_starting",
-        "dashboard_warning_obd"
+        "pm_false_alarms",
+        "pm_pms_vs_inspection"
       ],
-      "retrieval_score": 0.155,
+      "retrieval_score": 0.24,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -2209,11 +2204,11 @@
       "retrieved_knowledge_id": "fleet_maintenance_prioritization",
       "top_ranked_knowledge_ids": [
         "fleet_maintenance_prioritization",
+        "pm_downtime_cost",
+        "pm_repair_vs_replace",
         "pre_rental_inspection",
-        "oil_change_schedule",
-        "transmission_slip",
-        "vehicle_health_data_limits",
-        "maintenance_model_explanation"
+        "pm_fleet_prioritization",
+        "pm_fleet_kpis"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2232,18 +2227,18 @@
         "fleet_maintenance_prioritization"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "retrieved_knowledge_id": "pm_fleet_prioritization",
       "top_ranked_knowledge_ids": [
+        "pm_fleet_prioritization",
         "fleet_maintenance_prioritization",
         "maintenance_schedule_overdue",
         "vehicle_health_data_limits",
         "pre_rental_inspection",
-        "oil_change_schedule",
-        "filters_routine_service"
+        "pm_records_best_practice"
       ],
-      "retrieval_score": 0.342,
+      "retrieval_score": 0.2938,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -2261,13 +2256,13 @@
       "retrieved_knowledge_id": "fleet_maintenance_prioritization",
       "top_ranked_knowledge_ids": [
         "fleet_maintenance_prioritization",
-        "pre_rental_inspection",
         "rental_damage_reporting",
         "rental_fault_reporting",
-        "tire_puncture",
-        "steering_heavy"
+        "pm_repair_vs_replace",
+        "pm_condition_based",
+        "tire_puncture"
       ],
-      "retrieval_score": 0.247,
+      "retrieval_score": 0.2438,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2284,18 +2279,18 @@
         "fleet_maintenance_prioritization"
       ],
       "expected_abstention": false,
-      "retrieved_knowledge_id": "fleet_maintenance_prioritization",
+      "retrieved_knowledge_id": "pm_fleet_prioritization",
       "top_ranked_knowledge_ids": [
+        "pm_fleet_prioritization",
         "fleet_maintenance_prioritization",
         "symptom_vs_fault",
-        "exhaust_emissions_dpf",
-        "vehicle_health_data_limits",
-        "battery_charging_starting",
-        "brake_failure"
+        "pm_repair_vs_replace",
+        "pm_spare_parts",
+        "exhaust_emissions_dpf"
       ],
-      "retrieval_score": 0.2526,
+      "retrieval_score": 0.309,
       "retrieved_passage_count": 6,
-      "retrieval_expectation_met": true,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -2317,9 +2312,9 @@
         "exhaust_emissions_dpf",
         "vehicle_health_data_limits",
         "engine_misfire",
-        "brake_failure"
+        "hybrid_ev_high_voltage_safety"
       ],
-      "retrieval_score": 0.4089,
+      "retrieval_score": 0.4611,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2366,14 +2361,14 @@
       "retrieved_knowledge_id": "symptom_vs_fault",
       "top_ranked_knowledge_ids": [
         "symptom_vs_fault",
+        "pm_repeat_failures",
         "exhaust_smoke_color",
+        "engine_overheating",
         "dashboard_warning_obd",
-        "vehicle_pulling",
-        "brake_wear",
-        "hvac_air_conditioning"
+        "hybrid_ev_high_voltage_safety"
       ],
       "retrieval_score": 0.48,
-      "retrieved_passage_count": 1,
+      "retrieved_passage_count": 2,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
       "safety_terms_found": [],
@@ -2393,10 +2388,10 @@
       "top_ranked_knowledge_ids": [
         "symptom_vs_fault",
         "dashboard_warning_obd",
-        "filters_routine_service",
         "engine_overheating",
-        "transmission_slip",
-        "vehicle_health_data_limits"
+        "pm_repeat_failures",
+        "exhaust_emissions_dpf",
+        "pm_data_needed"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2420,11 +2415,11 @@
         "hybrid_ev_high_voltage_safety",
         "engine_overheating",
         "hvac_air_conditioning",
-        "battery_charging_light",
-        "engine_misfire",
-        "battery_maintenance"
+        "pm_battery_prediction",
+        "jump_start",
+        "battery_charging_light"
       ],
-      "retrieval_score": 0.4615,
+      "retrieval_score": 0.4823,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [
@@ -2449,10 +2444,10 @@
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
         "engine_overheating",
+        "hybrid_operation",
+        "eps_light",
         "engine_misfire",
-        "fuel_ignition_air",
-        "hvac_air_conditioning",
-        "exhaust_emissions_dpf"
+        "fuel_ignition_air"
       ],
       "retrieval_score": 0.4,
       "retrieved_passage_count": 6,
@@ -2475,10 +2470,10 @@
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
         "engine_overheating",
+        "ev_charging",
+        "regenerative_braking",
         "hvac_air_conditioning",
-        "vehicle_pulling",
-        "blown_fuse",
-        "coolant_water"
+        "hybrid_operation"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2500,11 +2495,11 @@
       "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
-        "motorcycle_chain_drive",
+        "regenerative_braking",
         "engine_overheating",
-        "oil_change_schedule",
-        "timing_engine_wear",
-        "filters_routine_service"
+        "tire_pressure_tread",
+        "filters_routine_service",
+        "exhaust_emissions_dpf"
       ],
       "retrieval_score": 0.288,
       "retrieved_passage_count": 6,
@@ -2526,13 +2521,13 @@
       "retrieved_knowledge_id": "hvac_air_conditioning",
       "top_ranked_knowledge_ids": [
         "hvac_air_conditioning",
-        "fluid_leak_colors",
+        "temperature_gauge_low",
+        "ac_musty_smell",
         "engine_overheating",
         "filters_routine_service",
-        "fuel_ignition_air",
-        "engine_cranks_no_start"
+        "fuel_ignition_air"
       ],
-      "retrieval_score": 0.2227,
+      "retrieval_score": 0.2532,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2552,11 +2547,11 @@
       "retrieved_knowledge_id": "hvac_air_conditioning",
       "top_ranked_knowledge_ids": [
         "hvac_air_conditioning",
-        "engine_overheating",
-        "filters_routine_service",
-        "brake_noise",
-        "pre_rental_inspection",
-        "exhaust_emissions_dpf"
+        "dim_headlights",
+        "ac_power_loss",
+        "battery_weak_signs",
+        "service_schedule_pms",
+        "pm_fluid_analysis"
       ],
       "retrieval_score": 0.2743,
       "retrieved_passage_count": 6,
@@ -2579,13 +2574,13 @@
       "top_ranked_knowledge_ids": [
         "hvac_air_conditioning",
         "wheel_alignment",
-        "wheel_balancing",
         "hybrid_ev_high_voltage_safety",
-        "engine_overheating",
-        "brake_warning_abs"
+        "ac_power_loss",
+        "warning_chimes",
+        "engine_overheating"
       ],
-      "retrieval_score": 0.36,
-      "retrieved_passage_count": 3,
+      "retrieval_score": 0.24,
+      "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [
         "do not handle refrigerant"
@@ -2608,11 +2603,11 @@
       "retrieved_knowledge_id": "hvac_air_conditioning",
       "top_ranked_knowledge_ids": [
         "hvac_air_conditioning",
-        "brake_failure",
-        "blown_fuse",
+        "hybrid_operation",
         "engine_overheating",
-        "hybrid_ev_high_voltage_safety",
-        "key_fob"
+        "regenerative_braking",
+        "brake_failure",
+        "blown_fuse"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2636,9 +2631,9 @@
         "exhaust_emissions_dpf",
         "exhaust_smoke_color",
         "rotten_egg_smell",
+        "hvac_air_conditioning",
         "exhaust_blue_smoke",
-        "exhaust_black_smoke",
-        "electrical_burning_smell"
+        "exhaust_black_smoke"
       ],
       "retrieval_score": 0.384,
       "retrieved_passage_count": 6,
@@ -2667,10 +2662,10 @@
       "top_ranked_knowledge_ids": [
         "exhaust_emissions_dpf",
         "fuel_ignition_air",
+        "high_fuel_consumption",
         "dashboard_warning_obd",
         "symptom_vs_fault",
-        "hvac_air_conditioning",
-        "exhaust_black_smoke"
+        "hybrid_ev_high_voltage_safety"
       ],
       "retrieval_score": 0.32,
       "retrieved_passage_count": 6,
@@ -2693,10 +2688,10 @@
       "top_ranked_knowledge_ids": [
         "exhaust_emissions_dpf",
         "exhaust_black_smoke",
+        "brake_warning_abs",
         "tpms_light",
         "engine_overheating",
-        "filters_routine_service",
-        "battery_charging_light"
+        "oil_pressure_leak"
       ],
       "retrieval_score": 0.855,
       "retrieved_passage_count": 6,
@@ -2719,13 +2714,13 @@
       "top_ranked_knowledge_ids": [
         "exhaust_emissions_dpf",
         "engine_overheating",
-        "brake_wear",
+        "hvac_air_conditioning",
         "maintenance_schedule_overdue",
         "oil_pressure_leak",
-        "oil_change_schedule"
+        "brake_wear"
       ],
       "retrieval_score": 0.24,
-      "retrieved_passage_count": 5,
+      "retrieved_passage_count": 2,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
       "safety_terms_found": [],
@@ -2745,10 +2740,10 @@
       "top_ranked_knowledge_ids": [
         "motorcycle_chain_drive",
         "timing_engine_wear",
-        "engine_overheating",
         "exhaust_emissions_dpf",
+        "engine_overheating",
         "engine_noises",
-        "battery_charging_starting"
+        "transmission_types"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -2800,11 +2795,11 @@
       "retrieved_knowledge_id": "motorcycle_chain_drive",
       "top_ranked_knowledge_ids": [
         "motorcycle_chain_drive",
+        "engine_overheating",
         "timing_engine_wear",
         "battery_charging_light",
-        "engine_overheating",
-        "oil_pressure_leak",
-        "brake_failure"
+        "transmission_types",
+        "high_fuel_consumption"
       ],
       "retrieval_score": 0.765,
       "retrieved_passage_count": 6,
@@ -2826,13 +2821,13 @@
       "retrieved_knowledge_id": "motorcycle_chain_drive",
       "top_ranked_knowledge_ids": [
         "motorcycle_chain_drive",
-        "engine_overheating",
-        "timing_engine_wear",
-        "filters_routine_service",
         "exhaust_emissions_dpf",
-        "fluid_leak_colors"
+        "engine_overheating",
+        "tire_pressure_tread",
+        "filters_routine_service",
+        "pm_repair_vs_replace"
       ],
-      "retrieval_score": 0.3098,
+      "retrieval_score": 0.2911,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2849,12 +2844,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "pm_warning_signs",
         "engine_misfire",
-        "tire_pressure_tread",
-        "brake_grinding",
-        "hvac_air_conditioning",
-        "coolant_leaks_fluids",
-        "brake_wear"
+        "pm_downtime_cost",
+        "tire_replacement",
+        "flooded_car",
+        "pm_tire_wear_prediction"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -2873,12 +2868,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
-        "engine_cranks_no_start",
         "steering_failure",
+        "engine_cranks_no_start",
         "gear_shifting_difficulty",
+        "key_wont_turn",
         "transmission_slip",
-        "brake_failure",
-        "battery_charging_starting"
+        "ev_charging"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -2897,12 +2892,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "oil_change_schedule",
+        "pm_component_life",
         "steering_heavy",
         "clutch_drivetrain_vibration",
-        "coolant_maintenance",
-        "pre_rental_inspection",
-        "tpms_light",
-        "exhaust_smoke_color"
+        "pm_false_alarms",
+        "tire_pressure_tread"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -2945,12 +2940,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
-        "oil_change_schedule",
         "engine_overheating",
         "motorcycle_chain_drive",
+        "oil_change_schedule",
+        "eps_light",
         "hvac_air_conditioning",
-        "timing_engine_wear",
-        "brake_noise"
+        "timing_engine_wear"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -2973,12 +2968,12 @@
       "top_ranked_knowledge_ids": [
         "coolant_leaks_fluids",
         "fluid_leak_colors",
-        "transmission_slip",
+        "pm_component_life",
+        "pm_fluid_analysis",
         "engine_overheating",
-        "brake_warning_abs",
-        "hybrid_ev_high_voltage_safety"
+        "brake_warning_abs"
       ],
-      "retrieval_score": 0.2095,
+      "retrieval_score": 0.2093,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -2995,12 +2990,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "symptom_vs_fault",
         "vehicle_health_data_limits",
         "dashboard_warning_obd",
+        "engine_braking",
         "brake_grinding",
-        "wrong_fuel",
-        "battery_charging_light",
-        "brake_wear"
+        "pm_severe_service"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3019,12 +3014,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
-        "maintenance_schedule_overdue",
         "dtc_code_types",
         "engine_overheating",
-        "timing_engine_wear",
-        "dashboard_warning_obd",
-        "vehicle_health_data_limits"
+        "maintenance_schedule_overdue",
+        "vehicle_health_data_limits",
+        "hvac_air_conditioning",
+        "exhaust_emissions_dpf"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3071,10 +3066,10 @@
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
         "engine_overheating",
-        "battery_charging_light",
-        "engine_misfire",
-        "transmission_slip",
-        "symptom_vs_fault"
+        "hvac_air_conditioning",
+        "jump_start",
+        "pm_battery_prediction",
+        "battery_charging_light"
       ],
       "retrieval_score": 0.4114,
       "retrieved_passage_count": 6,
@@ -3093,12 +3088,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "eps_light",
+        "tire_pressure_tread",
         "brake_vibration",
         "high_speed_vibration",
-        "timing_engine_wear",
-        "transmission_slip",
-        "filters_routine_service",
-        "motorcycle_chain_drive"
+        "changing_a_tire",
+        "high_fuel_consumption"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3120,11 +3115,11 @@
       "retrieved_knowledge_id": "hvac_air_conditioning",
       "top_ranked_knowledge_ids": [
         "hvac_air_conditioning",
-        "battery_charging_starting",
         "hybrid_ev_high_voltage_safety",
         "exhaust_emissions_dpf",
-        "battery_charging_light",
-        "engine_overheating"
+        "ev_charging",
+        "battery_charging_starting",
+        "battery_charging_light"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -3143,12 +3138,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
-        "engine_overheating",
         "engine_misfire",
+        "engine_overheating",
         "fuel_ignition_air",
         "hybrid_ev_high_voltage_safety",
         "exhaust_emissions_dpf",
-        "hvac_air_conditioning"
+        "engine_stalling"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3165,18 +3160,18 @@
       "expected_knowledge_id": null,
       "acceptable_knowledge_ids": [],
       "expected_abstention": true,
-      "retrieved_knowledge_id": null,
+      "retrieved_knowledge_id": "dashboard_warning_obd",
       "top_ranked_knowledge_ids": [
-        "motorcycle_chain_drive",
         "dashboard_warning_obd",
         "engine_overheating",
         "exhaust_emissions_dpf",
+        "motorcycle_chain_drive",
         "engine_misfire",
         "oil_change_schedule"
       ],
-      "retrieval_score": null,
-      "retrieved_passage_count": 0,
-      "retrieval_expectation_met": true,
+      "retrieval_score": 0.2133,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -3192,10 +3187,10 @@
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
-        "timing_engine_wear",
-        "dashboard_warning_obd",
+        "warning_chimes",
+        "pm_false_alarms",
+        "engine_overheating",
         "dtc_code_types",
-        "vehicle_pulling",
         "engine_misfire"
       ],
       "retrieval_score": null,
@@ -3213,18 +3208,18 @@
       "expected_knowledge_id": null,
       "acceptable_knowledge_ids": [],
       "expected_abstention": true,
-      "retrieved_knowledge_id": null,
+      "retrieved_knowledge_id": "pm_downtime_cost",
       "top_ranked_knowledge_ids": [
+        "pm_downtime_cost",
+        "pm_repair_vs_replace",
+        "pm_fleet_kpis",
         "tire_puncture",
-        "engine_overheating",
-        "fuel_ignition_air",
-        "brake_noise",
-        "steering_suspension",
-        "symptom_vs_fault"
+        "pm_data_needed",
+        "pm_budgeting"
       ],
-      "retrieval_score": null,
-      "retrieved_passage_count": 0,
-      "retrieval_expectation_met": true,
+      "retrieval_score": 0.208,
+      "retrieved_passage_count": 6,
+      "retrieval_expectation_met": false,
       "safety_terms_expected": [],
       "safety_terms_found": [],
       "safety_expectation_met": null,
@@ -3243,10 +3238,10 @@
       "top_ranked_knowledge_ids": [
         "transmission_slip",
         "transmission_fluid",
-        "transmission_noise",
+        "pm_fluid_analysis",
         "coolant_leaks_fluids",
         "maintenance_model_explanation",
-        "fluid_leak_colors"
+        "transmission_noise"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,
@@ -3265,12 +3260,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
-        "filters_routine_service",
-        "hybrid_ev_high_voltage_safety",
-        "oil_change_schedule",
         "maintenance_schedule_overdue",
+        "pm_what_is_predictive",
+        "oil_change_schedule",
+        "filters_routine_service",
         "dtc_code_types",
-        "transmission_slip"
+        "service_schedule_pms"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3293,12 +3288,12 @@
       "top_ranked_knowledge_ids": [
         "tire_pressure_tread",
         "engine_overheating",
-        "exhaust_emissions_dpf",
+        "high_fuel_consumption",
+        "fuel_saving",
         "vehicle_pulling",
-        "tpms_light",
-        "tire_puncture"
+        "diesel_vs_gasoline"
       ],
-      "retrieval_score": 0.2182,
+      "retrieval_score": 0.2618,
       "retrieved_passage_count": 6,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
@@ -3318,14 +3313,14 @@
       "retrieved_knowledge_id": "hybrid_ev_high_voltage_safety",
       "top_ranked_knowledge_ids": [
         "hybrid_ev_high_voltage_safety",
+        "hybrid_operation",
+        "regenerative_braking",
         "engine_overheating",
         "exhaust_emissions_dpf",
-        "motorcycle_chain_drive",
-        "battery_maintenance",
-        "battery_hazard"
+        "hvac_air_conditioning"
       ],
       "retrieval_score": 0.48,
-      "retrieved_passage_count": 6,
+      "retrieved_passage_count": 5,
       "retrieval_expectation_met": true,
       "safety_terms_expected": [],
       "safety_terms_found": [],
@@ -3341,12 +3336,12 @@
       "expected_abstention": true,
       "retrieved_knowledge_id": null,
       "top_ranked_knowledge_ids": [
+        "pm_severe_service",
+        "vehicle_health_data_limits",
         "ac_musty_smell",
-        "oil_change_schedule",
-        "brake_noise",
-        "transmission_slip",
-        "steering_suspension",
-        "dashboard_warning_obd"
+        "oil_colour",
+        "pm_fluid_analysis",
+        "oil_change_schedule"
       ],
       "retrieval_score": null,
       "retrieved_passage_count": 0,
@@ -3368,11 +3363,11 @@
       "retrieved_knowledge_id": "vehicle_health_data_limits",
       "top_ranked_knowledge_ids": [
         "vehicle_health_data_limits",
+        "pm_data_needed",
         "symptom_vs_fault",
+        "pm_records_best_practice",
         "hybrid_ev_high_voltage_safety",
-        "hvac_air_conditioning",
-        "exhaust_emissions_dpf",
-        "motorcycle_chain_drive"
+        "hvac_air_conditioning"
       ],
       "retrieval_score": 0.9,
       "retrieved_passage_count": 6,

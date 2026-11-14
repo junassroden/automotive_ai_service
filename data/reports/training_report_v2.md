@@ -170,14 +170,14 @@ Evaluation set `data\evaluation\chatbot_eval_v2.json`: 220 author-written cases 
 
 | Metric | Router | Previous core |
 |---|---:|---:|
-| Pass rate | 1.0 | 0.1574 |
+| Pass rate | 0.9915 | 0.1532 |
 | Critical cases | 1.0 | 0.2 |
 | Permission leaks | 0/27 | 1/27 |
-| Latency p50/p95 ms | 402.9/913.8 | 96.4/269.4 |
+| Latency p50/p95 ms | 469.9/1136.8 | 155.0/521.7 |
 
 Retrieval on labelled cases: recall@3 0.9655, precision@3 0.4138, MRR 1.0.
 
 | Role | Router pass | Previous core |
 |---|---:|---:|
 | admin | 1.0 | 0.1111 |
-| customer | 1.0 | 0.1713 |
+| customer | 0.989 | 0.1657 |

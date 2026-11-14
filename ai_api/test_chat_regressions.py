@@ -923,9 +923,10 @@ class LiveScreenshotTests(TestCase):
         ask = lambda message: answer_chat(message, viewer_role="customer", conversation_id=conversation,  # noqa: E731
                                           conversation_scope="customer:screenshot-test", retrieval_protocol=1)
         first = ask("my engine is overheating, what are the cause")["answer"]
-        more = ask("anymore")["answer"]
-        self.assertNotEqual(first.split("\n")[0], more.split("\n")[0])
-        self.assertIn("radiator cap", more)
+        more = ask("anymore")
+        self.assertNotEqual(first.split("\n")[0], more["answer"].split("\n")[0])
+        self.assertEqual(more["data"]["knowledge_id"], "engine_overheating")
+        self.assertFalse({line for line in more["answer"].split("\n") if line} & {line for line in first.split("\n") if line})
 
     @skipUnless(INDEX_BUILT, "knowledge index not built")
     def test_flat_wheels_are_a_flat_tire(self):
@@ -941,13 +942,15 @@ class MechanicTriageTests(TestCase):
         return [answer_chat(message, viewer_role="customer", conversation_id=conversation, conversation_scope="customer:triage-test",
                             retrieval_protocol=1)["answer"] for message in messages]
 
-    def test_overheating_is_narrowed_step_by_step(self):
+    def test_overheating_is_narrowed_from_knowledge(self):
+        # Each reply is answered from the knowledge that matches it; nothing is asked or said from a script (2026-11-14).
         first, traffic, coolant, fan = self.conversation("my car is overheating", "only in traffic", "the coolant is full", "no the fan doesn't spin")
-        self.assertIn("To narrow it down: Does it overheat mostly in slow traffic", first)
-        self.assertIn("points to the radiator fan", traffic)
-        self.assertIn("Next: With the engine cold, is the coolant reservoir low", traffic)
+        for scripted in ("To narrow it down", "Next:", "Usually it's"):
+            self.assertNotIn(scripted, first)
+        self.assertIn("radiator fan", traffic)
         self.assertIn("thermostat", coolant)
-        self.assertIn("fan that doesn't run", fan)
+        self.assertIn("fan", fan)
+        self.assertEqual(len({first, traffic, coolant, fan}), 4)
 
     def test_a_new_problem_is_not_read_as_a_reply(self):
         # "not" in "engine not starting" once answered "does the radiator fan run?" with "no" (2026-11-14).
@@ -955,10 +958,20 @@ class MechanicTriageTests(TestCase):
         self.assertIn("won't start", new_problem)
         self.assertNotIn("fan", new_problem)
 
-    def test_a_bare_no_to_an_either_or_question_is_asked_again(self):
-        _, _, bare = self.conversation("my engine is overheating", "in traffic", "no")
-        self.assertIn("is the coolant reservoir low or empty", bare)
-        self.assertNotIn("fan that doesn't run", bare)
+    def test_a_follow_up_never_repeats_what_was_said(self):
+        first, more = self.conversation("my engine is overheating", "anything else?")
+        sentences = lambda text: {part.strip() for part in re.split(r"(?<=[.!?])\s+", text) if part.strip()}  # noqa: E731
+        self.assertTrue(more.strip())
+        self.assertFalse(sentences(first) & sentences(more))
+
+    def test_answers_are_chosen_by_the_question(self):
+        # The same topic answers different questions with different knowledge.
+        # Once matched the engine-braking entry, whose overview mentions safe driving and overheating brakes.
+        drive = answer_chat("is it safe to drive with an overheating engine", viewer_role="customer", retrieval_protocol=1)["answer"]
+        part = answer_chat("what does a thermostat do", viewer_role="customer", retrieval_protocol=1)["answer"]
+        self.assertTrue(drive.startswith("No."), drive)
+        self.assertIn("thermostat", part.casefold())
+        self.assertNotIn("No.", part)
 
     def test_taglish_replies_are_understood(self):
         _, traffic, coolant = self.conversation("umiinit ang makina", "sa traffic lang", "puno naman ang coolant")
@@ -1122,9 +1135,10 @@ class MechanicAnswerTests(TestCase):
         self.assertTrue(answer.startswith("A steady check-engine light: yes"), answer)
 
     def test_cost_questions_explain_what_decides_the_price(self):
+        # The topic's own cost knowledge leads; no price is invented.
         answer = answer_chat("how much does a brake pad replacement cost", viewer_role="customer", retrieval_protocol=1)["answer"]
-        self.assertIn("What decides it", answer)
-        self.assertIn("quote", answer)
+        self.assertTrue(answer.startswith("Pads alone are one of the cheaper brake jobs"), answer)
+        self.assertNotRegex(answer, r"(?:PHP|₱|\$)\s*\d")
         _, cost = self.conversation("what does P0420 mean", "how much to fix")
         self.assertIn("exact price for P0420", cost)
 
@@ -1271,7 +1285,7 @@ class PredictiveMaintenanceKnowledgeTests(TestCase):
 
     def test_interval_question_gets_only_that_part(self):
         answer = answer_chat("how often should brake pads be replaced", viewer_role="customer", retrieval_protocol=1)["answer"]
-        self.assertTrue(answer.startswith("Typical interval: brake pads"), answer)
+        self.assertTrue(answer.startswith("Brake pads:"), answer)
         self.assertNotIn("timing belt", answer)
 
     def test_model_questions_get_different_answers(self):

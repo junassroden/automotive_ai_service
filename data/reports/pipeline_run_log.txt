@@ -1,3 +1,3 @@
-[    2.2s] building knowledge index
-[   33.3s] knowledge index: 9939 chunks
-[   33.3s] report: data\reports\training_report_v2.md
+[    5.2s] building knowledge index
+[   74.1s] knowledge index: 9939 chunks
+[   74.2s] report: data\reports\training_report_v2.md

@@ -1,4 +1,6 @@
+import hashlib
 import json
+import math
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -23,6 +25,9 @@ GENERIC_ENGLISH = {"no", "symptom", "symptoms", "open", "safety", "safe", "speci
 NEAR_TIE_RATIO = 0.9
 COVERAGE_TIE_RATIO = 0.8
 CLEARLY_BETTER_COVERAGE = 0.5
+NAMED_TOPIC_RATIO = 0.7
+NAMED_TOPIC_COVERAGE = 0.75
+NAMED_TOPIC_GAIN = 0.25
 # One specific word in common is enough only with a reasonable retrieval score ("wheel" alone in a lug-nut torque question is not).
 MIN_SINGLE_TERM_SCORE = 0.15
 # Words that ask about a topic without naming one.
@@ -328,6 +333,15 @@ def retrieve_knowledge(
         covering = max(wider, key=lambda item: (item["topic_coverage"], item["score"]))
         if covering["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE:
             ranked = [covering] + [item for item in ranked if item is not covering]
+        else:
+            # A topic whose own name covers most of the question beats one that only shares words in passing
+            # ("is it safe to drive with an overheating engine": the overheating entry, not engine braking,
+            # whose overview happens to mention safe driving and overheating brakes).
+            named = [item for item in ranked if item["score"] >= ranked[0]["score"] * NAMED_TOPIC_RATIO
+                     and item["topic_coverage"] >= NAMED_TOPIC_COVERAGE]
+            best = max(named, key=lambda item: (item["topic_coverage"], item["score"]), default=None)
+            if best is not None and best["topic_coverage"] >= ranked[0]["topic_coverage"] + NAMED_TOPIC_GAIN:
+                ranked = [best] + [item for item in ranked if item is not best]
     query_terms = [
         term for term in _normalize(query).split()
         if term not in QUERY_STOP_WORDS
@@ -611,6 +625,88 @@ FUNCTION_QUESTION = re.compile(
 FUNCTION_FILLER = {"does", "do", "function", "role", "purpose", "work", "works", "an", "the"}
 
 
+def _sentence(text):
+    text = text.strip()
+    text = text[:1].upper() + text[1:]
+    return text if text.endswith((".", "!", "?")) else text + "."
+
+
+# What kind of question it is. This only decides which kind of knowledge answers it, never the wording.
+# "Can I still drive it?", "is it safe to drive?", "pwede pa ba i-drive?"
+ASKS_DRIVE = re.compile(
+    r"\b(?:can i (?:still |keep )?drive|could i (?:still )?drive|can i (?:still |keep )?use (?:it|the car|my car|the vehicle)\b(?! (?:instead|for))|safe to drive|ok(?:ay)? to drive|is it safe|still drive|keep driving"
+    r"|drive (?:it )?with|drive on it|pwede (?:pa )?(?:ba )?(?:i-?|ma)?(?:drive|gamitin|byahe)|delikado|dangerous|serious|urgent)\b", re.IGNORECASE)
+# "How much does it cost to fix?", "magkano ipagawa?"
+ASKS_PRICE = re.compile(r"\b(?:how much (?:does|do|will|would|is|to|for)|cost|costs|price|magkano|expensive|mahal ba|cheap)\b", re.IGNORECASE)
+ASKS_ADVICE = re.compile(
+    # The message reaches this normalised, sometimes without the "I" ("when should change the timing belt").
+    r"^\s*(?:what|which|how much|how often|how many|when)\b.*\b(?:should|do (?:i|we) need|is (?:the )?(?:correct|right|recommended|best|ideal))\b"
+    r"|^\s*how often\b|^\s*what(?:'s| is) the (?:correct|right|recommended|ideal|normal)\b", re.IGNORECASE)
+ASKS_INTERVAL = re.compile(r"\b(?:how often|how long|how many (?:km|kilometers|kilometres|miles)|interval|lifespan|life span|every how"
+                           r"|when (?:should|do|to) (?:i )?(?:change|replace))\b", re.IGNORECASE)
+
+
+# ---------------------------------------------------------------------------
+# Chat answers built from knowledge. Every statement a topic entry holds (what it is, what each part does,
+# causes, clues, checks, safety, cost, intervals) is scored against the question, and the answer is the
+# statements that answer it best. No answer text, layout or follow-up question is written in advance.
+# ---------------------------------------------------------------------------
+
+# Where statements come from, and what kind of knowledge each field holds.
+STATEMENT_FIELDS = (
+    ("answer", "explain"), ("overview", "explain"), ("component_functions", "function"), ("possible_causes", "cause"),
+    ("symptoms", "clue"), ("triage", "clue"), ("condition_hints", "clue"), ("actions", "check"), ("checks", "check"),
+    ("professional", "workshop"), ("diagnostic_steps", "workshop"), ("drive_safety", "drive"), ("stop", "safety"),
+    ("urgency", "safety"), ("cost_note", "cost"), ("interval_items", "interval"),
+)
+# How well each kind of knowledge suits each kind of question.
+KIND_WEIGHTS = {
+    "drive": {"drive": 3.0, "safety": 1.8, "explain": 0.9, "clue": 0.8},
+    "cost": {"cost": 3.0, "workshop": 1.3, "cause": 1.0},
+    "function": {"function": 2.6, "explain": 1.6},
+    "interval": {"interval": 3.0, "explain": 0.6, "check": 0.8},
+    "advice": {"explain": 1.6, "interval": 1.6, "check": 1.4, "function": 1.2},
+    "action": {"check": 2.0, "workshop": 1.3, "safety": 1.3, "clue": 1.0},
+    "cause": {"cause": 2.0, "clue": 1.6, "explain": 1.2},
+    "problem": {"explain": 1.5, "cause": 1.5, "clue": 1.4, "check": 1.2, "safety": 1.1},
+}
+OTHER_KIND_WEIGHT = 0.5
+# Statements that hold only under a condition ("in traffic", "with the coolant full") answer a question only
+# when it says something about that condition; a word the whole topic shares ("overheating") isn't enough.
+CONDITIONAL_FIELDS = {"triage", "condition_hints", "symptoms"}
+CONDITIONAL_WITHOUT_DETAIL = 0.2
+# A word in at most this share of the topic's statements is specific enough to pick out a condition.
+SPECIFIC_TERM_SHARE = 0.25
+# Fields written for technicians or as background count for less than plain advice to a driver.
+FIELD_WEIGHTS = {"answer": 1.3, "checks": 0.75, "diagnostic_steps": 0.5, "overview": 0.85, "possible_causes": 0.9}
+# Each further statement of a kind already in the answer counts this much less, so an answer covers what is
+# wrong, why and what to do rather than three ways of saying one of them.
+REPEATED_KIND_FACTOR = 0.55
+# Statements of one kind in one answer; one safety instruction is enough.
+KIND_LIMITS = {"safety": 1, "drive": 1, "cost": 1}
+# The order statements are read in, so the answer goes from what is happening to what to do about it.
+READING_ORDER = ("drive", "explain", "function", "interval", "clue", "cause", "cost", "check", "workshop", "safety")
+MAX_STATEMENTS = 4
+# A follow-up adds to what was said, so it is shorter and only keeps what clearly answers it.
+FOLLOW_UP_STATEMENTS = 3
+FOLLOW_UP_SCORE_FLOOR = 0.45
+MAX_ANSWER_WORDS = 120
+# A statement much weaker than the best one doesn't answer the question.
+RELATIVE_SCORE_FLOOR = 0.3
+STATEMENT_STOP = {
+    "a", "an", "the", "and", "or", "but", "if", "then", "so", "of", "to", "in", "on", "at", "by", "for", "with", "from", "as", "is", "are",
+    "was", "were", "be", "been", "being", "it", "its", "this", "that", "these", "those", "there", "here", "i", "me", "my", "we", "our", "you",
+    "your", "he", "she", "they", "them", "their", "do", "does", "did", "done", "can", "could", "should", "would", "will", "may", "might",
+    "must", "have", "has", "had", "what", "which", "who", "when", "where", "why", "how", "about", "into", "up", "out", "just", "also", "very",
+    "really", "still", "any", "some", "all", "more", "most", "other", "such", "only", "than", "too", "s", "t", "ll", "re", "ve", "d", "m",
+    "please", "po", "ba", "ang", "ng", "na", "sa", "mga", "lang", "naman", "pa", "not", "no", "yes", "car", "vehicle", "tell", "know",
+    "much", "many", "often", "long", "much", "get", "got", "like", "one", "anything", "else", "something", "thing", "things", "way",
+    "ok", "okay", "hmm", "now", "even", "suppose", "happen", "happens", "mean", "means", "meaning", "explain", "details", "info", "continue",
+    "anymore", "though", "already", "go", "kasi", "din", "rin", "yung", "ito", "iyan", "lng", "pls",
+}
+NEGATION = re.compile(r"\b(?:not|no|never|cannot|without|hindi|ayaw|wala)\b|n'?t\b", re.IGNORECASE)
+
+
 def has_chat_fields(document):
     return isinstance(document.get("answer"), str) and document["answer"].strip() != ""
 
@@ -625,279 +721,178 @@ def mentions(text, terms):
     return any(_terms_match(term, word) for term in terms for word in words)
 
 
-def _join(items, conjunction="or"):
-    items = [item.rstrip(".") for item in items if item]
-    if len(items) <= 1:
-        return "".join(items)
-    if any("," in item or f" {conjunction} " in item for item in items):
-        # Items that contain commas or "or" themselves are separated with semicolons so the list stays readable.
-        return "; ".join(items[:-1]) + f"; {conjunction} " + items[-1]
-    return ", ".join(items[:-1]) + f" {conjunction} " + items[-1]
+def _content_terms(text):
+    return [word for word in _normalize(text).split() if len(word) > 1 and word not in STATEMENT_STOP]
 
 
-def _sentence(text):
-    text = text.strip()
-    return text if text.endswith((".", "!", "?")) else text + "."
+def _split_sentences(text):
+    return [part for part in re.split(r"(?<=[.!?])\s+(?=[A-Z])", text.strip()) if part]
 
 
-def causes_sentence(causes, lead="Common causes include"):
-    return _sentence(f"{lead} {_join(causes)}") if causes else ""
-
-
-def likely_causes(causes):
-    """The causes as a mechanic says them. Entries don't rank their causes reliably, so no order is claimed."""
-    if not causes:
-        return ""
-    return _sentence(f"Usually it's {_join(causes)}")
-
-
-# "Can I still drive it?", "is it safe to drive?", "pwede pa ba i-drive?"
-ASKS_DRIVE = re.compile(
-    r"\b(?:can i (?:still |keep )?drive|could i (?:still )?drive|can i (?:still |keep )?use (?:it|the car|my car|the vehicle)\b(?! (?:instead|for))|safe to drive|ok(?:ay)? to drive|is it safe|still drive|keep driving"
-    r"|drive (?:it )?with|drive on it|pwede (?:pa )?(?:ba )?(?:i-?|ma)?(?:drive|gamitin|byahe)|delikado)\b", re.IGNORECASE)
-# "How much does it cost to fix?", "magkano ipagawa?"
-ASKS_PRICE = re.compile(r"\b(?:how much (?:does|do|will|would|is|to|for)|cost|costs|price|magkano|expensive|mahal ba)\b", re.IGNORECASE)
-COST_TIP = "Get a written quote before the work starts."
-ASKS_ADVICE = re.compile(
-    # The message reaches this normalised, sometimes without the "I" ("when should change the timing belt").
-    r"^\s*(?:what|which|how much|how often|how many|when)\b.*\b(?:should|do (?:i|we) need|is (?:the )?(?:correct|right|recommended|best|ideal))\b"
-    r"|^\s*how often\b|^\s*what(?:'s| is) the (?:correct|right|recommended|ideal|normal)\b", re.IGNORECASE)
-# Words in "how often should X be replaced" that don't name the component.
-INTERVAL_FILLER = {"often", "long", "last", "lasts", "replace", "replaced", "replacing", "change", "changed", "should", "be", "interval",
-                   "intervals", "life", "lifespan", "typical", "every", "when", "much", "km", "car", "parts", "part"}
-
-
-def cost_answer(document):
-    """What decides the bill for this problem, the way a shop explains it before quoting. No prices are invented:
-    the entry's cost note when it has one, otherwise the likely causes the price depends on."""
-    if document.get("cost_note"):
-        return f"No exact price without seeing the car. What decides it: {document['cost_note']} {COST_TIP}"
-    causes = list(document.get("key_causes") or [])[:3]
-    if causes:
-        return (f"No exact price without seeing the car: it depends on which it turns out to be: {_join(causes)}. "
-                f"Have it diagnosed first so you only pay for the part that's bad. {COST_TIP}")
-    return f"No exact price without seeing the car; it depends on what the workshop finds. {COST_TIP}"
-
-
-def compose_chat_answer(document, query=""):
-    """(answer, parts shown) for a chat question, from this document only.
-
-    Simple and definition questions get the direct answer and one next step; "why" questions
-    get the causes; "what should I do" questions get the steps; a problem happening right now
-    gets the safety instruction first. Internal source names are never part of the text."""
-    query = query or ""
-    if FUNCTION_QUESTION.search(query):
-        terms = [term for term in _normalize(query).split() if term not in QUERY_STOP_WORDS and term not in FUNCTION_FILLER]
-        roles = [item for item in document.get("component_functions") or [] if terms and mentions(item, terms)]
-        if roles:
-            return " ".join(roles[:2]), ["component_functions"]
-    causes = list(document.get("key_causes") or [])
-    actions = list(document.get("actions") or [])
-    stop = document.get("stop")
-    emergency = bool(stop) and bool(EMERGENCY.search(query))
-    wants_action = bool(ASKS_ACTION.search(query))
-    wants_cause = bool(ASKS_CAUSE.search(query))
-    # "What tire pressure should I use?", "how often should I change oil?": advice, not a problem, so no list of causes.
-    advice = bool(ASKS_ADVICE.search(query)) and not re.search(r"\bwhat (?:should|do|can|must) (?:i|we) do\b", query, re.IGNORECASE)
-    definition = (bool(ASKS_DEFINITION.search(query)) and not wants_action or advice) and not wants_cause
-
-    if document.get("interval_items"):
-        # "How often should brake pads be replaced?": the item asked about, not the whole table.
-        terms = [term for term in _normalize(query).split() if term not in QUERY_STOP_WORDS and term not in INTERVAL_FILLER]
-        scores = {item: sum(1 for term in terms if mentions(item.split(":")[0], [term])) for item in document["interval_items"]}
-        best = max(scores.values(), default=0)
-        matched = [item for item, score in scores.items() if best and score == best]
-        if matched and len(matched) <= 3:
-            return ("Typical interval: " + "; ".join(matched) + ". The owner's manual decides for each car, and city traffic and heat "
-                    "put rental cars at the short end of the range."), ["interval_items"]
-    if ASKS_DRIVE.search(query) and (document.get("drive_safety") or stop) and not emergency:
-        # "Can I still drive with the check-engine light on?": the yes or no first, like a mechanic would.
-        verdict = document.get("drive_safety") or stop
-        rest = [document["answer"]] + ([_sentence(actions[0])] if actions else [])
-        return "\n\n".join([verdict] + rest), ["drive_safety" if document.get("drive_safety") else "stop", "answer", "actions:1"]
-    if ASKS_PRICE.search(query) and not definition:
-        # "How much does a brake pad replacement cost?": what decides the bill, without inventing prices.
-        return "\n\n".join([document["answer"], cost_answer(document)]), ["answer", "cost"]
-
-    paragraphs, shown = [], ["answer"]
-    if emergency:
-        paragraphs.append(stop)
-        shown.append("stop")
-    paragraphs.append(document["answer"])
-    if definition:
-        cause_count, action_count = 0, 1
-    elif wants_action:
-        cause_count, action_count = 3, 3
-    elif wants_cause:
-        cause_count, action_count = 5, 1
-    else:
-        cause_count, action_count = 4, 2
-    if document.get("triage") and not definition:
-        # The narrowing question takes the place of the other suggestions; the next steps follow from the reply.
-        action_count = min(action_count, 1)
-    if causes and cause_count:
-        paragraphs.append(likely_causes(causes[:cause_count]))
-        shown.append(f"causes:{min(cause_count, len(causes))}")
-    if actions and action_count:
-        paragraphs.append(" ".join(_sentence(item) for item in actions[:action_count]))
-        shown.append(f"actions:{min(action_count, len(actions))}")
-    if stop and not emergency:
-        paragraphs.append(stop)
-        shown.append("stop")
-    triage = document.get("triage") or []
-    if triage and not definition:
-        already = triage_reply(document, query)
-        if already is not None:
-            # The question already says what a narrowing question would ask ("green fluid near the front", "only in traffic").
-            narrowed, asked = already
-            # On a first message the closing "have a mechanic test those parts" line is not needed yet.
-            narrowed = narrowed.replace("\n\n" + TRIAGE_CLOSING, "")
-            return "\n\n".join([document["answer"], narrowed]), ["answer"] + asked
-        # Like a mechanic: one question that splits the likely causes; the reply is handled by triage_reply().
-        paragraphs.append(f"To narrow it down: {triage[0]['ask']}")
-        shown.append("triage_asked:0")
-    return "\n\n".join(paragraph for paragraph in paragraphs if paragraph), shown
-
-
-TRIAGE_CLOSING = "If that doesn't settle it, have a mechanic test those parts before replacing anything."
-# Yes/no words only make sense as the reply to a question that was put to the user: "not" in "engine not
-# starting" is no answer to "does the radiator fan run?".
-GENERIC_REPLY_WORDS = {"no", "nope", "not", "never", "yes", "yeah", "yep", "yup", "ok", "okay", "fine", "correct", "it", "does", "doesn",
-                       "doesnt", "t", "is", "isn", "isnt", "on", "only", "also", "always", "oo", "opo", "hindi", "wala", "walang", "tama",
-                       "meron", "mayroon", "normal", "enough", "just", "when"}
-REPLY_FUNCTION_WORDS = {"the", "and", "are", "what", "when", "where", "which", "with", "your", "you", "this", "that", "have", "has", "from",
-                        "mostly", "there", "how", "for", "was", "were", "but", "any", "can", "did", "its", "then", "than", "one", "all"}
-
-
-def asks_about(question, message):
-    """True when the message names something the narrowing question asks about ("fan" for "does the radiator fan run?")."""
-    # Not QUERY_STOP_WORDS: words like "traffic" are noise for search but are exactly what a narrowing question asks about.
-    def content(text):
-        return [word for word in _normalize(text).split() if len(word) > 2 and word not in REPLY_FUNCTION_WORDS
-                and word not in GENERIC_QUERY_TERMS and word not in GENERIC_REPLY_WORDS]
-    subject = content(question)
-    words = content(message)
-    return any(_terms_match(word, term) for word in words for term in subject)
-
-
-def triage_reply(document, message, shown=()):
-    """(answer, parts shown) when the message answers one of the topic's narrowing questions, else None.
-
-    The answer says what the reply points to and asks the next question that hasn't been asked yet."""
-    triage = document.get("triage") or []
-    if not triage:
-        return None
-    shown = set(shown or ())
-    asked = sorted(int(item.split(":")[1]) for item in shown if item.startswith("triage_asked:"))
-    answered = {int(item.split(":")[1]) for item in shown if item.startswith("triage_answered:")}
-    # The question just asked is checked first, then any other question the reply happens to answer.
-    order = list(reversed(asked)) + [index for index in range(len(triage)) if index not in asked]
-    text = message.casefold()
-    for index in order:
-        if index in answered:
-            continue
-        hits = [(option_position, match.group(0))
-                for option_position, option in enumerate(triage[index]["answers"])
-                for match in re.finditer(option["match"], text, re.IGNORECASE)]
-        if index not in asked and not asks_about(triage[index]["ask"], text):
-            # A question nobody asked yet is answered only by a specific word ("in traffic", "green"), not by a bare yes or no.
-            hits = [(position, found) for position, found in hits if set(_normalize(found).split()) - GENERIC_REPLY_WORDS]
-        if not hits:
-            continue
-        # The most specific answer wins: "cold while driving but warm in traffic" hits the traffic answer twice.
-        counts = {}
-        for position, _ in hits:
-            counts[position] = counts.get(position, 0) + 1
-        position = max(counts, key=lambda key: (counts[key], -key))
-        option = triage[index]["answers"][position]
-        parts, new = [option["narrow"]], [f"triage_answered:{index}"]
-        upcoming = [i for i in range(len(triage)) if i not in answered and i != index and i not in asked]
-        if upcoming:
-            parts.append(f"Next: {triage[upcoming[0]]['ask']}")
-            new.append(f"triage_asked:{upcoming[0]}")
+def knowledge_statements(document):
+    """Every statement the topic entry holds, each tagged with the kind of knowledge it is."""
+    statements, seen = [], set()
+    for field, kind in STATEMENT_FIELDS:
+        value = document.get(field)
+        if field == "triage":
+            items = [option.get("narrow") for question in value or [] for option in question.get("answers", [])]
+        elif isinstance(value, dict):
+            items = list(value.values())
+        elif isinstance(value, list):
+            items = value
         else:
-            parts.append(TRIAGE_CLOSING)
-        return "\n\n".join(parts), new
+            items = [value]
+        for item in items:
+            if not isinstance(item, str) or not item.strip():
+                continue
+            # Long passages are split so a question gets the sentence that answers it, not the paragraph around it.
+            for text in (_split_sentences(item) if field in {"overview", "urgency"} else [item]):
+                text = _sentence(text)
+                if text.casefold() in seen:
+                    continue
+                seen.add(text.casefold())
+                statements.append({"key": "s:" + hashlib.md5(text.encode("utf-8")).hexdigest()[:10], "kind": kind,
+                                   "field": field, "text": text, "terms": frozenset(_content_terms(text))})
+    return statements
+
+
+def question_kind(query):
+    """What the question asks for: whether to drive, cost, what a part does, an interval, advice, what to do, why, or a problem."""
+    if ASKS_DRIVE.search(query):
+        return "drive"
+    if ASKS_PRICE.search(query) and not ASKS_INTERVAL.search(query):
+        return "cost"
+    if FUNCTION_QUESTION.search(query):
+        return "function"
+    if ASKS_INTERVAL.search(query):
+        return "interval"
+    if ASKS_ACTION.search(query):
+        return "action"
+    if ASKS_CAUSE.search(query):
+        return "cause"
+    if ASKS_ADVICE.search(query) or ASKS_DEFINITION.search(query):
+        return "advice"
+    return "problem"
+
+
+def _matches(term, statement):
+    return any(_terms_match(term, word) for word in statement["terms"])
+
+
+def rank_statements(statements, query, kind=None, context="", exclude=(), topic_words=()):
+    """(score, statement) pairs that share words with the question, best first.
+
+    A word counts more the fewer statements share it ("traffic" says more than "engine" in the overheating
+    entry), words from the earlier question count less than the new message's, and a question that says
+    something is not happening prefers statements about things not happening ("the fan doesn't spin")."""
+    kind = kind or question_kind(query)
+    terms = set(_content_terms(query))
+    context_terms = set(_content_terms(context)) - terms
+    count = len(statements) or 1
+    weight, specific = {}, set()
+    for term in terms | context_terms:
+        shared = sum(1 for statement in statements if _matches(term, statement))
+        weight[term] = math.log(1 + count / (1 + shared))
+        # The topic's own words ("engine", "overheating") say which problem it is, not which condition.
+        if shared <= SPECIFIC_TERM_SHARE * count and term not in GENERIC_QUERY_TERMS and term not in QUESTION_ONLY_TERMS \
+                and not any(_terms_match(term, word) for word in topic_words):
+            specific.add(term)
+    negated = bool(NEGATION.search(query))
+    suits = KIND_WEIGHTS[kind]
+    ranked = []
+    for statement in statements:
+        if statement["key"] in exclude or (statement["kind"] == "drive" and kind != "drive"):
+            # A verdict on driving ("No. Driving on a flat tire...") only answers "can I drive it?".
+            continue
+        score = sum(weight[term] for term in terms if _matches(term, statement))
+        score += 0.35 * sum(weight[term] for term in context_terms if _matches(term, statement))
+        if score <= 0:
+            continue
+        if negated and NEGATION.search(statement["text"]):
+            score *= 1.25
+        if statement["field"] in CONDITIONAL_FIELDS and not any(_matches(term, statement) for term in specific):
+            score *= CONDITIONAL_WITHOUT_DETAIL
+        # Long statements match more words by length alone.
+        score *= suits.get(statement["kind"], OTHER_KIND_WEIGHT) * FIELD_WEIGHTS.get(statement["field"], 1.0)             / max(1, len(statement["terms"])) ** 0.25
+        ranked.append((round(score, 4), statement))
+    ranked.sort(key=lambda pair: -pair[0])
+    return ranked
+
+
+def _overlap(left, right):
+    if not left["terms"] or not right["terms"]:
+        return 0.0
+    return len(left["terms"] & right["terms"]) / min(len(left["terms"]), len(right["terms"]))
+
+
+def _select(ranked, limit=MAX_STATEMENTS, floor=RELATIVE_SCORE_FLOOR):
+    """The best statements that say different things, within a readable length: each pick is the strongest
+    remaining statement after discounting kinds the answer already has."""
+    chosen, words, per_kind = [], 0, {}
+    top = ranked[0][0] if ranked else 0
+    remaining = [(score, statement) for score, statement in ranked if score >= top * floor]
+    while remaining and len(chosen) < limit:
+        candidates = [(score * REPEATED_KIND_FACTOR ** per_kind.get(statement["kind"], 0), statement) for score, statement in remaining
+                      if per_kind.get(statement["kind"], 0) < KIND_LIMITS.get(statement["kind"], 2)
+                      and not any(_overlap(statement, other) > 0.6 for other in chosen)
+                      and (not chosen or words + len(statement["text"].split()) <= MAX_ANSWER_WORDS)]
+        if not candidates:
+            break
+        _, statement = max(candidates, key=lambda pair: pair[0])
+        chosen.append(statement)
+        words += len(statement["text"].split())
+        per_kind[statement["kind"]] = per_kind.get(statement["kind"], 0) + 1
+        remaining = [pair for pair in remaining if pair[1] is not statement]
+    return chosen
+
+
+def _read(chosen, lead=None, safety_first=False):
+    """The statements in reading order: the kind the question asks for first ("No." for "can I drive it?", the
+    cost note for "how much?"), the safety instruction first when it is happening right now."""
+    order = tuple(dict.fromkeys(((lead,) if lead else ()) + (("safety",) if safety_first else ()) + READING_ORDER))
+    chosen = sorted(chosen, key=lambda statement: order.index(statement["kind"]))
+    paragraphs = []
+    for statement in chosen:
+        if paragraphs and paragraphs[-1][0] == statement["kind"]:
+            paragraphs[-1][1].append(statement["text"])
+        else:
+            paragraphs.append((statement["kind"], [statement["text"]]))
+    return "\n\n".join(" ".join(texts) for _, texts in paragraphs)
+
+
+def compose_chat_answer(document, query="", shown=(), context=""):
+    """(answer, keys of the statements used) for a question about this topic, built from its knowledge.
+
+    ``shown`` holds statements already given in this conversation, which are not repeated; ``context`` is the
+    earlier question, so a short follow-up ("in traffic", "what else?") is read in its light."""
+    query = query or ""
+    statements = knowledge_statements(document)
+    kind = question_kind(query)
+    exclude = set(shown or ())
+    topic_words = frozenset(_content_terms(document.get("title", "")))
+    ranked = rank_statements(statements, query, kind, context, exclude, topic_words)
+    if not ranked and context:
+        # Nothing in the message itself to go on ("anything else?", "yes"): carry on with the earlier question.
+        ranked = rank_statements(statements, context, question_kind(context) if kind == "problem" else kind, "", exclude, topic_words)
+    if not ranked and not exclude:
+        ranked = [(1.0, statement) for statement in statements if statement["kind"] == "explain"][:1]
+    chosen = _select(ranked, FOLLOW_UP_STATEMENTS, FOLLOW_UP_SCORE_FLOOR) if exclude else _select(ranked)
+    if not chosen:
+        return "", []
+    stop = [statement for statement in statements if statement["field"] == "stop" and statement["key"] not in exclude]
+    if stop and kind in {"problem", "action", "cause"} and not any(statement["field"] == "stop" for statement in chosen):
+        # A problem that can be dangerous always carries its stop instruction, once per conversation, in place of
+        # any milder safety note.
+        chosen = [statement for statement in chosen if statement["kind"] != "safety"] + stop[:1]
+    # A direct question gets its direct answer first: the verdict on driving, the cost, what the part does, the interval.
+    lead = max(KIND_WEIGHTS[kind], key=KIND_WEIGHTS[kind].get) if kind in {"drive", "cost", "function", "interval"} else None
+    return _read(chosen, lead, safety_first=bool(EMERGENCY.search(query))), [statement["key"] for statement in chosen]
+
+
+def compose_follow_up(document, message, shown=(), context=""):
+    """(answer, keys used) for a follow-up about the topic being discussed: what the knowledge says about the
+    new message that hasn't been said yet, or None when the knowledge has nothing more on it."""
+    answer, keys = compose_chat_answer(document, message, shown, context)
+    if answer:
+        return answer, keys
     return None
-
-
-def compose_follow_up(document, kind, shown=(), subject=None, lead=None):
-    """(answer, parts shown) for a follow-up about the document already being discussed.
-
-    ``kind``: "condition" (the user ruled something out: "what if the coolant is full?"),
-    "safety", "cost", "causes", "fix" or "more". Parts already shown are not repeated."""
-    shown = set(shown or ())
-    causes = list(document.get("key_causes") or [])
-    actions = list(document.get("actions") or [])
-    stop = document.get("stop")
-    professional = document.get("professional")
-
-    if kind == "condition":
-        excluded = [term for term in _normalize(subject or "").split() if term not in CONDITION_SUBJECT_FILLER]
-        remaining = [cause for cause in causes if not _names_part(cause, excluded)]
-        next_steps = [action for action in actions if not _names_part(action, excluded)]
-        hint = next((text for part, text in (document.get("condition_hints") or {}).items()
-                     if any(_terms_match(word, term) for word in _normalize(part).split() for term in excluded)), None)
-        if hint:
-            # What ruling this part out tells a technician (bright lights mean the battery still has charge).
-            return " ".join([_sentence(hint)] + ([_sentence(next_steps[0])] if next_steps else [])), ["condition"]
-        if not remaining:
-            text = _sentence(f"{lead or 'With that ruled out'}, I don't have a more specific cause to suggest") + \
-                " It needs an inspection by a technician to find what's wrong."
-            return text, ["condition"]
-        parts = [causes_sentence(remaining[:4], f"{lead}, the more likely causes are" if lead else "The more likely causes are")]
-        if next_steps:
-            parts.append(_sentence(next_steps[0]))
-        elif professional:
-            parts.append(_sentence(professional))
-        return " ".join(parts), ["condition"]
-    if kind == "safety":
-        if document.get("drive_safety"):
-            return document["drive_safety"], ["drive_safety"]
-        if stop:
-            return stop, ["stop"]
-        return _sentence(document.get("urgency") or "Have it checked by a technician before relying on the car"), ["urgency"]
-    if kind == "cost":
-        return cost_answer(document), ["cost"]
-    if kind == "causes":
-        if not causes:
-            return _sentence(document["answer"]), ["answer"]
-        return causes_sentence(causes[:5], "The usual causes are"), ["causes:5"]
-    if kind == "fix":
-        # The steps not given yet, then what needs a technician.
-        given = max((int(item.split(":")[1]) for item in shown if item.startswith("actions:")), default=0)
-        steps = actions[given:] or actions
-        parts = [" ".join(_sentence(item) for item in steps)] if steps else []
-        if professional:
-            parts.append(_sentence(professional))
-        if stop and "stop" not in shown:
-            parts.append(stop)
-        return "\n\n".join(part for part in parts if part) or _sentence(document["answer"]), ["actions", "professional"]
-    # "more": what hasn't been said yet, then what would narrow it down.
-    already = max((int(item.split(":")[1]) for item in shown if item.startswith("causes:")), default=0)
-    parts = []
-    if causes[already:]:
-        parts.append(causes_sentence(causes[already:], "Other possible causes are"))
-    if professional:
-        parts.append(_sentence(professional))
-    needed = document.get("needed_information") or []
-    if needed:
-        parts.append(_sentence("To narrow it down, tell me: " + needed[0].rstrip(".").lower()))
-    return " ".join(parts) or _sentence(document["answer"]), ["more"]
-
-
-CONDITION_SUBJECT_FILLER = {"the", "my", "a", "an", "its", "level", "levels", "one", "new", "old", "it", "is", "are", "already"}
-# "battery terminals" is a different part from "the battery": ruling out the battery keeps its terminals.
-SEPARATE_PART_WORDS = {"terminal", "terminals", "cable", "cables", "connection", "connections", "clamp", "clamps", "tray", "light", "lights",
-                       "sensor", "sensors", "switch", "fuse", "fuses", "relay", "relays", "cap", "hose", "hoses", "pump", "fan", "belt", "wiring"}
-
-
-def _names_part(text, terms):
-    """True when ``text`` names the part ``terms`` itself, not a separate part named after it."""
-    words = _normalize(text).split()
-    for index, word in enumerate(words):
-        if any(_terms_match(term, word) for term in terms):
-            following = words[index + 1] if index + 1 < len(words) else ""
-            if following not in SEPARATE_PART_WORDS:
-                return True
-    return False

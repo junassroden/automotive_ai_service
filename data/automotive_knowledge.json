@@ -22,7 +22,7 @@
         "fuel injector function",
         "fuel pump function"
       ],
-      "overview": "A misfire or rough-running complaint means the engine is not producing smooth, consistent power. The symptom alone does not identify a failed part.",
+      "overview": "A misfire or rough running means the engine isn't producing smooth, even power. The symptom alone doesn't tell you which part has failed.",
       "component_functions": [
         "Spark plugs provide the ignition spark in spark-ignition engines; ignition coils supply the required high voltage.",
         "Fuel injectors meter fuel into the engine according to the engine-control system.",
@@ -38,7 +38,7 @@
         "Note when the symptom occurs and whether a warning light is steady or flashing.",
         "Have diagnostic trouble codes and related data read before parts are replaced."
       ],
-      "urgency": "A flashing engine warning light, severe shaking, fuel smell, or stalling can indicate a condition that may damage the vehicle or create a hazard. Stop safely and arrange qualified assistance.",
+      "urgency": "A flashing engine warning light, severe shaking, a fuel smell or stalling can damage the car or be dangerous. Stop somewhere safe and call a mechanic or roadside assistance.",
       "needed_information": [
         "Make, model, year, engine, mileage, warning lights, diagnostic codes, and when the symptom occurs."
       ],
@@ -134,46 +134,46 @@
         "coolant warning light",
         "temperature light is on"
       ],
-      "overview": "An overheating indication means heat is not being removed or circulated as intended, or the temperature reading is not trustworthy. Treat a high-temperature warning as real until the vehicle-specific checks establish otherwise. The cooling system moves heat from the engine through coolant and heat exchangers; radiator airflow, coolant circulation, system sealing, and temperature control all matter.",
+      "overview": "An overheating warning means the engine's heat isn't being carried away properly, or the temperature reading is wrong. Treat a high-temperature warning as real until a check proves otherwise. The cooling system carries heat from the engine to the radiator in the coolant, so airflow through the radiator, coolant flow, a sealed system and a working thermostat all matter.",
       "component_functions": [
         "Coolant absorbs engine heat and carries it to a radiator or other heat exchanger.",
-        "The radiator transfers heat from coolant to airflow; blocked external fins or restricted internal flow can reduce heat rejection.",
-        "A thermostat controls coolant flow according to engine design. A thermostat stuck closed or opening late can restrict heat transfer; a thermostat stuck open more commonly causes slow warm-up rather than classic overheating.",
+        "The radiator passes the coolant's heat to the air flowing through it. Fins blocked by dirt on the outside, or clogging inside, reduce how much heat it can get rid of.",
+        "The thermostat opens to let coolant flow to the radiator once the engine is warm. One that sticks closed or opens late causes overheating; one stuck open usually just makes the engine slow to warm up.",
         "A coolant pump circulates coolant. A damaged impeller, drive problem, or leak can reduce circulation; pump design and drive method vary by vehicle.",
-        "Cooling fans increase airflow at low road speed or when commanded. Fan operation is controlled differently across vehicles and may not be obvious from a brief visual check.",
+        "The cooling fan pulls air through the radiator when the car is slow or stopped. When it switches on differs from car to car, so a quick look may not show whether it works.",
         "The pressure cap and sealed system raise the coolant boiling margin and control pressure. A weak cap, leak, or trapped air can cause coolant loss or poor circulation; never open a hot system."
       ],
       "possible_causes": [
-        "Coolant loss from a hose, radiator, reservoir, heater circuit, pump seal, or another connection reduces the amount of heat-carrying fluid; a leak may appear only when hot or pressurized.",
-        "A radiator or heat-exchanger restriction, damaged fins, blocked grille, debris, or obstructed airflow can prevent enough heat from leaving the coolant, often becoming more apparent under load or hot weather.",
-        "A cooling fan, fan relay/control, wiring, fuse, or temperature input problem can reduce airflow at idle or in traffic; temperature that improves at road speed is a clue, not proof.",
-        "A thermostat that does not open as intended can limit circulation through the radiator. Housing or hose temperatures alone are not a definitive test.",
+        "Coolant can leak from a hose, the radiator, the reservoir, the heater pipes, the water-pump seal or another joint. Less coolant means less heat carried away, and some leaks only show when the engine is hot.",
+        "A blocked or damaged radiator, a blocked grille or debris in front of the radiator stops heat from escaping, which shows most under load or in hot weather.",
+        "A faulty cooling fan, fan relay, fuse, wiring or temperature sensor means too little air at idle or in traffic. Temperature that drops once you're moving is a clue, but not proof.",
+        "A thermostat that doesn't open properly limits coolant flow to the radiator. Feeling the hoses alone can't confirm it.",
         "A coolant-pump circulation or drive problem can reduce coolant flow and cause overheating at different speeds; leaks or noise may be present but are not required.",
-        "Air trapped after service, incorrect filling/bleeding, or a system leak can interrupt circulation and cause fluctuating temperature or intermittent cabin heat.",
+        "Air trapped after a coolant change, a system that wasn't filled or bled properly, or a leak can stop coolant circulating, making the temperature jump around or the heater work on and off.",
         "A pressure-cap or sealing fault can allow premature boiling or coolant expulsion without an obvious cold leak.",
-        "Less common but serious causes include internal leakage, combustion gases entering the cooling circuit, a restricted exhaust or other engine fault increasing heat load, or an inaccurate temperature sensor/gauge. These require evidence-based testing."
+        "Less common but serious causes are a head-gasket leak (exhaust gas getting into the coolant), a blocked exhaust, another engine fault making extra heat, or a faulty temperature sensor or gauge. These need proper testing to confirm."
       ],
       "symptoms": [
-        "A temperature rise mainly while idling or in slow traffic, with improvement at road speed, can point toward insufficient low-speed airflow; verify fan command and operation before replacing parts.",
-        "Overheating at highway speed or under load can occur with inadequate coolant flow, restricted heat exchange, low coolant, excess engine heat load, or other faults; it does not identify a single component.",
-        "A heater that turns cold while the engine temperature rises can accompany low coolant or interrupted circulation and is an urgent warning, but heater design and control vary.",
-        "Sweet coolant odor, visible wetness, dried residue, repeated low level, or steam can support coolant loss; absence of a puddle does not rule out a hot/pressurized or internal leak.",
-        "Temperature that fluctuates, gurgling, or recent cooling-system work can be consistent with trapped air or low coolant but needs confirmation.",
+        "Overheating mainly at idle or in slow traffic, which improves once you're moving, points to too little airflow at low speed. Check that the cooling fan comes on before replacing parts.",
+        "Overheating at highway speed or when climbing or loaded can come from poor coolant flow, a partly blocked radiator, low coolant or the engine making extra heat. It doesn't point to one part on its own.",
+        "If the heater blows cold while the temperature gauge climbs, coolant may be low or not circulating. That is an urgent warning.",
+        "A sweet smell, wet spots, dried crusty residue, coolant that keeps dropping, or steam all suggest a coolant leak. No puddle doesn't rule one out: some leaks only happen when hot, or inside the engine.",
+        "A temperature that goes up and down, gurgling sounds, or recent cooling-system work can mean trapped air or low coolant, but it needs checking to be sure.",
         "Persistent bubbles, rapid pressurization from a cold start, unexplained coolant loss, or white exhaust may warrant internal-leak tests; none alone proves a head-gasket failure."
       ],
       "checks": [
         "Never remove a radiator cap, pressurized reservoir cap, hose, or bleed screw while hot; hot coolant and steam can cause severe burns.",
-        "After the vehicle is completely cool, look from a safe position for a low level only in the reservoir and by the procedure specified in that vehicle's owner's manual. Do not top up with an unspecified fluid or open a sealed system.",
+        "Once the car has cooled completely, check the coolant level in the reservoir only, the way the owner's manual describes. Don't top up with the wrong fluid or open a sealed system.",
         "Look for obvious external leakage or damage without reaching near fans, belts, or hot parts; electric fans can start unexpectedly.",
-        "Record when the temperature rises, warning messages, coolant level only when cold, visible residue, cabin-heater behavior, recent repairs, and ambient/load conditions. Do not run an overheating engine to reproduce the symptom."
+        "Note when it overheats (in traffic, on the highway, uphill), any warning messages, whether the heater turns cold, any leaks or steam, and recent repairs. Don't run an overheating engine just to see it happen again."
       ],
       "diagnostic_steps": [
-        "Compare the dashboard indication with scan-tool coolant-temperature data from a cold start and during a controlled test; check plausibility against ambient conditions and independent measurements using the vehicle procedure.",
-        "Inspect coolant level and condition when cold, then inspect hoses, radiator, reservoir, pump area, heater circuit, cap, and connections for evidence of leakage; use the specified pressure-test procedure when indicated.",
-        "Check commanded and actual fan operation, fan stages, fuses, relays/control module, wiring, and relevant temperature inputs using the wiring diagram and service procedure.",
-        "Evaluate thermostat opening and coolant circulation with vehicle-appropriate temperature measurements; do not infer a failed thermostat from one hose-temperature observation.",
-        "If external causes are not found, perform the relevant internal-leak checks, such as a combustion-gas test, cylinder leak-down/compression checks, or oil/coolant inspection as justified. A positive or negative result must be interpreted using the exact engine procedure.",
-        "After repair, refill and bleed using the specified coolant and procedure, verify stable temperature and fan operation under controlled conditions, check for leaks after cool-down, and confirm the warning does not return."
+        "A mechanic will compare the dashboard gauge with the temperature the engine computer reads, from a cold start and during a test drive, to see whether the reading is believable.",
+        "A mechanic will check the coolant level and condition with the engine cold, look over the hoses, radiator, reservoir, water pump, heater pipes and cap for leaks, and pressure-test the system if needed.",
+        "A mechanic will check that the cooling fan turns on when it should, at each speed, and test its fuses, relays, wiring and temperature sensor.",
+        "A mechanic will test whether the thermostat opens and coolant circulates using proper temperature readings, not just by feeling one hose.",
+        "If no outside cause is found, a mechanic will test for an internal leak, such as a head-gasket test for exhaust gas in the coolant, a compression or leak-down test, or a check for oil in the coolant.",
+        "After the repair, the system should be refilled with the right coolant and bled of air, then checked for a steady temperature, a working fan and no leaks once it cools down."
       ],
       "vehicle_variations": [
         "Cooling layouts, pressure caps, expansion tanks, thermostat locations, pump drives, fan controls, bleed procedures, and coolant specifications differ by make, model, engine, and year.",
@@ -183,7 +183,7 @@
       "known_unknowns": [
         "Without the exact vehicle and measured conditions, a specific cause cannot be ranked. No manufacturer procedure, coolant type, pressure value, or temperature threshold was available for this response."
       ],
-      "urgency": "If a high-temperature warning appears, steam or coolant is expelled, or the temperature continues to rise, stop safely and switch off the engine. Do not continue driving an overheating vehicle; severe damage can occur. Arrange qualified assistance.",
+      "urgency": "If a high-temperature warning comes on, steam or coolant comes out, or the temperature keeps rising, stop safely and switch off the engine. Do not continue driving an overheating car; it can be badly damaged. Call a mechanic or roadside assistance.",
       "needed_information": [
         "Make/model/year, engine and fuel type, exact dashboard warning or gauge reading, when it overheats (idle/traffic/speed/load), whether cabin heat changes, coolant level checked only when fully cold, visible leaks/steam/odor, recent repair or coolant work, and any scan codes or measured temperatures."
       ],
@@ -295,17 +295,17 @@
       ],
       "overview": "Oil level, oil pressure, and oil condition are different checks. A warning lamp may indicate a lubrication problem and should not be treated as a routine reminder without checking the manual.",
       "possible_causes": [
-        "A leak, incorrect level, consumption, sensor or wiring issue, or lubrication-system fault can cause oil-related symptoms."
+        "Oil can be lost through a leak or burned inside the engine, so an engine that uses oil without leaving a puddle may be burning it. A wrong oil level, a faulty sensor or wiring, or a lubrication fault can also cause oil warnings."
       ],
       "symptoms": [
         "Oil warning lamp, visible oil drops, smoke, burning-oil odor, or a level that repeatedly falls."
       ],
       "checks": [
         "If an oil-pressure warning appears while running, stop the engine as soon as it is safe.",
-        "Check the level only using the vehicle's specified procedure and correct oil specification.",
+        "Check the oil level the way the owner's manual describes, and use the oil grade it lists.",
         "Do not diagnose pressure from the dipstick level alone."
       ],
-      "urgency": "An oil-pressure warning, loud engine noise, or rapid oil loss requires stopping safely and prompt qualified inspection.",
+      "urgency": "An oil-pressure warning, a loud engine noise or oil disappearing fast means stop safely and have the car checked right away.",
       "needed_information": [
         "Warning symbol or message, measured level and procedure, oil specification, leak location, mileage, and service history."
       ],
@@ -367,8 +367,8 @@
         "A service reminder or oil-life message should be interpreted using the owner's manual; an oil-pressure warning is a separate, more urgent condition."
       ],
       "checks": [
-        "Check the exact make/model/year/engine maintenance schedule and service history.",
-        "Use the specified oil grade and service procedure.",
+        "Check the service schedule for your exact car and engine, and its service history.",
+        "Follow the oil grade and change method in the owner's manual.",
         "Do not use a general mileage interval when the vehicle maker specifies otherwise."
       ],
       "urgency": "A routine oil-change reminder is not the same as an oil-pressure warning. If oil pressure is warned while the engine is running, stop safely and follow the manual.",
@@ -464,16 +464,16 @@
         "belt replacement interval",
         "chain noise"
       ],
-      "overview": "Timing components keep engine events synchronized. Whether a vehicle uses a belt or chain, inspection and replacement requirements depend on the exact engine and manufacturer schedule.",
+      "overview": "The timing belt or chain keeps the engine's moving parts in step. Whether your engine has a belt or a chain, and when it needs checking or replacing, depends on the exact engine and the maker's schedule.",
       "possible_causes": [
         "Age, mileage, lubrication or tensioner problems, and component wear may affect timing-system condition."
       ],
       "symptoms": [
-        "Unusual timing-area noise or engine-running problems may warrant inspection, but symptoms cannot establish belt or chain condition."
+        "Unusual noise from the timing area or the engine running badly is a reason to have it inspected, but symptoms alone can't tell how worn the belt or chain is."
       ],
       "checks": [
-        "Verify the engine-specific maintenance schedule and service history.",
-        "Have suspected timing noise or damage inspected by a qualified technician."
+        "Check the service schedule for your exact engine and its service history.",
+        "Have any suspected timing noise or damage inspected by a mechanic."
       ],
       "urgency": "If timing-related failure is suspected or the engine suddenly runs abnormally, stop driving and arrange professional assessment.",
       "needed_information": [
@@ -593,7 +593,7 @@
         "brakes squeak in the morning",
         "brake pad wear indicator"
       ],
-      "overview": "A squeak or squeal when braking is most often caused by the pads and rotors themselves: pads worn down to their wear indicator, brake dust or debris, moisture or light surface rust, glazed friction surfaces, or missing or worn anti-noise shims and lubricant. A noise alone does not prove which part is at fault.",
+      "overview": "A squeak or squeal when braking usually comes from the pads and discs: pads worn down to their wear indicator, brake dust or debris, moisture or light rust, glazed pads or discs, or missing or worn anti-noise shims and grease. The noise alone doesn't prove which part is at fault.",
       "component_functions": [
         "Many brake pads have a small metal wear indicator that is designed to squeal against the rotor when the pad is nearly worn out.",
         "Rotors (discs) can develop surface rust after rain, washing or overnight parking; this is usually wiped off by the first few stops."
@@ -706,7 +706,7 @@
         "abs light is on",
         "abs light on"
       ],
-      "overview": "Brake and ABS warnings can indicate different systems. The exact symbol and the owner's-manual instructions matter; an ABS warning does not prove that the ordinary braking system is fully functional.",
+      "overview": "The brake warning and the ABS warning cover different systems, so check which symbol is lit and what the owner's manual says. An ABS warning doesn't mean the normal brakes are definitely fine.",
       "possible_causes": [
         "Fluid level or leakage, sensor or wiring faults, hydraulic concerns, or ABS component issues may trigger warnings."
       ],
@@ -715,7 +715,7 @@
       ],
       "checks": [
         "Identify the exact warning and follow the manual's immediate instructions.",
-        "Do not open or service hydraulic components unless qualified.",
+        "Don't open or work on brake lines or other hydraulic parts unless you're trained to.",
         "Arrange professional diagnostic inspection."
       ],
       "urgency": "A red brake warning with changed pedal feel, visible fluid leak, or reduced stopping ability is safety-critical. Stop safely and seek assistance.",
@@ -798,7 +798,7 @@
       ],
       "checks": [
         "Avoid towing or continued hard driving when a warning or severe symptom occurs.",
-        "Check fluid only if the manufacturer's procedure permits it; many systems require special conditions or have no dipstick.",
+        "Check the transmission fluid only if the owner's manual says you can; many cars need special conditions or have no dipstick.",
         "Have codes and fluid condition assessed."
       ],
       "urgency": "Loss of drive, severe slipping, burning odor, fluid leak, or an over-temperature warning warrants stopping safely and arranging inspection.",
@@ -936,7 +936,7 @@
         "Pressure warning, visible damage, low pressure, uneven wear, vibration, or reduced wet-road grip."
       ],
       "checks": [
-        "Check cold pressure against the vehicle placard/manual and inspect for damage.",
+        "Check the tire pressure when the tires are cold, against the sticker in the door jamb or the owner's manual, and look for damage.",
         "Use a suitable tread-depth gauge or have tires inspected.",
         "Do not drive on a visibly damaged, bulging, or rapidly deflating tire."
       ],
@@ -996,7 +996,7 @@
       ],
       "overview": "Steering and suspension symptoms affect vehicle control. Pulling, vibration, or noise can also arise from tires, brakes, road conditions, or wheel alignment.",
       "possible_causes": [
-        "Tire pressure or wear, alignment, worn suspension joints, shocks/struts, wheel bearings, or brake drag may contribute."
+        "Tire pressure or wear, wheel alignment, worn suspension joints, worn shock absorbers, wheel bearings or a dragging brake can all play a part."
       ],
       "symptoms": [
         "Pulling, wandering, excessive bounce, clunks, vibration, uneven tire wear, or humming that changes with speed."
@@ -1005,7 +1005,7 @@
         "Check tire condition and pressure only when safe.",
         "Have steering, suspension, wheel attachment, and alignment inspected; do not work under an unsupported vehicle."
       ],
-      "urgency": "Loose steering, a damaged wheel/tire, severe pulling, or a sudden change in handling is safety-critical. Stop safely and arrange inspection.",
+      "urgency": "Loose steering, a damaged wheel or tire, strong pulling or a sudden change in how the car handles is a safety risk. Stop safely and have it inspected.",
       "needed_information": [
         "Vehicle, speed and road conditions, recent impacts or repairs, tire condition, noises, and warning lights."
       ],
@@ -1075,17 +1075,17 @@
         "The alternator supplies electrical power and charges the battery while the engine runs in vehicles equipped with one."
       ],
       "possible_causes": [
-        "Low battery charge or capacity, loose/corroded connections, charging-system faults, starter issues, or parasitic electrical draw."
+        "A weak or worn-out battery, loose or corroded terminals, a charging-system fault, a starter problem, or something draining the battery while the car is parked."
       ],
       "symptoms": [
-        "Slow crank, clicking, dimming lights, battery/charging warning, repeated jump-start need, or stalling."
+        "Slow cranking, clicking, dimming lights, a battery warning light, needing jump-starts again and again, or stalling."
       ],
       "checks": [
         "Record warning lights and whether the problem occurs after the vehicle sits or while running.",
-        "Have battery and charging system tested with appropriate equipment.",
+        "Have the battery and charging system tested at a workshop.",
         "Avoid shorting battery terminals; follow the manual for jump-starting."
       ],
-      "urgency": "A burning smell, smoke, hot wiring, or repeated stalling requires stopping safely and qualified assistance.",
+      "urgency": "A burning smell, smoke, hot wiring or repeated stalling means stop safely and get help from a mechanic or roadside assistance.",
       "needed_information": [
         "Battery age, starting behavior, warning lights, recent jump starts, and test results if available."
       ],
@@ -1185,7 +1185,7 @@
         "check engine warning light",
         "engine check light"
       ],
-      "overview": "An OBD diagnostic trouble code identifies a detected condition or circuit that needs diagnosis; it does not automatically identify a failed part. A code reader's description is not a complete diagnosis.",
+      "overview": "A trouble code tells you which system or circuit found a problem; it doesn't name the broken part on its own. A code reader's short description isn't a full diagnosis.",
       "possible_causes": [
         "The same code can have multiple causes, including wiring, connections, leaks, sensor readings, or a component fault."
       ],
@@ -1194,10 +1194,10 @@
       ],
       "checks": [
         "Record exact codes and freeze-frame data before clearing them.",
-        "Follow the vehicle-specific diagnostic procedure and verify the underlying cause before replacing parts.",
+        "Have the cause confirmed with proper tests before replacing parts.",
         "Use the owner's manual for warning severity."
       ],
-      "urgency": "A flashing warning, oil-pressure or temperature warning, brake/steering warning, or severe drivability problem needs immediate attention. Do not treat all dashboard lights as equal.",
+      "urgency": "A flashing warning light, an oil-pressure or temperature warning, a brake or steering warning, or the car driving very badly needs attention right away. Not all dashboard lights are equally urgent.",
       "needed_information": [
         "Exact code including prefix, warning icon, vehicle make/model/year/engine, and symptoms."
       ],
@@ -1258,14 +1258,14 @@
         "A seal, hose, connection, reservoir, or component may leak; fluid can travel before dripping."
       ],
       "symptoms": [
-        "Puddle, falling fluid level, odor, warning light, overheating, or changed brake/steering/transmission behavior."
+        "A puddle, a fluid level that keeps dropping, a smell, a warning light, overheating, or brakes, steering or gears behaving differently."
       ],
       "checks": [
         "Do not taste or touch unknown fluid; keep people and pets away.",
         "Do not open a hot cooling system.",
         "A brake-fluid leak or changed pedal feel requires stopping safely; identify the source professionally."
       ],
-      "urgency": "Fuel, brake-fluid, major coolant, or oil-pressure-related leaks can be hazardous. Stop safely and seek qualified assistance rather than continuing to drive.",
+      "urgency": "Fuel, brake-fluid, big coolant or oil leaks can be dangerous. Stop safely and get help rather than driving on.",
       "needed_information": [
         "Leak location, approximate amount, warning lights, fluid level only if safe to check, and recent service."
       ],
@@ -1318,20 +1318,20 @@
         "when to replace spark plugs",
         "spark plug replacement"
       ],
-      "overview": "Filters and ignition items have different service requirements. Dust, operating conditions, engine design, and the manufacturer's schedule can change inspection or replacement timing.",
+      "overview": "Filters, spark plugs and other ignition parts each have their own service intervals. Dust, driving conditions, the engine and the maker's schedule can change when they need checking or replacing.",
       "component_functions": [
         "The engine air filter limits intake contaminants.",
         "The cabin air filter cleans air entering the passenger compartment where fitted.",
-        "A fuel filter removes specified contaminants from fuel where the vehicle has a serviceable filter."
+        "A fuel filter cleans dirt out of the fuel, on cars that have a replaceable one."
       ],
       "possible_causes": [
-        "A restricted or damaged filter or worn ignition component may affect operation, but symptoms are not enough to confirm the part is due."
+        "A blocked or damaged filter or worn ignition part can affect how the car runs, but symptoms alone don't prove the part is due."
       ],
       "symptoms": [
         "Reduced airflow, odor, rough running, or a service reminder may prompt inspection but do not determine a universal interval."
       ],
       "checks": [
-        "Use the schedule for the exact make/model/year/engine and severe-use conditions.",
+        "Use the service schedule for your exact car and engine, including the 'severe use' schedule if you drive in dust, heavy traffic or heat.",
         "Record completed service and parts used.",
         "Do not set a generic interval as overdue without the applicable schedule and service history."
       ],
@@ -1373,16 +1373,16 @@
         "time based maintenance",
         "pre trip inspection"
       ],
-      "overview": "Maintenance may be scheduled by time, mileage, operating conditions, or a vehicle's monitoring system. Without the applicable maker schedule and verified service records, overdue status cannot be calculated reliably.",
+      "overview": "Service can be due by time, by mileage, by driving conditions, or when the car's own service reminder says so. Without the maker's schedule and real service records, you can't reliably say whether it's overdue.",
       "possible_causes": [
         "Missing history, incorrect mileage, severe operating conditions, or use of the wrong vehicle schedule can make a due-date estimate unreliable."
       ],
       "symptoms": [
-        "A service reminder or missing record is a reason to check documentation, not proof that a particular component has failed."
+        "A service reminder or a missing record is a reason to check the paperwork, not proof that a part has failed."
       ],
       "checks": [
         "Compare dated service records and odometer readings with the exact vehicle's official schedule.",
-        "Use manufacturer severe-use guidance where applicable.",
+        "Follow the maker's 'severe use' schedule if it applies to how the car is driven.",
         "Record future due items only after verifying the schedule."
       ],
       "urgency": "Safety-related warnings or obvious defects require immediate inspection independent of routine intervals.",
@@ -1432,11 +1432,11 @@
         "New damage, warning indicators, abnormal noises, fluid leaks, tire concerns, or customer-reported symptoms."
       ],
       "checks": [
-        "Record exterior/interior condition, warning lights, tires, visible leaks, mileage, fuel/charge level, and required equipment.",
-        "Review open maintenance work and service due status against verified records.",
+        "Record the outside and inside condition, warning lights, tires, any leaks, mileage, fuel or charge level, and required equipment.",
+        "Check open maintenance jobs and what service is due against the real service records.",
         "Do not release a vehicle with unresolved safety-critical concerns."
       ],
-      "urgency": "Brake, steering, tire, severe overheating, oil-pressure, fuel-leak, or other safety-critical concerns require removing the vehicle from service until qualified inspection.",
+      "urgency": "A brake, steering, tire, serious overheating, oil-pressure, fuel-leak or other safety problem means taking the car out of service until a mechanic has inspected it.",
       "needed_information": [
         "Vehicle ID, dated inspection, odometer, checklist results, open work orders, and service schedule."
       ],
@@ -1477,7 +1477,7 @@
         "reported symptoms versus technician confirmed faults",
         "confirm vehicle passed inspection when no inspection record was supplied"
       ],
-      "overview": "A reliable health assessment combines verified vehicle identity, mileage, service history, inspection findings, and relevant diagnostic measurements. A short chat description or model score cannot establish overall vehicle condition.",
+      "overview": "A reliable picture of a car's health needs its exact identity, mileage, service history, inspection results and test measurements. A short chat description or a model score can't tell you the car's overall condition.",
       "possible_causes": [
         "Incomplete history, missing measurements, unverified user reports, or a model trained on different data can limit an assessment."
       ],
@@ -1487,9 +1487,9 @@
       "checks": [
         "Separate recorded facts, user-reported symptoms, model recommendations, and technician-confirmed faults.",
         "Prioritize safety-critical symptoms for inspection.",
-        "Request make/model/year/engine, mileage, warning codes, service history, and symptom conditions."
+        "Ask for the make, model, year, engine, mileage, any warning codes, the service history, and when the problem happens."
       ],
-      "urgency": "A low model score cannot establish that a vehicle is safe. Safety-critical symptoms must be addressed independently of model output.",
+      "urgency": "A low model score doesn't mean a car is safe. Safety symptoms must be dealt with whatever the model says.",
       "needed_information": [
         "Vehicle identity, current mileage, service records, warning codes, inspection results, and symptom details."
       ],
@@ -1532,13 +1532,13 @@
         "Scores may reflect patterns in training data and are limited by training coverage, feature quality, label quality, and the configured decision threshold."
       ],
       "symptoms": [
-        "A flagged category means the model crossed its configured recommendation threshold; a low score does not prove that the vehicle is fault-free."
+        "A flagged category means the model's score passed its recommendation threshold; a low score doesn't prove the car has no faults."
       ],
       "checks": [
         "Review the supplied feature values, threshold, service history, and a physical inspection.",
         "Explain the model's actual recorded output; never infer a failed part or invent a probability."
       ],
-      "urgency": "Use safety-critical symptoms and qualified inspection to determine immediate action; do not use model output alone to declare a vehicle safe.",
+      "urgency": "Decide what to do now from safety symptoms and a mechanic's inspection; never declare a car safe from the model's output alone.",
       "needed_information": [
         "The model response, supplied features, model version, threshold, and relevant inspection/history data."
       ],
@@ -1577,10 +1577,10 @@
         "Missing mileage, stale inspections, inconsistent labels, and incomplete maintenance history can distort prioritization or hide recurring issues."
       ],
       "symptoms": [
-        "Repeated work orders, safety-critical findings, overdue verified service, and model recommendations are distinct evidence types and should be reported separately."
+        "Repeated work orders, safety findings, overdue service and model recommendations are different kinds of evidence; report them separately."
       ],
       "checks": [
-        "Compare dated records with vehicle-specific schedules.",
+        "Compare dated records with each car's own service schedule.",
         "Prioritize confirmed safety defects and urgent symptoms before routine predictive recommendations.",
         "Report analyzed, rejected, and missing records rather than treating missing data as low risk."
       ],
@@ -1621,17 +1621,17 @@
         "confirmed mechanical fault",
         "what does a symptom mean"
       ],
-      "overview": "A symptom is an observed behavior, a diagnostic code is a recorded indication, and a confirmed fault requires appropriate testing or inspection. They should not be presented as interchangeable.",
+      "overview": "A symptom is what you notice, a trouble code is what the car's computer recorded, and a confirmed fault needs testing or inspection. They aren't the same thing.",
       "possible_causes": [
         "Different faults can create similar symptoms, and one code can have several possible causes."
       ],
       "symptoms": [
-        "Noise, warning light, vibration, odor, or changed performance are observations to document, not proof of a specific failed component."
+        "A noise, warning light, vibration, smell or change in performance is something to note down, not proof that a particular part has failed."
       ],
       "checks": [
-        "Record the condition and exact warning/code.",
-        "Use manufacturer diagnostic procedures and confirm findings before repair.",
-        "Seek a qualified technician when safety or specialized testing is involved."
+        "Write down what happens and the exact warning light or code.",
+        "Have the cause confirmed with proper tests before any repair.",
+        "See a mechanic when safety or special testing is involved."
       ],
       "urgency": "Treat warning lights and safety-critical symptoms according to the owner's manual; severe brake, steering, overheating, oil-pressure, or fuel symptoms require prompt action.",
       "needed_information": [
@@ -1672,26 +1672,26 @@
         "plug in hybrid system",
         "electric vehicle repair"
       ],
-      "overview": "Hybrid, plug-in hybrid, and battery-electric vehicles can contain high-voltage traction circuits in addition to ordinary low-voltage electrical systems. Their layouts, isolation methods, interlocks, stored energy, and technician requirements are vehicle-specific; a symptom or warning does not make exposed components safe to touch.",
+      "overview": "Hybrid, plug-in hybrid and electric cars have high-voltage parts as well as the normal 12-volt system. How they're built and protected differs from car to car, and a warning light never makes exposed high-voltage parts safe to touch.",
       "component_functions": [
         "A traction battery stores energy for an electric drive system; a battery-management system monitors and controls it.",
         "An inverter and electric motor convert and use electrical energy; hybrid designs may also include an engine and separate power paths.",
         "Some vehicles have multiple thermal circuits for the traction battery, power electronics, motor, engine, or cabin; one reservoir must not be assumed to serve all circuits."
       ],
       "possible_causes": [
-        "A warning may relate to low-voltage supply, charging equipment, thermal management, isolation monitoring, battery-management controls, wiring, or a high-voltage component; the displayed message and vehicle-specific diagnostic data are needed."
+        "A warning on a hybrid or electric car can come from the 12-volt battery, the charging equipment, battery cooling, the battery's control system, wiring or a high-voltage part; the exact message and a proper scan are needed."
       ],
       "symptoms": [
         "A high-voltage or hybrid-system warning, reduced propulsion, charging interruption, unusual heat, smoke, odor, crash damage, or fluid intrusion warrants cautious handling."
       ],
       "checks": [
-        "Do not open a traction-battery enclosure, touch orange cables/connectors, probe high-voltage terminals, defeat an interlock, or attempt isolation yourself.",
-        "For smoke, fire, unusual heat, crash damage, or hissing/odor, move people away, stop using or charging the vehicle if safe, and contact emergency responders or qualified assistance.",
+        "Do not open the high-voltage battery, touch orange cables or connectors, or try to work on high-voltage parts yourself.",
+        "If there's smoke, fire, unusual heat, crash damage, hissing or a strange smell, get everyone away, stop using or charging the car if it's safe to, and call emergency services or roadside assistance.",
         "Use only the owner's manual for user-level instructions such as warning response, towing, and charging; do not assume conventional jump-start or fluid-check procedures apply."
       ],
       "diagnostic_steps": [
-        "A trained high-voltage technician must identify the exact vehicle architecture and follow its manufacturer's isolation, verification, PPE, and service procedures before working on high-voltage components.",
-        "Do not infer battery failure from a warning code alone; diagnosis may involve scan data and manufacturer-defined isolation, electrical, thermal, and control-system tests."
+        "Only a technician trained for high-voltage systems should work on them, following that car maker's safety steps and wearing protective equipment.",
+        "A warning code alone doesn't mean the battery has failed; finding the cause takes scan data and the maker's own electrical and cooling tests."
       ],
       "professional_diagnostics": [
         "High-voltage diagnosis and battery opening require appropriately trained and equipped personnel using exact manufacturer service information; this knowledge base does not provide an isolation procedure."
@@ -1702,7 +1702,7 @@
       "known_unknowns": [
         "No make, model, year, warning message, or service document was supplied, so no component-level diagnosis or procedure can be given."
       ],
-      "urgency": "Do not touch or service exposed high-voltage components. For smoke, fire, unusual heat, collision damage, or electrical hazard, move away and seek emergency or qualified assistance. Do not charge a damaged or abnormally hot vehicle.",
+      "urgency": "Do not touch or work on exposed high-voltage parts. For smoke, fire, unusual heat, crash damage or an electrical hazard, move away and call emergency services or roadside assistance. Don't charge a damaged or unusually hot car.",
       "needed_information": [
         "Make/model/year and powertrain type, exact dashboard message, whether charging or propulsion is affected, and any collision, flooding, smoke, heat, or odor."
       ],
@@ -1748,15 +1748,15 @@
         "walang lamig ang aircon",
         "aircon not working"
       ],
-      "overview": "Cabin heating and air-conditioning depend on airflow, heat exchangers, doors and controls, and—in vehicles with conventional A/C—a sealed refrigerant circuit. A warm vent or weak airflow does not by itself identify a failed compressor or refrigerant leak.",
+      "overview": "Heating and air-conditioning depend on airflow, the heater and A/C units, the air flaps and controls, and on most cars a sealed refrigerant system. A warm vent or weak airflow doesn't by itself mean the compressor has failed or the refrigerant is leaking.",
       "component_functions": [
         "The blower moves air through cabin filters and heat exchangers.",
-        "A heater may use engine coolant, an electric heater, or another vehicle-specific heat source; blend doors route air through the selected path.",
-        "Air conditioning transfers cabin heat through a refrigerant circuit with components such as a compressor, condenser, metering device, and evaporator, but architectures vary."
+        "The heater usually uses hot engine coolant (some cars use an electric heater), and flaps inside the dash send the air through the heater or the A/C as you select.",
+        "Air-conditioning moves heat out of the cabin using refrigerant pumped by a compressor through a condenser at the front of the car and an evaporator behind the dashboard."
       ],
       "possible_causes": [
         "Weak airflow can result from a blower, control, filter, door, or electrical issue.",
-        "Warm air with normal airflow can involve control settings, blend-door operation, heat-source availability, refrigerant-circuit performance, or a sensor/control fault.",
+        "Warm air with normal airflow can come from the control settings, a stuck air flap, the heater, the refrigerant system or a faulty sensor.",
         "Odor, water, noise, or intermittent behavior may have several causes and requires inspection."
       ],
       "symptoms": [
@@ -1764,12 +1764,12 @@
       ],
       "checks": [
         "Confirm the selected temperature, fan, recirculation, and outlet settings; consult the vehicle manual for normal operation.",
-        "Do not handle refrigerant, loosen A/C fittings, bypass pressure switches, or probe moving/electrically controlled components.",
+        "Do not handle refrigerant, loosen A/C pipes, bypass pressure switches, or poke at moving or electrical A/C parts.",
         "If cabin heat is lost at the same time as engine overheating, treat the engine-temperature warning as urgent and follow the cooling-system safety guidance."
       ],
       "diagnostic_steps": [
-        "A qualified technician may inspect filters, airflow doors, blower controls, electrical supplies, temperature sensors, and system performance using vehicle-specific procedures.",
-        "Refrigerant identification, pressure testing, recovery, leak repair, and charging require suitable equipment and applicable legal/technical procedures; a pressure reading alone is not a diagnosis."
+        "A mechanic may check the cabin filter, air flaps, blower and its controls, wiring, temperature sensors and how well the A/C cools.",
+        "Finding leaks, recovering and recharging refrigerant need proper equipment and a qualified A/C technician; a pressure reading alone isn't a diagnosis."
       ],
       "professional_diagnostics": [
         "A/C refrigerant service and suspected refrigerant leaks should be handled by appropriately equipped personnel; exact refrigerant and charge specification are vehicle-specific."
@@ -1859,12 +1859,12 @@
       "component_functions": [
         "The catalytic converter uses precious-metal catalysts to turn harmful exhaust gases (carbon monoxide, unburnt hydrocarbons and nitrogen oxides) into less harmful ones.",
         "An oxygen sensor reports exhaust-related measurements to the control system; the code or reading does not alone prove sensor failure.",
-        "A catalytic converter and, where fitted, a diesel particulate filter treat or capture specified exhaust constituents.",
+        "The catalytic converter cleans harmful gases from the exhaust, and on diesels a particulate filter (DPF) traps soot.",
         "Diesel filter regeneration and EGR operation are managed according to the particular engine and aftertreatment design."
       ],
       "possible_causes": [
-        "A leak, damaged wiring, sensor circuit, air/fuel issue, engine misfire, exhaust restriction, or aftertreatment operating condition may cause an emissions warning or changed exhaust behavior.",
-        "A DPF warning may reflect loading or a system fault; the exact message and manufacturer procedure determine safe next steps."
+        "An exhaust leak, damaged wiring, a faulty sensor, a fuel-mixture problem, a misfire, a blocked exhaust or the exhaust cleaning system's own operation can set off an emissions warning or change the exhaust.",
+        "A DPF warning can mean the filter is filling with soot or there's a fault in the system; the exact message and the owner's manual tell you what to do next."
       ],
       "symptoms": [
         "Exhaust odor, ticking or hissing, smoke, reduced power, warning messages, or a scan code can help guide inspection but do not confirm a failed catalyst, sensor, EGR valve, or filter."
@@ -1872,11 +1872,11 @@
       "checks": [
         "If exhaust fumes enter the cabin, stop using the vehicle and get fresh air; carbon monoxide cannot be reliably detected by smell.",
         "Record the exact warning and diagnostic codes, including pending status and freeze-frame data, before clearing anything.",
-        "Do not block, remove, bypass, or modify emissions equipment, and do not initiate an unfamiliar regeneration procedure."
+        "Don't block, remove or modify emissions parts, and don't start a filter-cleaning (regeneration) cycle you're not familiar with."
       ],
       "diagnostic_steps": [
-        "A technician may inspect for leaks, review engine and aftertreatment data, verify sensor circuits and plausibility, and follow the exact manufacturer diagnostic tree before parts replacement.",
-        "After repair, confirm the fault is corrected and the applicable readiness/monitoring checks complete using the vehicle-specific method."
+        "A mechanic will check for leaks, read the engine and exhaust-system data, test the sensors, and follow the maker's steps before replacing parts.",
+        "After the repair, a test should confirm the fault is gone and the car's self-checks complete."
       ],
       "professional_diagnostics": [
         "Exhaust leaks, catalyst/DPF faults, sensor diagnosis, and regeneration procedures require exact vehicle service information and suitable diagnostic equipment."
@@ -1991,13 +1991,13 @@
         "motorcycle final drive",
         "motorcycle chain adjustment"
       ],
-      "overview": "Many motorcycles use a chain and sprockets, a belt, or a shaft final drive. Wear, lubrication, alignment, tension, and inspection requirements depend on the exact drive design and manufacturer procedure.",
+      "overview": "Most motorcycles use a chain and sprockets; some use a belt or a shaft. Wear, oiling, alignment, tension and inspection depend on the exact type and the maker's instructions.",
       "component_functions": [
         "A chain and sprockets transmit engine torque to the rear wheel and require model-specific inspection and maintenance.",
         "Belt and shaft drives have different inspection and service needs; chain adjustment guidance must not be applied to them."
       ],
       "possible_causes": [
-        "Noise, tight spots, excess slack, uneven wear, damaged links or teeth, misalignment, lubrication condition, or wheel/drive faults can affect final-drive operation."
+        "Noise, tight spots, too much slack, uneven wear, damaged links or teeth, misalignment, poor lubrication or a wheel problem can all affect the drive."
       ],
       "symptoms": [
         "Clicking, tight spots during wheel rotation, snatch or lash, visible damage, unusual slack, or a change after wheel service warrants inspection."
@@ -2005,10 +2005,10 @@
       "checks": [
         "Do not touch or adjust a moving chain. Keep hands, clothing, and tools away from the drive while the engine is running.",
         "With the motorcycle secured and engine off, perform only the inspection described by its owner's manual; do not assume one slack value applies to all bikes.",
-        "Do not ride with a damaged, binding, or visibly unsafe final drive; arrange qualified inspection."
+        "Don't ride with a damaged, binding or obviously unsafe chain, belt or shaft; have it inspected."
       ],
       "diagnostic_steps": [
-        "A technician should verify chain/belt/shaft type, wheel alignment, tension or play at the specified measurement point, wear limits, and fastener procedures using the exact model service information."
+        "A mechanic will check the drive type, wheel alignment, slack at the right point, wear limits and bolt tightness using that model's service information."
       ],
       "professional_diagnostics": [
         "Adjustment values, lubrication products, wear limits, and axle torque are model-specific and are not provided here."

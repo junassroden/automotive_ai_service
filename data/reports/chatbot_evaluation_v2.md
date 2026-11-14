@@ -1,13 +1,13 @@
 # Chatbot evaluation (v2)
 
-Generated 2026-11-14T07:51:27+0800 with `python scripts/evaluate_chatbot.py`. Evaluation set: `data\evaluation\chatbot_eval_v2.json` (220 author-written cases + 15 DTC questions from the held-out chat validation split). Cases are evaluation-only; the training-overlap check is below.
+Generated 2026-11-14T20:54:52+0800 with `python scripts/evaluate_chatbot.py`. Evaluation set: `data\evaluation\chatbot_eval_v2.json` (220 author-written cases + 15 DTC questions from the held-out chat validation split). Cases are evaluation-only; the training-overlap check is below.
 
 | Metric | Current router | Previous core (baseline) |
 |---|---:|---:|
-| Pass rate (all checks) | 1.0 | 0.1574 (content checks only) |
+| Pass rate (all checks) | 0.9915 | 0.1532 (content checks only) |
 | Critical-case pass rate | 1.0 | 0.2 |
 | Permission leaks | 0 of 27 | 1 of 27 |
-| Latency p50 / p95 (ms) | 436.8 / 1001.5 | 86.6 / 322.4 |
+| Latency p50 / p95 (ms) | 564.8 / 985.0 | 77.1 / 363.1 |
 | Mean lexical groundedness (reference answers) | 0.8772 over 50 | n/a |
 
 Baseline rows apply the same content checks (required/forbidden text, abstention, intent) but not the evidence-type or citation checks, which the old core cannot produce.
@@ -21,7 +21,7 @@ Cases with labelled sources: 29; recall@3 0.9655, precision@3 0.4138, MRR 1.0.
 | Role | Cases | Router pass | Baseline pass |
 |---|---:|---:|---:|
 | admin | 54 | 1.0 | 0.1111 |
-| customer | 181 | 1.0 | 0.1713 |
+| customer | 181 | 0.989 | 0.1657 |
 
 ## By routing
 
@@ -29,7 +29,7 @@ Cases with labelled sources: 29; recall@3 0.9655, precision@3 0.4138, MRR 1.0.
 
 | Routing | Cases | Router pass | Baseline pass |
 |---|---:|---:|---:|
-| backend | 232 | 1.0 | 0.1552 |
+| backend | 232 | 0.9914 | 0.1509 |
 | diagnostic_mode | 1 | 1.0 | 1.0 |
 | direct | 2 | 1.0 | 0.0 |
 
@@ -43,17 +43,18 @@ Cases with labelled sources: 29; recall@3 0.9655, precision@3 0.4138, MRR 1.0.
 | fleet_management | 18 | 1.0 | 0.0 |
 | follow_up | 6 | 1.0 | 0.1667 |
 | general | 5 | 1.0 | 0.2 |
-| maintenance_knowledge | 23 | 1.0 | 0.8696 |
+| maintenance_knowledge | 23 | 0.9565 | 0.8261 |
 | model_limitations | 1 | 1.0 | 0.0 |
 | out_of_scope | 5 | 1.0 | 1.0 |
 | parts | 1 | 1.0 | 0.0 |
 | permissions | 27 | 1.0 | 0.2222 |
 | rental | 87 | 1.0 | 0.0115 |
-| system_support | 30 | 1.0 | 0.0333 |
+| system_support | 30 | 0.9667 | 0.0333 |
 
-## Router failures (0)
+## Router failures (2)
 
-- none
+- `g-h06` (customer): missing 'no password-change or password-reset feature'
+- `g-s04` (customer): missing any of ['overheat', 'Overheat']
 
 ## Training overlap
 

@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-11-13T23:44:10.004218+00:00",
+  "built_at": "2026-11-14T12:50:10.119106+00:00",
   "chunk_count": 9939,
   "chunks_by_source": {
     "obdex": 9665,
@@ -21,8 +21,8 @@
     "rows_rejected_invalid_part_number": 9,
     "source": "masterparts.xlsx"
   },
-  "chunks_sha256": "f4a88b3fc1f0a1b190ef90a4b6569d23d09ebcbecc7665c1f71d096e4ae99ab1",
-  "index_sha256": "22fcef34298c73ca6dad05ab62f30957d748cb89aba600c4d3357f4938ff98ce",
+  "chunks_sha256": "894ce503053b6c998e181e9b1d824dd18e6692d4e1250bba68ac2af1f10fc326",
+  "index_sha256": "32608953456e8e6a1321d4b396f1c3942f154815ece5a42da3d6b1df696879da",
   "not_indexed": {
     "cvffad": "generated records (source='generated'); Chinese commercial-fleet content",
     "vehicle_diagnostic_sample": "generated diagnostics with random measurements",

@@ -659,7 +659,7 @@ class AutomotiveKnowledgeTests(TestCase):
             result["data"]["knowledge_id"],
             "vehicle_health_data_limits",
         )
-        self.assertIn("A low model score cannot establish", result["answer"])
+        self.assertIn("Inspect the safety items first", result["answer"])
 
     @patch("ai_api.chatbot_service.load_chatbot")
     def test_fleet_question_without_records_does_not_claim_analysis(
