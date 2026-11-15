@@ -54,12 +54,35 @@ TEMPLATES = []
 WSGI_APPLICATION = "automotive_ai.wsgi.application"
 ASGI_APPLICATION = "automotive_ai.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Conversation memory lives in MySQL (Aiven in production) when AI_DB_HOST is set, so it survives
+# redeploys; without it, in the local SQLite file. Aiven requires TLS: AI_DB_SSL_CA is the path to
+# its CA certificate (on Render, a Secret File such as /etc/secrets/ca.pem).
+if os.environ.get("AI_DB_HOST"):
+    import pymysql
+
+    pymysql.install_as_MySQLdb()
+    _db_options = {"charset": "utf8mb4"}
+    if os.environ.get("AI_DB_SSL_CA"):
+        _db_options["ssl"] = {"ca": os.environ["AI_DB_SSL_CA"]}
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "HOST": os.environ["AI_DB_HOST"],
+            "PORT": os.environ.get("AI_DB_PORT", "3306"),
+            "NAME": os.environ.get("AI_DB_NAME", "defaultdb"),
+            "USER": os.environ.get("AI_DB_USER", ""),
+            "PASSWORD": os.environ.get("AI_DB_PASSWORD", ""),
+            "OPTIONS": _db_options,
+            "CONN_MAX_AGE": 60,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Manila"

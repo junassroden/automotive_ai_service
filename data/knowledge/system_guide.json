@@ -279,11 +279,11 @@
         "email verification",
         "did not get verification email"
       ],
-      "text": "Create an account on the sign-up page (/auth/sign-up) with your full name, email address and a password of 8 to 72 characters; each email address can be registered once. Registration sends a verification link to your email address. You must open it (it works once and expires after 24 hours) before you can sign in at /auth/login; if it expired, sign in and choose 'Send a new verification link'. You can also sign up with Google, which needs no separate verification. If an account already uses your Google email, Google is not linked automatically: sign in with your password and link Google from your profile. Administrator accounts cannot be created by sign-up.",
+      "text": "Create an account on the sign-up page (/auth/sign-up) with your full name, email address and a password of 8 to 72 characters; each email address can be registered once. Once the account is created you can sign in right away at /auth/login; there is no email verification step. You can also sign up with Google. If an account already uses your Google email, Google is not linked automatically: sign in with your password and link Google from your profile. Administrator accounts cannot be created by sign-up.",
       "code_references": [
         "Back-End/app/controllers/AuthController.php::register",
         "Front-End/src/auth/SignUp.jsx",
-        "Back-End/app/controllers/AuthController.php::register, verifyEmail, googleLogin"
+        "Back-End/app/controllers/AuthController.php::register, googleLogin"
       ]
     },
     {
@@ -446,7 +446,7 @@
         "422",
         "503"
       ],
-      "text": "'Authentication is required' (401): your session expired; sign in again. 'Verify your email address before signing in' (403): open the verification link in your email, or choose 'Send a new verification link'. 'Too many sign-in attempts' (429): wait the stated number of minutes or reset your password. 'Administrator access is required' (403): the page or action is for administrators only. 'This vehicle is already reserved for part or all of those dates' or 'not available for those dates' (409): choose other dates or another vehicle. 'You already have unpaid reservations waiting for payment' (409): pay for or cancel one of your 2 unpaid reservations first. 'The time to pay for this reservation has run out' (409): the 60-minute payment time ended and the dates were released; make a new reservation. 'The selected dates do not meet this vehicle's minimum rental duration' (422): extend the period. 'Enter a message of up to 4,000 characters' (422): shorten the chat message. 'The local AI chat service is unavailable right now' (503): the Python AI service is not running or not reachable; an administrator should start it (python manage.py runserver 127.0.0.1:8001) and check AI_SERVICE_API_URL and AI_SERVICE_API_KEY.",
+      "text": "'Authentication is required' (401): your session expired; sign in again. 'Too many sign-in attempts' (429): wait the stated number of minutes or reset your password. 'Administrator access is required' (403): the page or action is for administrators only. 'This vehicle is already reserved for part or all of those dates' or 'not available for those dates' (409): choose other dates or another vehicle. 'You already have unpaid reservations waiting for payment' (409): pay for or cancel one of your 2 unpaid reservations first. 'The time to pay for this reservation has run out' (409): the 60-minute payment time ended and the dates were released; make a new reservation. 'The selected dates do not meet this vehicle's minimum rental duration' (422): extend the period. 'Enter a message of up to 4,000 characters' (422): shorten the chat message. 'The local AI chat service is unavailable right now' (503): the Python AI service is not running or not reachable; an administrator should start it (python manage.py runserver 127.0.0.1:8001) and check AI_SERVICE_API_URL and AI_SERVICE_API_KEY.",
       "code_references": [
         "Back-End/app/controllers/ReservationController.php::ERRORS",
         "Back-End/app/controllers/ChatController.php",
