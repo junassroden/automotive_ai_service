@@ -9,4 +9,4 @@ scipy==1.18.1
 openpyxl>=3.1
 pyarrow>=14
 gunicorn>=22.0
-PyMySQL==2.2.8
+PyMySQL==1.2.4
