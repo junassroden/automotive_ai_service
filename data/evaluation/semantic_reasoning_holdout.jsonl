@@ -1,0 +1,22 @@
+{"id":"hold001","category":"problem","expected":"kb:brake_noise","question":"My stopping makes a high-pitched chirp from the wheels"}
+{"id":"hold002","category":"problem","expected":"kb:brake_noise","question":"The brake makes a sound but I can't tell what kind"}
+{"id":"hold003","category":"problem","expected":"kb:engine_overheating","question":"Temp needle is way up after climbing a hill; what now?"}
+{"id":"hold004","category":"problem","expected":"kb:coolant_leaks_fluids","question":"May tumutulong green liquid under the hood, safe ba?"}
+{"id":"hold005","category":"problem","expected":"kb:transmission_slip","question":"Engine revs but the car barely speeds up"}
+{"id":"hold006","category":"problem","expected":"kb:tire_blowout","question":"A tire just burst while I was driving, what should I do?"}
+{"id":"hold007","category":"problem","expected":"kb:steering_heavy","question":"Steering became really hard to turn after starting"}
+{"id":"hold008","category":"warning","expected":"kb:check_engine_flashing","question":"Check-engine lamp flashes only when I accelerate"}
+{"id":"hold009","category":"warning","expected":"kb:tpms_light","question":"My tire symbol won't go away after adding air"}
+{"id":"hold010","category":"warning","expected":"kb:brake_warning_abs","question":"Dashboard says brake system, how urgent is that?"}
+{"id":"hold011","category":"dtc","expected":"dtc","question":"P0135 on the scanner, what does it point to?"}
+{"id":"hold012","category":"dtc","expected":"dtc","question":"Can you tell me what B0021 means?"}
+{"id":"hold013","category":"maintenance","expected":"kb:engine_oil_type","question":"Which oil grade should I use in a gasoline car?"}
+{"id":"hold014","category":"maintenance","expected":"kb:wheel_alignment","question":"How often should the wheels get aligned?"}
+{"id":"hold015","category":"maintenance","expected":"kb:pm_repeat_failures","question":"Same repair keeps coming back on one car; how should we investigate?"}
+{"id":"hold016","category":"vehicles","expected":"vehicles","question":"Can you find me a car for six people with AC?"}
+{"id":"hold017","category":"vehicles","expected":"vehicles","question":"What is free to rent on Saturday and Sunday?"}
+{"id":"hold018","category":"pricing","expected":"vehicles","question":"Quote the City for a long weekend"}
+{"id":"hold019","category":"bookings","expected":"ownbook","question":"Did my earlier reservation finish?"}
+{"id":"hold020","category":"payment","expected":"guide","question":"I paid by card, but it still shows pending - what can I check?"}
+{"id":"hold021","category":"policy","expected":"guide","question":"Pwede bang iba ang magmaneho ng nirentahan ko?"}
+{"id":"hold022","category":"admin","expected":"admin","question":"How many service visits are recorded for the fleet?"}
