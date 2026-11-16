@@ -229,12 +229,25 @@ instruction first. Source names, file names and retrieval details stay in
 `data.evidence`; they are never part of the text. The long structured fields
 remain for `format_knowledge_answer` without `concise`.
 
-The conversation remembers the topic being discussed (`last_topic` in the
-conversation memory), so short follow-ups ("what if the coolant is full?", "is
-it safe to drive?", "how much will it cost?", "what else could it be?") are
-answered from the same entry without repeating what was already said. A message
-that clearly names another topic starts a new answer; a vague message ("my car
-makes a noise") gets a clarifying question.
+The conversation remembers a structured topic ID, the knowledge-statement IDs
+already shown, and the last question type (`last_topic` in conversation memory),
+so short follow-ups ("what if the coolant is full?", "is it safe to drive?",
+"how much will it cost?", "what else could it be?") use the same entry without
+repeating what was already said. User question text is not stored in that
+memory. A message that clearly names another topic starts a new answer; a vague
+message ("my car makes a noise") gets a clarifying question.
+
+Curated automotive knowledge uses local semantic similarity as its primary
+ranking signal, with the existing lexical index providing candidate recall and
+corroborating evidence. Other knowledge sources retain their reciprocal-rank
+fusion. Embeddings come from a quantized ONNX backend for
+`intfloat/multilingual-e5-small`
+(MIT, pinned revision
+`614241f622f53c4eeff9890bdc4f31cfecc418b3`). The model files are stored under
+`trained_models/embeddings/multilingual-e5-small`; runtime inference is local
+and does not call an external model or API. Rebuild the index after installing
+the model and the pinned `sentence-transformers` / `optimum-onnx` dependencies:
+`python -m data_pipeline.run_all --only knowledge`.
 
 Measure answer quality (accuracy, relevance, length, follow-ups, safety,
 invented figures, retrieval, paraphrase consistency and source-label leakage)
