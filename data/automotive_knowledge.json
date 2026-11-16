@@ -8602,7 +8602,11 @@
         "locked out of the car",
         "locked out of my car",
         "naiwan ang susi sa loob",
-        "nalock ko ang susi sa loob"
+        "nalock ko ang susi sa loob",
+        "locked the keys inside",
+        "locked keys inside the rental car",
+        "keys locked in the rental",
+        "locked the key in the car"
       ],
       "overview": "If the keys are locked inside, don't force a door or break a window: that costs far more than the call-out. Use a spare key, or call roadside assistance or a locksmith; on a rental, call the rental team first, since they may hold a spare and forced entry counts as damage.",
       "possible_causes": [
@@ -8655,7 +8659,12 @@
         "keyless start not working",
         "car says no key",
         "car won't start with push button",
-        "ayaw mag start ang push start"
+        "ayaw mag start ang push start",
+        "key not detected and it won't start",
+        "says key not detected",
+        "key not detected won't start",
+        "smart key not detected won't start",
+        "no key detected"
       ],
       "overview": "With push-button start, a car that won't start or says the key is not detected usually can't sense the smart key, most often because its battery is weak. Most cars let you start by holding the key fob against the start button, which reads it without its battery.",
       "possible_causes": [
@@ -8663,7 +8672,7 @@
         "interference from phones, chargers or other keys near the fob",
         "the brake (automatic) or clutch (manual) pedal not pressed fully",
         "the gear selector not in Park or Neutral",
-        "a weak car battery or a fault in the immobiliser"
+        "a fault in the immobiliser or the smart-key receiver"
       ],
       "symptoms": [
         "Push-button start won't start, or key not detected."
@@ -8671,11 +8680,11 @@
       "checks": [
         "Press the brake pedal firmly (or the clutch in a manual) and make sure the gear selector is in Park or Neutral.",
         "Hold the key fob right against the start button while pressing it; the owner's manual shows the exact spot.",
-        "Replace the fob's coin battery; if the dashboard lights are dim too, the car battery is the problem instead."
+        "Replace the coin battery inside the smart key. This applies to push-button cars only; if you start the car by turning a key, the problem is elsewhere."
       ],
       "urgency": "Not dangerous, but the car may not restart after stopping, so replace the fob battery soon.",
       "needed_information": [
-        "The message on the dash, whether the dash lights come on, and whether holding the fob on the button works."
+        "The message shown, and whether holding the smart key against the start button works."
       ],
       "safety_critical": false,
       "sources": [
@@ -8690,12 +8699,12 @@
         "interference from phones, chargers or other keys near the fob",
         "the brake (automatic) or clutch (manual) pedal not pressed fully",
         "the gear selector not in Park or Neutral",
-        "a weak car battery or a fault in the immobiliser"
+        "a fault in the immobiliser or the smart-key receiver"
       ],
       "actions": [
         "Press the brake pedal firmly (or the clutch in a manual) and make sure the gear selector is in Park or Neutral.",
         "Hold the key fob right against the start button while pressing it; the owner's manual shows the exact spot.",
-        "Replace the fob's coin battery; if the dashboard lights are dim too, the car battery is the problem instead."
+        "Replace the coin battery inside the smart key. This applies to push-button cars only; if you start the car by turning a key, the problem is elsewhere."
       ],
       "stop": null,
       "professional": null,
@@ -8777,7 +8786,13 @@
         "gauges not working",
         "dashboard gauges dead",
         "rpm gauge not working",
-        "hindi gumagana ang speedometer"
+        "hindi gumagana ang speedometer",
+        "fuel gauge shows empty",
+        "fuel gauge always empty",
+        "fuel gauge always shows empty",
+        "fuel gauge wrong",
+        "fuel gauge reads empty",
+        "fuel gauge not moving"
       ],
       "overview": "A gauge that stops or reads wrong usually has lost its sensor signal rather than the instrument itself failing. A speedometer that drops to zero, often with the ABS or traction light on, points to a wheel-speed or vehicle-speed sensor; a fuel gauge that sticks points to the fuel-level sender in the tank. All gauges dying at once points to the cluster's fuse or connection.",
       "possible_causes": [
@@ -9087,7 +9102,13 @@
         "turbo blue smoke",
         "turbo failure",
         "turbo diesel no power",
-        "mahina ang hatak ng turbo"
+        "mahina ang hatak ng turbo",
+        "turbo whistle",
+        "whistling sound from the turbo",
+        "turbo lost power",
+        "turbo diesel lost power",
+        "turbo making noise",
+        "whistling under acceleration"
       ],
       "overview": "A turbo problem usually shows as a sudden loss of power (often with the engine light and limp mode), a loud whistle or siren-like whine, or blue-grey smoke from oil getting past worn turbo seals. A split boost hose or a stuck control valve is more common than the turbo itself failing.",
       "possible_causes": [
@@ -9151,7 +9172,13 @@
         "when to use 4wd",
         "4wd on the highway",
         "4wd tight turns",
-        "how to use four wheel drive"
+        "how to use four wheel drive",
+        "when to use 4h",
+        "when to use 4l",
+        "4h and 4l",
+        "use 4h or 4l",
+        "4h or 4l",
+        "2h 4h 4l"
       ],
       "overview": "Part-time 4WD (common on pickups and SUVs) is for loose or slippery surfaces only: using it on dry pavement makes the drivetrain bind and hop on tight turns and can damage it. Use 2H normally, 4H on mud, gravel or sand at road speeds, and 4L only for slow, steep or deep going. A flashing 4WD light usually means the shift hasn't finished.",
       "possible_causes": [
