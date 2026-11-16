@@ -729,7 +729,8 @@ class PaymentAndAdminAnswerTests(TestCase):
     def test_fuel_economy_hourly_and_advance_booking_answers(self):
         def ask(message):
             return answer_chat(message, viewer_role="customer", retrieval_protocol=1)
-        self.assertIn("fuel type but not its consumption", ask("which car has the best fuel economy")["answer"])
+        # Fuel economy figures were recorded by the business on 2026-11-16 (sys_policy_fuel_economy).
+        self.assertIn("Toyota Vios about 15 km/L", ask("which car has the best fuel economy")["answer"])
         self.assertEqual(ask("why is my car using so much fuel")["data"]["knowledge_id"], "high_fuel_consumption")
         self.assertIn("no hourly rate", ask("can i rent for just a few hours")["answer"])
         self.assertIn("no advance-booking limit", ask("how far in advance should i book")["answer"])
@@ -1483,6 +1484,48 @@ class AdminRoutingTests(TestCase):
                             retrieval={"plan": first["plan"], "results": results, "data_as_of": "2026-11-08T09:00:00+08:00"})
         self.assertIn("#52 Ben Cruz", final["answer"])
         self.assertIn("3 day(s) late", final["answer"])
+
+
+class DemandTests(TestCase):
+    """Rental demand for administrators (demand.summary, Demand Intelligence; 2026-11-16)."""
+
+    def plan(self, message):
+        response = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1)
+        return response.get("plan") or {}
+
+    def test_demand_questions_reach_the_demand_summary(self):
+        for message in ("What demand do you expect in December?", "which months are busiest?", "forecast bookings for next month",
+                        "how far ahead do customers book?", "may demand ba ngayong buwan?"):
+            plan = self.plan(message)
+            self.assertEqual([r["tool"] for r in plan.get("retrievals") or []], ["demand.summary"], message)
+        self.assertRegex(self.plan("What demand do you expect in December?")["retrievals"][0]["args"]["month"], r"^\d{4}-12$")
+        self.assertEqual(self.plan("how far ahead do customers book?").get("focus"), "lead_time")
+        # A breakdown forecast is about the fleet's condition, not rental demand.
+        self.assertNotIn("demand.summary", [r["tool"] for r in self.plan("Which car is most likely to break down next?").get("retrievals") or []])
+        self.assertNotIn("demand.summary", [r["tool"] for r in (answer_chat("which months are busiest?", viewer_role="customer",
+                                                                            retrieval_protocol=1).get("plan") or {}).get("retrievals") or []])
+
+    def answer(self, message, data):
+        first = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1)
+        return answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1,
+                           retrieval={"plan": first["plan"], "results": [{"tool": "demand.summary", "status": "ok", "args": {}, "data": data}],
+                                      "data_as_of": "2026-11-16T09:00:00+08:00"})["answer"]
+
+    BASE = {"today": "2026-11-16", "currency": "PHP", "fleet_size": 23, "forecast_min_months": 6, "pickups_by_weekday": {"Friday": 2},
+            "by_category": [], "on_the_books": {"next_30_days": 4, "next_60_days": 8, "next_90_days": 12},
+            "lead_time_days": {"median": 7, "bookings": 2}, "cancellation_rate_percent": 10.0, "expiry_rate_percent": 0.0, "asked_month": None}
+
+    def test_no_forecast_without_enough_history(self):
+        data = {**self.BASE, "history_months": 2, "forecast": None,
+                "by_month": [{"month": "2026-10", "bookings": 2, "booked_days": 6, "booked_value": 9000.0, "cancelled": 0, "expired": 0, "future": False}]}
+        answer = self.answer("which months are busiest?", data)
+        self.assertIn("No forecast yet: that needs 6 months of booking history, and there are 2.", answer)
+        self.assertIn("October 2026 (6)", answer)
+
+    def test_lead_time_question_leads_with_the_lead_time(self):
+        data = {**self.BASE, "history_months": 2, "forecast": None,
+                "by_month": [{"month": "2026-10", "bookings": 2, "booked_days": 6, "booked_value": 9000.0, "cancelled": 0, "expired": 0, "future": False}]}
+        self.assertTrue(self.answer("how far ahead do customers book?", data).startswith("Customers book a median of 7 days before pickup"))
 
 
 class UnderstandingFixesTests(TestCase):
