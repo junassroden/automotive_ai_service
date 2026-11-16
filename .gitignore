@@ -14,3 +14,6 @@ data/raw/*
 
 # Large intermediate experiment data
 trained_models/experiments/**/prepared_*.csv
+
+# Downloaded embedding model (over GitHub's 100 MB file limit; see README)
+trained_models/embeddings/
