@@ -22,14 +22,27 @@ import time
 
 from django.conf import settings
 from django.db import DatabaseError
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 from . import chatbot_service as core
 from . import grounded_answers as grounded
 from . import planner
 from .automotive_knowledge import (
-    _content_terms, _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document, knowledge_statements, mentions,
-    retrieve_knowledge,
+    COVERAGE_FILLER, GENERIC_ENGLISH, QUESTION_ONLY_TERMS, SYMPTOM_FILLER,
+    _content_terms, _terms_match, compose_chat_answer, compose_follow_up, has_chat_fields, knowledge_document,
+    knowledge_statements, mentions, question_kind, retrieve_knowledge,
 )
+
+# Plans that read fleet, reservation, payment or customer records for an administrator (see planner._admin_lookup_plan).
+ADMIN_RECORD_INTENTS = frozenset({
+    "reservation_summary", "maintenance_records", "maintenance_costs", "maintenance_due", "maintenance_recurring",
+    "maintenance_inspections", "vehicle_status", "revenue", "utilization", "fleet_status", "reassessment_due", "payments", "customers",
+})
+
+# Words any car problem can use, so they show neither that a message stays on a topic nor that it leaves it.
+TOPIC_NEUTRAL_TERMS = frozenset(SYMPTOM_FILLER | COVERAGE_FILLER | GENERIC_ENGLISH | QUESTION_ONLY_TERMS) | {
+    "problem", "problems", "issue", "issues", "wrong", "car", "vehicle", "unit", "trouble", "help", "fix", "check",
+}
 from .fleet_service import analyze_fleet
 from .language import correct_typos, normalize_message
 from .prediction_service import MaintenancePredictionsUnavailableError
@@ -107,7 +120,8 @@ VAGUE_SYMPTOMS = (
      "brown or black under the engine, or red near the middle."),
     (r"\blights?\b", "warning_light", "Which warning light is it, and what colour? For example: the check-engine light (steady or flashing), "
      "the battery light, the oil-pressure light, or the brake or ABS light."),
-    (r"\b(?:wrong|problems?|issues?|trouble)\b", "problem", "What's happening with the car? Tell me the symptom, for example a noise, a warning light, "
+    (r"\b(?:wrong|problems?|issues?|trouble|weird|strange|odd|funny|acting up|acting|not right)\b", "problem",
+     "What's happening with the car? Tell me the symptom, for example a noise, a warning light, "
      "a smell, a leak, or trouble starting, steering or braking."),
 )
 # Free-text retrieval never answers from DTC definitions: fuzzy matches between a
@@ -323,17 +337,38 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
         response, grounded_vehicles, memory_updates = _grounded_response(message, role, retrieval, vocabulary, memory, entities)
     else:
         direct = None
-        if database_mode and not _is_car_problem(message, entities):
+        if database_mode:
             plan = planner.plan_message(message, role, vocabulary, memory)
-            if plan and plan.get("retrievals") and _policy_question_over_vague_plan(message, plan):
+            car_problem = _is_car_problem(message, entities)
+            requested = (plan or {}).get("requested") or {}
+            explicit_rental_plan = bool(
+                plan and (
+                    plan.get("follow_up")
+                    or any(requested.get(key) for key in ("makes", "models", "categories", "unknown_names"))
+                    or plan.get("intent") == "vehicles"
+                    and plan.get("purpose") in {"quote", "price", "availability", "listing", "recommend", "compare", "feature_check"}
+                    and (RENTAL_REQUEST.search(message) or question_kind(message) == "cost")
+                )
+            )
+            # An administrator's question the rules read as a records question ("when was the last oil change on vehicle 2?",
+            # "any rentals overdue for return?") is answered from the records, even though a car topic also matches its words.
+            admin_records_plan = role == "admin" and bool(plan) and plan.get("intent") in ADMIN_RECORD_INTENTS
+            use_database_plan = not car_problem or explicit_rental_plan or admin_records_plan
+            if plan and plan.get("direct") and plan["direct"] not in {"clarify_quote", "clarify_vehicle"}:
+                direct = _direct_response(plan["direct"], plan)
+            if use_database_plan and plan and plan.get("retrievals") and _policy_question_over_vague_plan(message, plan):
                 plan = None  # the rules only guessed a listing; the classifier is sure it is a policy question
-            if plan and plan.get("retrievals"):
+            if not direct and use_database_plan and plan and plan.get("retrievals"):
                 return {"status": "needs_data", "plan": plan}
-            if plan and plan.get("intent") == "multi":
+            if not direct and use_database_plan and plan and plan.get("intent") == "multi":
                 # Several questions, none needing records: answer each part in turn.
-                response, _, memory_updates = _grounded_response(message, role, {"plan": plan, "results": []}, vocabulary, memory, entities)
-                direct = response
-            elif plan and plan.get("direct"):
+                direct = _multi_knowledge_response(message)
+                if direct is None:
+                    response, _, memory_updates = _grounded_response(
+                        message, role, {"plan": plan, "results": []}, vocabulary, memory, entities,
+                    )
+                    direct = response
+            elif not direct and use_database_plan and plan and plan.get("direct"):
                 direct = _direct_response(plan["direct"], plan)
         # Typos and Tagalog terms are mapped before matching; entities come from the message as typed.
         # "Is it serious?" / "What causes it?" about a code from earlier in the conversation answers just that.
@@ -361,8 +396,11 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
     if "last_topic" not in memory_updates:
         # The car problem being discussed, so a follow-up can build on it; anything else ends that topic.
         topic_id = response["data"].get("knowledge_id")
-        memory_updates["last_topic"] = {"id": topic_id, "shown": response["data"].get("shown_parts", []),
-                                        "query": normalize_message(message)} if topic_id else None
+        memory_updates["last_topic"] = {
+            "id": topic_id,
+            "shown": response["data"].get("shown_parts", []),
+            "question_kind": question_kind(message),
+        } if topic_id else None
     _save_memory(conversation_id, conversation_scope, memory, entities, response.get("intent"), grounded_vehicles, memory_updates)
     logger.info("chat intent=%s evidence=%s role=%s latency_ms=%s", response.get("intent"),
                 response["data"]["evidence"].get("evidence_type"), role, response["data"]["latency_ms"])
@@ -534,6 +572,11 @@ def _route(message, entities, role, vehicle, vehicles, rental_context, diagnosti
         specific = _specific_reference(message, role)
         if specific is not None:
             return specific
+
+    if not isinstance(database_context, dict) and not diagnostic_context and not vehicle and not vehicles:
+        multi = _multi_knowledge_response(message)
+        if multi is not None:
+            return multi
 
     response = core._answer_chat_core(message, vehicle=vehicle, vehicles=vehicles,
                                       rental_context=rental_context, diagnostic_context=diagnostic_context)
@@ -809,10 +852,21 @@ def _append_dtc_definitions(response, codes, role):
 def _specific_reference(message, role):
     """System-guide and PID answers are more specific than the general curated notes, so they go first."""
     try:
-        passages = retrieve(message, role, top_k=3, source_types=FREE_TEXT_SOURCES)
+        passages = [
+            passage for passage in retrieve(message, role, top_k=10)
+            if passage["source_type"] in FREE_TEXT_SOURCES
+        ]
     except KnowledgeIndexUnavailable:
         return None
-    if not passages or passages[0]["support"] < SPECIFIC_SOURCE_MIN_SUPPORT:
+    if not passages:
+        return None
+    system = next((passage for passage in passages if passage["source_type"] == "system_documentation"), None)
+    curated = next((passage for passage in passages if passage["source_type"] == "curated_reference"), None)
+    if system and system["support"] >= SPECIFIC_SOURCE_MIN_SUPPORT and (
+        passages[0] is system or curated and system["support"] >= curated["support"] + 0.12
+    ):
+        passages = [system]
+    if passages[0]["support"] < SPECIFIC_SOURCE_MIN_SUPPORT:
         return None
     top = passages[0]["source_type"]
     if top == "system_documentation" and _rental_operation_topic(message):
@@ -1050,6 +1104,9 @@ def _topic_follow_up(message, entities, memory):
     known = {term for term in terms if mentions(names, [term]) or any(_terms_match(term, word) for item in statements for word in item["terms"])}
     ruled_out = CONDITION.search(text) or CHECKED.search(text) or NOT_THE.search(text)
     other = retrieve_knowledge(normalized)
+    named_terms = terms - STATE_WORDS or terms
+    other_supported = False
+    other_known = set()
     if other is not None and other["document"]["id"] != document["id"]:
         # Whichever topic's knowledge covers more of what was said: "what about a flat tire?" after overheating is
         # a new topic; "it's clicking fast" after "won't start" stays on it. A tie goes to the conversation.
@@ -1057,30 +1114,47 @@ def _topic_follow_up(message, entities, memory):
         other_names = " ".join([other["document"]["title"]] + list(other["document"].get("keywords") or []))
         other_known = {term for term in terms if mentions(other_names, [term])
                        or any(_terms_match(term, word) for item in other_statements for word in item["terms"])}
-        if len(other_known) > len(known):
+        other_supported = other["phrase_length"] > 0 or (
+            other["topic_coverage"] >= 0.75 and len(other_known) > len(known)
+        )
+        if other_supported and len(other_known) > len(known):
             return None
+    # The parts and symptoms the message names, without the words any problem uses ("light", "working", "problem").
+    # When this topic's knowledge holds fewer than half of them and another topic holds more, it is a new question:
+    # "I have an engine light and my throttle is not working" after brake noise names engine and throttle, which an
+    # engine topic covers and the brake topic never mentions, even though "light" (light rust) and "working" appear
+    # in it. "What about the front ones?" names nothing another topic covers, so it stays on the brakes.
+    specific = named_terms - TOPIC_NEUTRAL_TERMS
+    if specific and len(known & specific) * 2 < len(specific) and len(other_known & specific) > len(known & specific):
+        return None
     if terms:
         # Most of what the message says must be something this topic's knowledge talks about; words that only say
         # how a part is ("the lights work fine") count with the part they describe.
-        named = terms - STATE_WORDS or terms
-        if len(known & named) * 2 < len(named) or (word_count > 12 and not TOPIC_FOLLOW_UP.search(text)):
+        named = named_terms
+        if (len(known & named) * 2 < len(named) and not (TOPIC_FOLLOW_UP.search(text) and not other_supported)) or (
+            word_count > 12 and not TOPIC_FOLLOW_UP.search(text)
+        ):
             return None
     elif not TOPIC_FOLLOW_UP.search(text):
         return None
 
-    earlier = topic.get("query") or ""
-    result = compose_follow_up(document, normalized, topic.get("shown"), earlier)
+    context = "" if terms else " ".join([document.get("title", "")] + list(document.get("keywords") or []))
+    prior_kind = topic.get("question_kind")
+    result = compose_follow_up(document, normalized, topic.get("shown"), context, prior_kind)
     if result is None:
-        answer, shown = ("That's everything my knowledge base holds on this problem; finding the exact cause needs a technician "
-                         "to inspect the car."), []
-    else:
-        answer, shown = result
+        return None
+    answer, shown = result
     response = core.build_response(document["category"], 1.0, answer,
                                    {"knowledge_id": document["id"], "knowledge_ids": [document["id"]], "follow_up": "knowledge"})
     response = _with_evidence(response, "reference", [{"name": "Curated automotive knowledge base", "ids": [document["id"]]}])
     response["data"]["resolved_from_conversation"] = {"topic": document["id"]}
-    query = " ".join((earlier + " " + normalized).split()[-40:])
-    updates = {"last_topic": {"id": document["id"], "shown": sorted(set(topic.get("shown") or []) | set(shown)), "query": query}}
+    new_kind = question_kind(normalized)
+    updates = {"last_topic": {
+        "id": document["id"],
+        "shown": sorted(set(topic.get("shown") or []) | set(shown)),
+        "question_kind": prior_kind if new_kind == "problem" and prior_kind in {"drive", "cost", "function", "interval",
+                                                                              "advice", "action", "cause"} else new_kind,
+    }}
     return response, updates
 
 
@@ -1124,7 +1198,67 @@ def _is_car_problem(message, entities):
         return False
     # Matched the way the answer is: "the car is not starting" reads as "won't start" (language.normalize_message).
     knowledge = retrieve_knowledge(normalize_message(message))
-    return knowledge is not None and knowledge.get("phrase_length", 0) > 0
+    return knowledge is not None
+
+
+def _multi_knowledge_response(message):
+    """Answer independent knowledge topics separately when each clause retrieves its own evidence."""
+    if RENTAL_REQUEST.search(message) or NAMED_VEHICLE_SPEC.search(message):
+        return None
+    if re.search(r"\b(?:difference between|compare|versus|vs\.?)\b", message, re.IGNORECASE) and re.search(
+        r"\band\b", message, re.IGNORECASE,
+    ):
+        return None
+    clauses = [
+        part.strip(" ,.!?")
+        for part in re.split(r"[;?]+|\s+(?:and also|also|at saka|tapos|and)\s+", message, flags=re.IGNORECASE)
+        if part.strip(" ,.!?")
+    ]
+    if len(clauses) < 2:
+        return None
+
+    retrieved, unresolved, requests, topics = [], [], [], []
+    generic_terms = {
+        "what", "should", "do", "i", "can", "could", "how", "to", "fix", "repair", "it", "please", "help", "now",
+        "and", "also", "then", "is", "this", "that", "the", "a", "an",
+    }
+    for clause in clauses:
+        terms = set(_content_terms(normalize_message(clause)))
+        if not terms - generic_terms:
+            requests.append(clause)
+        else:
+            topics.append(clause)
+    for clause in topics:
+        query = " ".join([clause] + requests)
+        match = retrieve_knowledge(query)
+        if match is not None and match.get("semantic_similarity", 0.0) >= 0.55:
+            retrieved.append((query, match))
+            continue
+        unresolved.append(clause)
+    if unresolved or len({item["document"]["id"] for _, item in retrieved}) < 2:
+        return None
+
+    answers, shown, documents = [], [], []
+    for query, match in retrieved:
+        document = match["document"]
+        answer, used = compose_chat_answer(document, query)
+        if not answer:
+            return None
+        answers.append(f"{document['title']}: {answer}")
+        shown.extend(used)
+        documents.append(document)
+    response = core.build_response(
+        "multi_topic", 1.0, "\n\n".join(answers),
+        {
+            "knowledge_id": documents[-1]["id"],
+            "knowledge_ids": [document["id"] for document in documents],
+            "shown_parts": sorted(set(shown)),
+        },
+    )
+    return _with_evidence(
+        response, "reference",
+        [{"name": "Curated automotive knowledge base", "ids": [document["id"] for document in documents]}],
+    )
 
 
 def _rental_operation_topic(message):
@@ -1133,10 +1267,27 @@ def _rental_operation_topic(message):
     return knowledge is not None and knowledge.get("phrase_length", 0) > 0 and knowledge["document"]["id"] in RENTAL_OPERATION_TOPICS
 
 
+# Common English that says nothing about the car, so a message made of it and VAGUE_WORDS is vague. Words that do
+# describe where or how ("front", "back", "side", "fire", "full", "empty") are kept out: "a noise from the front" is specific.
+FILLER_WORDS = (frozenset(ENGLISH_STOP_WORDS) - {
+    "front", "back", "side", "bottom", "top", "full", "empty", "fire", "move", "thick", "thin", "off", "hot", "cold",
+}) | {"acting", "thoughts", "thought", "idea", "ideas", "anything", "everything", "happening", "going", "lately",
+      "suddenly", "sometimes", "advice", "wondering", "guess", "any"}
+
+
 def _vague_symptom(message):
-    """(kind, clarifying question) when the message names a kind of symptom and nothing specific, else None."""
-    words = re.findall(r"[a-z']+", message.casefold())
-    if not words or len(words) > 14 or any(word not in VAGUE_WORDS for word in words):
+    """(kind, clarifying question) when the message names a kind of symptom and nothing specific, else None.
+
+    Vague means every word is a generic symptom word or common English ("something's wrong with my car", "my car
+    is acting weird lately, any thoughts?"). Any other word, even a misspelt one ("the breaks are making sounds"),
+    may say what is wrong, so the message is answered rather than questioned back."""
+    words = [word.strip("'") for word in re.findall(r"[a-z']+", re.sub(r"['’]s\b", " is", message.casefold()))]
+    if not words or len(words) > 14:
+        return None
+    # "Several warning lights are on" is a specific situation (many lights at once), not a vague one.
+    if re.search(r"\b(?:several|multiple|many|all|both|two|three|four|lots of|a lot of)\b", " ".join(words)):
+        return None
+    if any(word not in VAGUE_WORDS and word not in FILLER_WORDS for word in words):
         return None
     for pattern, kind, question in VAGUE_SYMPTOMS:
         if re.search(pattern, message, re.IGNORECASE):
@@ -1157,7 +1308,11 @@ def _load_memory(conversation_id, scope):
         return {}
     if conversation.updated_at < _retention_cutoff():
         return {}
-    return conversation.memory
+    memory = conversation.memory
+    topic = memory.get("last_topic")
+    if isinstance(topic, dict) and "query" in topic:
+        memory = {**memory, "last_topic": {key: value for key, value in topic.items() if key != "query"}}
+    return memory
 
 
 _last_purge = 0.0
@@ -1194,6 +1349,9 @@ def _save_memory(conversation_id, scope, memory, entities, intent, vehicles=None
     if not conversation_id or not scope:
         return
     from .models import Conversation
+    last_topic = (updates or {}).get("last_topic", memory.get("last_topic"))
+    if isinstance(last_topic, dict):
+        last_topic = {key: last_topic[key] for key in ("id", "shown", "question_kind") if key in last_topic}
     # Only names of vehicles already shown to this viewer are kept; every follow-up is
     # answered from a fresh database retrieval, never from remembered prices or statuses.
     memory = {"scope": scope, "last_intent": intent,
@@ -1205,7 +1363,7 @@ def _save_memory(conversation_id, scope, memory, entities, intent, vehicles=None
               "last_period": (updates or {}).get("last_period", memory.get("last_period")),
               # A pickup date waiting for its return date: kept for up to three more messages, cleared once used.
               **_pending_pickup(memory, updates or {}),
-              "last_topic": (updates or {})["last_topic"] if "last_topic" in (updates or {}) else memory.get("last_topic")}
+              "last_topic": last_topic}
     try:
         conversation = Conversation.objects.filter(id=conversation_id).first()
         if conversation is not None and conversation.memory.get("scope") not in {None, scope}:
