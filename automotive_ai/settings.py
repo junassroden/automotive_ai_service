@@ -122,6 +122,17 @@ KNOWLEDGE_INDEX_PATH = Path(
         str(BASE_DIR / "data" / "processed" / "knowledge_index")
     )
 )
+SEMANTIC_EMBEDDING_MODEL_PATH = Path(os.environ.get(
+    "SEMANTIC_EMBEDDING_MODEL_PATH",
+    str(BASE_DIR / "trained_models" / "embeddings" / "multilingual-e5-small"),
+))
+SEMANTIC_EMBEDDING_MODEL_ID = "intfloat/multilingual-e5-small"
+SEMANTIC_EMBEDDING_MODEL_REVISION = "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+SEMANTIC_EMBEDDING_ONNX_FILE = os.environ.get(
+    "SEMANTIC_EMBEDDING_ONNX_FILE", "onnx/model_qint8_avx512_vnni.onnx"
+)
+SEMANTIC_EMBEDDING_THREADS = int(os.environ.get("SEMANTIC_EMBEDDING_THREADS", "4"))
+SEMANTIC_EMBEDDING_MAX_SEQUENCE_LENGTH = int(os.environ.get("SEMANTIC_EMBEDDING_MAX_SEQUENCE_LENGTH", "384"))
 # Evidence thresholds for retrieved answers (heuristic support score, not a
 # probability; tuned and checked by scripts/evaluate_chatbot.py).
 CHATBOT_MIN_RETRIEVAL_SUPPORT = float(os.environ.get("CHATBOT_MIN_RETRIEVAL_SUPPORT", "0.45"))
