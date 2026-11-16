@@ -355,7 +355,7 @@
         "show my license at pickup",
         "need my driver license when i pick up"
       ],
-      "text": "To reserve a vehicle you need a signed-in, active customer account; administrator accounts cannot create reservations. The reservation form asks for the vehicle, a pickup date and a return date, and you must accept the rental agreement: the pickup date cannot be in the past, and the rental must be 3 to 7 days (up to 21 days as a special-duration request) and meet the vehicle's own minimum. The rental agreement says you must present a valid driver's licence and follow DriveRent's rental rules before pickup. Your profile (/users/profile) stores your driver's licence number and expiry date and a photo of you holding your licence, but the reservation form does not check the profile, so the system does not block a booking when no licence is saved, and the system stores no minimum-age rule or other document requirement, so ask the rental team what else they check at pickup.",
+      "text": "To reserve a vehicle you need a signed-in, active customer account; administrator accounts cannot create reservations. The reservation form asks for the vehicle, a pickup date and a return date, and you must accept the rental agreement: the pickup date cannot be in the past, and the rental must be 3 to 7 days (up to 21 days as a special-duration request) and meet the vehicle's own minimum. Bring a valid driver's licence at pickup: a Philippine licence, or a valid foreign licence with an International Driving Permit when required. Rentals are self-drive only, and the rental agreement says you must follow DriveRent's rental rules. Your profile (/users/profile) stores your driver's licence number and expiry date and a photo of you holding your licence, but the reservation form does not check the profile, so the system does not block a booking when no licence is saved, and the system stores no minimum-age rule or other document requirement, so ask the rental team what else they check at pickup.",
       "code_references": [
         "Back-End/app/controllers/ReservationController.php::createReservation",
         "Back-End/app/libraries/RentalAgreement.php",
@@ -400,7 +400,7 @@
         "for 12 hours",
         "oras lang"
       ],
-      "text": "A reservation's total is the vehicle's daily rate multiplied by the number of rental days, counted from the pickup date up to but not including the return date. Rentals are charged by the full day, with no hourly rate, and run 3 to 7 days, or up to 21 days as a special-duration request. The system stores no discounts, promotions, free days, taxes or extra fees, and the listed security deposit is shown separately and is not added to the total or to the online payment. Ask the rental team about any charges they handle outside the system. No late-return fee or penalty is stored either.",
+      "text": "A reservation's total is the vehicle's daily rate multiplied by the number of rental days, counted from the pickup date up to but not including the return date. Rentals are charged by the full day, with no hourly rate, and run 3 to 7 days, or up to 21 days as a special-duration request. The system stores no discounts, promotions, free days or taxes, and the listed security deposit is shown separately and is not added to the total or to the online payment. The rental team charges these fees separately, outside the online total: additional drivers ₱300 per day, mileage over 200 km per day at ₱10 per km, late returns ₱300 per hour after a one-hour grace period, cleaning ₱1,500 (smoking ₱3,000), delivery ₱500 within 10 km, and refuelling ₱100 per litre.",
       "code_references": [
         "Back-End/app/models/ReservationModel.php::create_reservation",
         "Back-End/app/libraries/ReservationPolicy.php"
@@ -643,11 +643,315 @@
         "ibang tao magbalik",
         "who can return the car"
       ],
-      "text": "Each reservation records a pickup date and a return date; the return date is not counted as a rental day, and the rental agreement requires the vehicle back on the stated return date. An administrator records the handover during the rental period, and only after the reservation is paid; when the vehicle comes back, the administrator records the return and the reservation is marked completed. The system stores no pickup or return times, no pickup location, and no fuel, cleaning or handover rules, so confirm those with the rental team.",
+      "text": "Each reservation records a pickup date and a return date; the return date is not counted as a rental day, and the rental agreement requires the vehicle back on the stated return date. An administrator records the handover during the rental period, and only after the reservation is paid; when the vehicle comes back, the administrator records the return and the reservation is marked completed. Pickup and return are at the rental office in San Jose, Occidental Mindoro, during business hours (Monday to Saturday, 8:00 AM to 6:00 PM). Return the car with the same fuel level and reasonably clean; the rental team charges refuelling, cleaning and late-return fees separately. The system stores no pickup or return times, so agree the time with the rental team.",
       "code_references": [
         "Back-End/app/models/ReservationModel.php::update_vehicle_use",
         "Back-End/app/libraries/RentalAgreement.php"
       ]
+    },
+    {
+      "id": "sys_policy_licence",
+      "title": "Driver's licence accepted",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "what licence do i need",
+        "which license is accepted",
+        "can i use a foreign license",
+        "foreign driver's license",
+        "international driving permit",
+        "idp",
+        "do you accept international license",
+        "student permit",
+        "can i rent with a foreign license",
+        "anong lisensya ang kailangan",
+        "pwede ba ang foreign license"
+      ],
+      "text": "You need a valid Philippine driver's licence. A foreign driver's licence is accepted if it is valid and, when required, accompanied by an International Driving Permit (IDP). Bring the licence at pickup.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_driver_service",
+      "title": "Driver or chauffeur service",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "with driver",
+        "do you have a driver",
+        "can you provide a driver",
+        "chauffeur",
+        "rent with driver",
+        "self drive only",
+        "may kasamang driver",
+        "pwede ba may driver"
+      ],
+      "text": "No driver or chauffeur service is offered: all rentals are self-drive. The person driving must meet the minimum driving age and the licence requirements.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_smoking",
+      "title": "Smoking in the vehicle",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "can i smoke in the car",
+        "is smoking allowed",
+        "smoking policy",
+        "vaping in the car",
+        "no smoking",
+        "bawal ba manigarilyo"
+      ],
+      "text": "Smoking (including vaping) is not allowed in the vehicles. If smoking is detected, a ₱3,000 cleaning and deodorizing fee applies. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_pets",
+      "title": "Pets in the vehicle",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "can i bring my dog",
+        "can i bring my cat",
+        "are pets allowed",
+        "pet friendly",
+        "bring a pet",
+        "pwede ba ang aso",
+        "pwede ba ang pusa"
+      ],
+      "text": "Pets are allowed only inside a suitable pet carrier. If the vehicle needs special cleaning afterwards, an additional ₱1,000 cleaning fee may apply. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_additional_drivers",
+      "title": "Additional drivers",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "can someone else drive",
+        "additional driver",
+        "second driver",
+        "can my friend drive",
+        "can my wife drive",
+        "can my husband drive",
+        "add a driver",
+        "pwede bang iba ang magmaneho",
+        "ibang driver"
+      ],
+      "text": "Additional drivers are allowed if they are registered and approved before the rental starts, and they must meet the same licence requirements. The additional driver fee is ₱300 per day per driver. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_insurance",
+      "title": "Insurance",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "is insurance included",
+        "do you have insurance",
+        "is the car insured",
+        "insurance coverage",
+        "participation fee",
+        "what if i crash",
+        "may insurance ba"
+      ],
+      "text": "Basic vehicle insurance is included. A participation fee of ₱10,000 per claim applies, subject to the insurance policy and the rental agreement. If anything happens, report it to the rental team immediately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_travel_area",
+      "title": "Where you can take the car",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "can i take the car to manila",
+        "can i bring the car outside",
+        "travel area",
+        "can i take the car on a ferry",
+        "roro",
+        "ro-ro",
+        "can i go to luzon",
+        "can i leave mindoro",
+        "out of town",
+        "pwede bang ilabas ng mindoro",
+        "pwede bang isakay sa barko"
+      ],
+      "text": "Travel is allowed within Luzon (the Luzon island group, which includes Mindoro). Because leaving Mindoro needs a ferry, any ferry or RoRo crossing, and any travel outside the approved area, needs the rental team's authorization before the trip.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_mileage",
+      "title": "Mileage limit",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "mileage limit",
+        "is there a km limit",
+        "unlimited mileage",
+        "how many km per day",
+        "distance limit",
+        "excess mileage",
+        "extra kilometer charge",
+        "may limit ba sa km"
+      ],
+      "text": "Each rental includes 200 km per day. Distance beyond that is charged at ₱10 per kilometre. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_delivery",
+      "title": "Vehicle delivery",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "do you deliver",
+        "can you deliver the car",
+        "home delivery",
+        "deliver to my house",
+        "delivery fee",
+        "drop off the car at my place",
+        "pwede bang ihatid ang sasakyan"
+      ],
+      "text": "Delivery is available within 10 km of the rental office for ₱500; further away, additional charges apply. Arrange it with the rental team before the rental. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_business_hours",
+      "title": "Business hours",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "business hours",
+        "office hours",
+        "what time do you open",
+        "what time do you close",
+        "are you open on sunday",
+        "open today",
+        "anong oras kayo bukas",
+        "bukas ba kayo"
+      ],
+      "text": "The rental office is open Monday to Saturday, 8:00 AM to 6:00 PM. It is closed on Sundays and public holidays unless arrangements are made in advance.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_late_return",
+      "title": "Late returns and late fees",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "late return",
+        "late fee",
+        "what if i return late",
+        "return the car late",
+        "grace period",
+        "late return penalty",
+        "huli ang balik",
+        "malelate ako ng balik"
+      ],
+      "text": "There is a one-hour grace period after the agreed return time. After that, ₱300 per hour is charged, and longer delays may be charged as an extra rental day. This fee is not part of the online booking total; the rental team charges it separately. If you need the car longer, contact the rental team before the return date.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_cleaning",
+      "title": "Cleaning on return",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "do i need to clean the car",
+        "cleaning fee",
+        "return the car dirty",
+        "car wash before return",
+        "dirty car fee",
+        "kailangan bang linisin ang sasakyan"
+      ],
+      "text": "Return the vehicle reasonably clean. A ₱1,500 cleaning fee applies for excessive dirt, mud, stains or unpleasant odours (smoking is charged separately at ₱3,000). This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_fuel_economy",
+      "title": "Fuel economy of the rental cars",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "fuel consumption",
+        "fuel economy",
+        "how many km per liter",
+        "km per litre",
+        "is the vios fuel efficient",
+        "matipid ba sa gas",
+        "how much fuel does the fortuner use",
+        "gas mileage"
+      ],
+      "text": "Approximate fuel economy: Toyota Vios about 15 km/L, Toyota Avanza about 12 km/L, Toyota Innova about 11 km/L, and Toyota Fortuner about 10 km/L. Actual consumption varies with driving conditions and the vehicle's condition.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_location",
+      "title": "Pickup and return location",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "where do i pick up the car",
+        "pickup location",
+        "return location",
+        "where is your office",
+        "where are you located",
+        "your address",
+        "saan kukunin ang sasakyan",
+        "saan ang opisina"
+      ],
+      "text": "Pick up and return the car at the rental office in San Jose, Occidental Mindoro, Philippines. Contact the rental team (0916 746 7284) for the exact address and directions.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_fuel_return",
+      "title": "Fuel level on return",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "do i need to refill the gas",
+        "return with a full tank",
+        "fuel policy",
+        "fuel level on return",
+        "return it with an empty tank",
+        "refuelling charge",
+        "kailangan bang punuin ang gas"
+      ],
+      "text": "Return the vehicle with the same fuel level recorded at pickup. If it comes back lower, refuelling is charged at ₱100 per litre plus applicable service charges. This fee is not part of the online booking total; the rental team charges it separately.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
+    },
+    {
+      "id": "sys_policy_contact",
+      "title": "Contact details",
+      "audience": "all",
+      "category": "rental_policy",
+      "keywords": [
+        "how do i contact you",
+        "contact number",
+        "phone number",
+        "your number",
+        "hotline",
+        "facebook page",
+        "message you",
+        "paano kayo makontak",
+        "numero ninyo"
+      ],
+      "text": "Contact the rental team by phone at 0916 746 7284, or on the Facebook page: https://www.facebook.com/share/18e5JLfYZH/. The office is open Monday to Saturday, 8:00 AM to 6:00 PM.",
+      "code_references": [],
+      "source": "Rental rules provided by the business owner on 2026-11-16 (not enforced by the application; applied by the rental team)."
     }
   ]
 }
