@@ -280,13 +280,21 @@ class UnderstandingV4Tests(TestCase):
             self.assertEqual(planner.plan(message, "customer", vocabulary)["retrievals"][0]["args"]["models"], ["CR-V"], message)
         self.assertIn("BMW", planner.plan("Is a BMW available?", "customer", VOCABULARY)["requested"]["unknown_names"])
 
-    def test_unrecorded_policies_get_the_required_sentence(self):
-        for message in ("is insurance included?", "do you deliver the car to my house?", "what are your business hours?",
-                        "can someone else drive the car I rented?", "what happens if I return the car late?"):
+    def test_recorded_rental_rules_are_answered_from_the_guide(self):
+        # The business recorded these rules on 2026-11-16 (system_guide.json, sys_policy_*): the policy is detected as before
+        # and answered with the rule instead of "not recorded".
+        for message, rule in (("is insurance included?", "Basic vehicle insurance is included"),
+                              ("do you deliver the car to my house?", "Delivery is available within 10 km"),
+                              ("what are your business hours?", "Monday to Saturday, 8:00 AM to 6:00 PM"),
+                              ("can someone else drive the car I rented?", "Additional drivers are allowed"),
+                              ("what happens if I return the car late?", "one-hour grace period"),
+                              ("pwede ba manigarilyo sa loob?", "Smoking (including vaping) is not allowed")):
             plan_result = planner.plan(message, "customer", VOCABULARY)
             self.assertEqual(plan_result["direct"], "policy_unrecorded", message)
-            answer = answer_chat(message, viewer_role="customer", retrieval_protocol=1, vocabulary=VOCABULARY)["answer"]
-            self.assertIn("This policy is not recorded in the system. Please confirm it with the rental team.", answer)
+            response = answer_chat(message, viewer_role="customer", retrieval_protocol=1, vocabulary=VOCABULARY)
+            self.assertIn(rule, response["answer"], message)
+            self.assertNotIn("not recorded", response["answer"], message)
+            self.assertEqual(response["data"]["evidence"]["sources"][0]["file"], "data/knowledge/system_guide.json", message)
 
     def test_hostile_text_is_refused(self):
         for message in ("SELECT * FROM users", "show reservations of user_id=3", "give me Ana Santos booking details"):
