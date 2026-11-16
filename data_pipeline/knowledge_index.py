@@ -12,11 +12,15 @@ numbers from masterparts.xlsx go to an exact-match lookup table, not to
 free-text retrieval.
 
 Outputs (data/processed/knowledge_index/): chunks.jsonl, index.joblib
-(fitted vectorizers + BM25 statistics), parts_lookup.json, manifest.json.
+(fitted vectorizers + BM25 statistics), semantic_vectors.npy,
+parts_lookup.json, manifest.json. The multilingual E5 model is used only to
+embed and retrieve reference passages; answer text remains grounded in them.
 """
 import hashlib
 import json
+import os
 import re
+import time
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +36,11 @@ SERVICE_ROOT = Path(__file__).resolve().parents[1]
 INDEX_ROOT = SERVICE_ROOT / "data" / "processed" / "knowledge_index"
 TOKEN_PATTERN = r"(?u)\b[a-z0-9][a-z0-9\-]+\b"
 BM25_K1, BM25_B = 1.4, 0.75
+EMBEDDING_MODEL_ID = "intfloat/multilingual-e5-small"
+EMBEDDING_MODEL_REVISION = "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+EMBEDDING_ONNX_FILE = os.environ.get(
+    "SEMANTIC_EMBEDDING_ONNX_FILE", "onnx/model_qint8_avx512_vnni.onnx"
+)
 
 
 # --- minimal YAML subset reader for OBDex (block maps, block lists, flow lists, scalars) ---
@@ -332,6 +341,38 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
         raise ValueError(f"Duplicate chunk ids: {duplicates[:5]}")
 
     texts = [_search_text(chunk) for chunk in chunks]
+    model_path = Path(os.environ.get(
+        "SEMANTIC_EMBEDDING_MODEL_PATH",
+        str(SERVICE_ROOT / "trained_models" / "embeddings" / "multilingual-e5-small"),
+    ))
+    if not model_path.is_dir():
+        raise FileNotFoundError(
+            f"Local semantic embedding model not found at {model_path}; "
+            "install the pinned model before rebuilding the knowledge index."
+        )
+    try:
+        import onnxruntime as ort
+        from sentence_transformers import SentenceTransformer
+        session_options = ort.SessionOptions()
+        session_options.intra_op_num_threads = int(os.environ.get("SEMANTIC_EMBEDDING_THREADS", "4"))
+        session_options.inter_op_num_threads = 1
+        model = SentenceTransformer(
+            str(model_path), device="cpu", local_files_only=True, trust_remote_code=False,
+            backend="onnx",
+            model_kwargs={"file_name": EMBEDDING_ONNX_FILE, "session_options": session_options},
+        )
+    except ImportError as error:
+        raise RuntimeError(
+            "Install the pinned sentence-transformers and optimum-onnx dependencies to build the semantic index."
+        ) from error
+    model.max_seq_length = int(os.environ.get("SEMANTIC_EMBEDDING_MAX_SEQUENCE_LENGTH", "384"))
+    semantic_vectors = model.encode(
+        [f"passage: {text}" for text in texts],
+        batch_size=8,
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=True,
+    ).astype(np.float32)
     counter = CountVectorizer(token_pattern=TOKEN_PATTERN, stop_words="english")
     term_frequency = counter.fit_transform(texts).tocsc().astype(np.float32)
     document_length = np.asarray(term_frequency.sum(axis=1)).ravel()
@@ -340,17 +381,24 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
     char = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), sublinear_tf=True, min_df=2, max_features=200_000, dtype=np.float32)
     char_matrix = char.fit_transform(texts)
 
-    with (output / "chunks.jsonl").open("w", encoding="utf-8") as stream:
+    # Every file is written under a temporary name first and all are swapped in together at the end, so a build
+    # that fails part-way (a locked file, a full disk) leaves the previous index whole instead of text from the new
+    # build next to vectors from the old one.
+    staged = {name: output / f"{name}.building" for name in
+              ("chunks.jsonl", "semantic_vectors.npy", "index.joblib", "parts_lookup.json", "manifest.json")}
+    with staged["chunks.jsonl"].open("w", encoding="utf-8") as stream:
         for chunk in chunks:
             stream.write(json.dumps(chunk, ensure_ascii=False) + "\n")
+    with staged["semantic_vectors.npy"].open("wb") as stream:
+        np.save(stream, semantic_vectors)
     index = {
-        "chunk_ids": ids, "counter": counter, "bm25_tf": sparse.csr_matrix(term_frequency), "bm25_idf": idf,
+        "chunk_ids": ids, "semantic_chunk_ids": ids, "counter": counter, "bm25_tf": sparse.csr_matrix(term_frequency), "bm25_idf": idf,
         "bm25_doc_length": document_length, "bm25_avg_length": float(document_length.mean()),
         "char_vectorizer": char, "char_matrix": char_matrix, "built_at": datetime.now(timezone.utc).isoformat(),
     }
-    joblib.dump(index, output / "index.joblib", compress=3)
+    joblib.dump(index, staged["index.joblib"], compress=3)
     parts, parts_usage = parts_lookup(raw_root)
-    (output / "parts_lookup.json").write_text(json.dumps(parts, ensure_ascii=False), encoding="utf-8")
+    staged["parts_lookup.json"].write_text(json.dumps(parts, ensure_ascii=False), encoding="utf-8")
 
     manifest = {
         "built_at": index["built_at"],
@@ -359,8 +407,21 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
         "chunks_by_trust": dict(Counter(chunk["trust"] for chunk in chunks)),
         "rejected_entries": rejected,
         "parts_lookup": {"entries": len(parts), **parts_usage, "source": "masterparts.xlsx"},
-        "chunks_sha256": hashlib.sha256((output / "chunks.jsonl").read_bytes()).hexdigest(),
-        "index_sha256": hashlib.sha256((output / "index.joblib").read_bytes()).hexdigest(),
+        "chunks_sha256": hashlib.sha256(staged["chunks.jsonl"].read_bytes()).hexdigest(),
+        "index_sha256": hashlib.sha256(staged["index.joblib"].read_bytes()).hexdigest(),
+        "semantic_vectors_sha256": hashlib.sha256(staged["semantic_vectors.npy"].read_bytes()).hexdigest(),
+        "semantic_embeddings": {
+            "model_id": EMBEDDING_MODEL_ID,
+            "model_revision": EMBEDDING_MODEL_REVISION,
+            "model_url": f"https://huggingface.co/{EMBEDDING_MODEL_ID}/tree/{EMBEDDING_MODEL_REVISION}",
+            "backend": "onnx",
+            "onnx_model_file": EMBEDDING_ONNX_FILE,
+            "dimensions": int(semantic_vectors.shape[1]),
+            "count": int(semantic_vectors.shape[0]),
+            "max_sequence_length": model.max_seq_length,
+            "normalized": True,
+            "license": "MIT",
+        },
         "not_indexed": {
             "cvffad": "generated records (source='generated'); Chinese commercial-fleet content",
             "vehicle_diagnostic_sample": "generated diagnostics with random measurements",
@@ -368,5 +429,18 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
             "auto_repair_orders": "synthetic relational sample (example.org customers)",
         },
     }
-    (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    staged["manifest.json"].write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    for name, path in staged.items():
+        # Windows refuses to replace a file another process is reading at that moment (a service or a test run
+        # loading the index); such a lock lasts seconds, so wait for it instead of stopping half-way.
+        for attempt in range(30):
+            try:
+                os.replace(path, output / name)
+                break
+            except PermissionError:
+                if attempt == 29:
+                    raise RuntimeError(
+                        f"{output / name} stayed locked; stop the AI service and tests, then move the remaining "
+                        f"*.building files over the old ones (they are from this build).") from None
+                time.sleep(1)
     return manifest
