@@ -115,7 +115,7 @@ def compose(plan, results, role, vocabulary=None, guide=None, fleet_risk=None, s
         "vehicle_status": _vehicle_status, "revenue": _revenue, "utilization": _utilization,
         "reassessment_due": _reassessment_due,
         "maintenance_condition": _maintenance_condition, "maintenance_priority": _maintenance_priority,
-        "maintenance_retire": _maintenance_retire, "payments": _payments, "customers": _customers,
+        "maintenance_retire": _maintenance_retire, "payments": _payments, "customers": _customers, "demand": _demand,
     }.get(intent)
     if handler is None:
         return "I couldn't work out which records answer that. Could you rephrase it?", data
@@ -1264,6 +1264,75 @@ def _customers(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
     if data.get("without_verified_licence"):
         lines.append(f"{data['without_verified_licence']} customer(s) have no complete, valid driver's licence on file.")
     lines.append("Contact details are not shown in chat; open the customer's reservation to see them.")
+    return "\n".join(lines)
+
+
+def _month_name(month):
+    year, number = month.split("-")
+    return f"{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][int(number) - 1]} {year}"
+
+
+def _demand(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    """Rental demand from the reservations: what was booked, what is booked ahead, and a forecast only when there is
+    enough history. Every figure comes from demand.summary; nothing is estimated here."""
+    data = by_tool["demand.summary"].get("data") or {}
+    months = data.get("by_month") or []
+    forecast = {item["month"]: item for item in data.get("forecast") or []}
+    ahead = data.get("on_the_books") or {}
+    lines = []
+    if plan.get("focus") == "lead_time":
+        # "How far ahead do customers book?": that figure first, then what is already booked.
+        lead = data.get("lead_time_days")
+        lines.append(f"Customers book a median of {lead['median']} days before pickup (from {lead['bookings']} bookings)." if lead
+                     else "No booking dates are recorded yet, so how far ahead customers book can't be worked out.")
+        lines.append(f"Already booked: {ahead.get('next_30_days', 0)} days in the next 30 days, {ahead.get('next_60_days', 0)} in 60 "
+                     f"and {ahead.get('next_90_days', 0)} in 90.")
+        return "\n".join(lines)
+    asked = data.get("asked_month")
+    if asked and not asked.get("outside_window"):
+        month = asked["month"]
+        if month in forecast:
+            f = forecast[month]
+            spread = f"range {f['low']} to {f['high']}, " if f['low'] != f['high'] else ""
+            lines.append(f"{_month_name(month)}: about {f['expected_booked_days']} booked days expected ({spread}"
+                         f"from the {f['basis']}); {f['already_booked']} are already booked.")
+        elif asked.get("future"):
+            lines.append(f"{_month_name(month)}: {asked['booked_days']} booked days so far from {asked['bookings']} booking(s). "
+                         f"There isn't enough booking history for a forecast yet ({data.get('history_months', 0)} of "
+                         f"{data.get('forecast_min_months', 6)} months).")
+        else:
+            lines.append(f"{_month_name(month)}: {asked['booked_days']} booked days from {asked['bookings']} booking(s)"
+                         + (f", {money(asked['booked_value'])} booked value" if asked.get("booked_value") else "")
+                         + f"; {asked['cancelled']} cancelled and {asked['expired']} expired unpaid.")
+    elif asked:
+        lines.append(f"{_month_name(asked['month'])} is outside the months I have figures for.")
+    past = [m for m in months if not m.get("future")]
+    if not any(m.get("bookings") or m.get("booked_days") for m in months):
+        lines.append("There are no bookings in the last months yet, so there is no demand pattern to show. "
+                     "Demand Intelligence (/admin/intelligence/demand) fills in as reservations come in.")
+        return "\n".join(lines)
+    if not asked:
+        busiest = sorted((m for m in past if m["booked_days"]), key=lambda m: -m["booked_days"])[:3]
+        if busiest:
+            lines.append("Busiest months by booked days: " + ", ".join(f"{_month_name(m['month'])} ({m['booked_days']})" for m in busiest) + ".")
+        weekdays = data.get("pickups_by_weekday") or {}
+        if any(weekdays.values()):
+            top = max(weekdays, key=weekdays.get)
+            lines.append(f"Most pickups are on {top} ({weekdays[top]}).")
+        if forecast:
+            parts = [f"{_month_name(f['month'])} about {f['expected_booked_days']} booked days"
+                     + (f" (range {f['low']} to {f['high']})" if f["low"] != f["high"] else "") for f in forecast.values()]
+            lines.append("Forecast: " + "; ".join(parts) + f", from the {next(iter(forecast.values()))['basis']}.")
+        else:
+            lines.append(f"No forecast yet: that needs {data.get('forecast_min_months', 6)} months of booking history, and there "
+                         f"{'is' if data.get('history_months') == 1 else 'are'} {data.get('history_months', 0)}.")
+    lines.append(f"Already booked: {ahead.get('next_30_days', 0)} days in the next 30 days, {ahead.get('next_60_days', 0)} in 60 "
+                 f"and {ahead.get('next_90_days', 0)} in 90.")
+    if data.get("lead_time_days"):
+        lines.append(f"Customers book a median of {data['lead_time_days']['median']} days ahead.")
+    if data.get("cancellation_rate_percent") is not None:
+        lines.append(f"Cancellation rate {data['cancellation_rate_percent']}%, unpaid expiry rate {data.get('expiry_rate_percent', 0)}%.")
+    lines.append("More detail on Demand Intelligence (/admin/intelligence/demand).")
     return "\n".join(lines)
 
 
