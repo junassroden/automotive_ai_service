@@ -132,7 +132,11 @@
         "red temperature light",
         "the temperature light is red",
         "coolant warning light",
-        "temperature light is on"
+        "temperature light is on",
+        "umiinit ang makina",
+        "nag-ooverheat ang makina",
+        "mainit ang makina",
+        "tumataas ang temperatura"
       ],
       "overview": "An overheating warning means the engine's heat isn't being carried away properly, or the temperature reading is wrong. Treat a high-temperature warning as real until a check proves otherwise. The cooling system carries heat from the engine to the radiator in the coolant, so airflow through the radiator, coolant flow, a sealed system and a working thermostat all matter.",
       "component_functions": [
@@ -291,7 +295,9 @@
         "oil pressure light came on",
         "oil pressure light is on",
         "oil can light",
-        "oil light came on"
+        "oil light came on",
+        "tumutulo ang langis",
+        "may tagas na langis"
       ],
       "overview": "Oil level, oil pressure, and oil condition are different checks. A warning lamp may indicate a lubrication problem and should not be treated as a routine reminder without checking the manual.",
       "possible_causes": [
@@ -591,7 +597,11 @@
         "brake noise",
         "noise when braking",
         "brakes squeak in the morning",
-        "brake pad wear indicator"
+        "brake pad wear indicator",
+        "tunog ng preno",
+        "sumisipol ang preno",
+        "umiingit ang preno",
+        "maingay ang preno"
       ],
       "overview": "A squeak or squeal when braking usually comes from the pads and discs: pads worn down to their wear indicator, brake dust or debris, moisture or light rust, glazed pads or discs, or missing or worn anti-noise shims and grease. The noise alone doesn't prove which part is at fault.",
       "component_functions": [
@@ -782,7 +792,9 @@
         "hard shifts",
         "rough shifting",
         "car jerks when changing gears",
-        "delayed engagement"
+        "delayed engagement",
+        "dumudulas ang transmission",
+        "ayaw kumapit ng kambyo"
       ],
       "overview": "Slipping or delayed engagement describes a driving symptom, not a confirmed transmission failure. Different transmission designs have different fluid-check and service requirements.",
       "component_functions": [
@@ -970,7 +982,8 @@
         "Rotate the tires at the interval in the owner's manual."
       ],
       "stop": "Replace a tire with a bulge, a deep cut, or tread worn down to the wear indicators.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes if the pressures match the label on the driver's door frame and the tread is above the wear bars. Not on a tyre that is visibly low, bald, or bulging."
     },
     {
       "id": "steering_suspension",
@@ -1183,7 +1196,10 @@
         "check engine light is on",
         "check engine warning",
         "check engine warning light",
-        "engine check light"
+        "engine check light",
+        "may ilaw sa dashboard",
+        "umiilaw ang dashboard",
+        "maraming ilaw sa dashboard"
       ],
       "overview": "A trouble code tells you which system or circuit found a problem; it doesn't name the broken part on its own. A code reader's short description isn't a full diagnosis.",
       "possible_causes": [
@@ -1746,7 +1762,8 @@
         "air con not cold",
         "hindi malamig ang aircon",
         "walang lamig ang aircon",
-        "aircon not working"
+        "aircon not working",
+        "mainit ang hangin ng aircon"
       ],
       "overview": "Heating and air-conditioning depend on airflow, the heater and A/C units, the air flaps and controls, and on most cars a sealed refrigerant system. A warm vent or weak airflow doesn't by itself mean the compressor has failed or the refrigerant is leaking.",
       "component_functions": [
@@ -2039,7 +2056,8 @@
         "Adjust and lubricate as the owner's manual describes."
       ],
       "stop": "Don't ride with a damaged, binding or very loose chain.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Not with a loose, kinked or badly worn chain: it can jump off or snap and lock the rear wheel."
     },
     {
       "id": "brake_grinding",
@@ -2269,7 +2287,9 @@
         "blinking check engine light",
         "engine light blinking",
         "flashing engine light",
-        "flashing malfunction indicator lamp"
+        "flashing malfunction indicator lamp",
+        "kumukurap ang check engine",
+        "blinking ang check engine"
       ],
       "overview": "A flashing (blinking) check-engine light means the engine computer has detected a severe misfire that can overheat and damage the catalytic converter. It is more urgent than a steady check-engine light: reduce speed and load, stop in a safe place as soon as you can, and avoid continued driving.",
       "possible_causes": [
@@ -2780,7 +2800,8 @@
         "tire keeps going flat",
         "tire goes flat overnight",
         "tire deflates",
-        "nawawalan ng hangin ang gulong"
+        "nawawalan ng hangin ang gulong",
+        "butas ang gulong"
       ],
       "overview": "If a tire is flat or losing air, slow down, move to a safe place away from traffic, switch on the hazard lights and stop. Driving on a flat tire quickly destroys it and can damage the wheel and make the car hard to control.",
       "possible_causes": [
@@ -3387,7 +3408,9 @@
         "turns over but won't start",
         "engine turns over but won't start",
         "cranking but not starting",
-        "engine won't catch"
+        "engine won't catch",
+        "umaandar ang starter pero ayaw mag start",
+        "nag-crank pero ayaw umandar"
       ],
       "overview": "If the engine cranks normally but won't start, it usually isn't getting fuel, spark or enough air, or the immobiliser is blocking it.",
       "possible_causes": [
@@ -4329,7 +4352,8 @@
         "Use only the brake-fluid type printed on the reservoir cap or in the owner's manual."
       ],
       "stop": "If the level drops quickly or the red brake warning comes on, don't drive the car; have the brakes checked.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes if the brake pedal feels firm and the brake warning light is off. Not if the fluid is below MIN, the pedal feels soft, or the brake light is on."
     },
     {
       "id": "rental_damage_reporting",
@@ -4822,7 +4846,19 @@
         "tire pressure light",
         "tire pressure light is on",
         "tyre pressure light",
-        "what does the tpms light mean"
+        "what does the tpms light mean",
+        "tire pressure symbol",
+        "tire warning light",
+        "tyre warning light",
+        "tire light",
+        "tire light on",
+        "tire light keeps coming back",
+        "tire light still on after adding air",
+        "exclamation mark in a horseshoe",
+        "horseshoe with exclamation mark",
+        "horseshoe light",
+        "ilaw ng gulong",
+        "warning light ng gulong"
       ],
       "answer": "The TPMS light means one or more tires is well below its correct pressure. On many cars, a light that flashes for about a minute and then stays on means the monitoring system itself has a fault.",
       "key_causes": [
@@ -5014,7 +5050,8 @@
         "Drive for at least 20 to 30 minutes so the battery recharges; if it goes flat again, have the battery and charging system tested."
       ],
       "stop": "Don't jump-start a battery that is cracked, leaking or swollen, and keep sparks and flames away from it. Hybrids and electric cars have their own jump points, so follow the owner's manual.",
-      "professional": null
+      "professional": null,
+      "drive_safety": "Yes once it is running. Drive for at least 30 minutes, or have the battery tested, because it may not start again."
     },
     {
       "id": "transmission_types",
@@ -5168,7 +5205,8 @@
         "A temporary spare has a speed and distance limit; have the flat repaired or replaced soon, and recheck the wheel nuts after a short drive."
       ],
       "stop": null,
-      "professional": null
+      "professional": null,
+      "drive_safety": "Only on a properly fitted spare. A space-saver spare is for short distances at reduced speed; the limit, usually 80 km/h, is printed on it."
     },
     {
       "id": "idle_vibration",
@@ -6114,6 +6152,91 @@
       "drive_safety": "Usually yes at normal speeds, but leave more room when overtaking or merging, because it may not pull when you need it. If the check-engine light flashes, stop driving."
     },
     {
+      "id": "throttle_unresponsive_limp_mode",
+      "title": "Accelerator not responding or reduced power (limp mode) with the engine light on",
+      "category": "engine",
+      "system": "engine",
+      "component": "electronic throttle and accelerator pedal",
+      "keywords": [
+        "throttle not working",
+        "throttle not responding",
+        "throttle is not working",
+        "accelerator not working",
+        "accelerator not responding",
+        "gas pedal not responding",
+        "gas pedal does nothing",
+        "pedal does nothing",
+        "car won't accelerate",
+        "car will not accelerate",
+        "no acceleration",
+        "car not accelerating",
+        "limp mode",
+        "limp home mode",
+        "reduced power",
+        "engine power reduced",
+        "reduced engine power",
+        "epc light",
+        "stuck at low rpm",
+        "engine light and no power",
+        "throttle body",
+        "electronic throttle",
+        "ayaw umarangkada",
+        "hindi umaarangkada",
+        "hindi gumagana ang silinyador",
+        "ayaw tumakbo kahit inaapakan"
+      ],
+      "overview": "When the accelerator stops responding, or the car will barely speed up, and the check-engine light is on, the engine computer has usually found a fault in the electronic throttle system and switched to limp mode: it limits power and engine speed to protect the engine and keep the car controllable.",
+      "possible_causes": [
+        "a faulty accelerator pedal position sensor",
+        "a dirty, sticking or failing electronic throttle body",
+        "a faulty throttle position sensor in the throttle body",
+        "damaged wiring or a loose connector between the pedal, throttle body and engine computer",
+        "low battery or charging voltage confusing the throttle sensors",
+        "a floor mat or object stopping the pedal from moving"
+      ],
+      "symptoms": [
+        "The accelerator pedal does little or nothing, or the car will not go above low speed, with the check-engine light on.",
+        "The engine stays at low revs or drops to idle when the pedal is pressed."
+      ],
+      "checks": [
+        "Make sure the floor mat or anything else is not under or behind the accelerator pedal.",
+        "After stopping somewhere safe, switch the engine off for a minute and restart it; limp mode may clear for a while, but the fault is still stored and needs checking.",
+        "Have the trouble codes read; throttle and pedal codes such as P2135, P2138, P2101, P2111, P2112 and P0120 to P0123 point to the part at fault."
+      ],
+      "urgency": "Have it checked as soon as possible; limp mode means the engine computer has found a fault it cannot ignore.",
+      "needed_information": [
+        "Which warning lights are on, whether the pedal does nothing at all or only gives reduced power, and whether it started after rain, a jump start or recent repairs."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "SAE J2012 diagnostic trouble code definitions (P2135, P2138, P2101, P2111, P2112, P0120-P0123)",
+          "reference": "Standard OBD-II code meanings for throttle position, accelerator pedal position and throttle actuator faults."
+        },
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Limp-mode behaviour and recovery are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "When the accelerator stops responding, or the car will barely speed up, and the check-engine light is on, the engine computer has usually found a fault in the electronic throttle system and switched to limp mode: it limits power and engine speed to protect the engine and keep the car controllable.",
+      "key_causes": [
+        "a faulty accelerator pedal position sensor",
+        "a dirty, sticking or failing electronic throttle body",
+        "a faulty throttle position sensor in the throttle body",
+        "damaged wiring or a loose connector between the pedal, throttle body and engine computer",
+        "low battery or charging voltage confusing the throttle sensors",
+        "a floor mat or object stopping the pedal from moving"
+      ],
+      "actions": [
+        "Make sure the floor mat or anything else is not under or behind the accelerator pedal.",
+        "After stopping somewhere safe, switch the engine off for a minute and restart it; limp mode may clear for a while, but the fault is still stored and needs checking.",
+        "Have the trouble codes read; throttle and pedal codes such as P2135, P2138, P2101, P2111, P2112 and P0120 to P0123 point to the part at fault."
+      ],
+      "stop": "If the car speeds up on its own or the throttle stays open, shift to neutral, brake firmly, steer to a safe stop and switch the engine off once stopped.",
+      "professional": "A workshop can read the stored codes and test the pedal sensor, throttle body and wiring.",
+      "drive_safety": "Only slowly and a short distance to a safe place or a nearby workshop: with reduced power you cannot overtake or merge safely. Turn on the hazard lights if you are much slower than traffic."
+    },
+    {
       "id": "hard_starting_cold",
       "title": "Car is hard to start or takes long to start",
       "category": "engine",
@@ -6949,7 +7072,10 @@
         "battery going bad",
         "battery is going bad",
         "bad battery",
-        "battery is bad"
+        "battery is bad",
+        "mahina ang baterya",
+        "lowbat ang sasakyan",
+        "patay ang baterya"
       ],
       "answer": "The usual signs of a weak battery are slow or laboured cranking, especially in the morning, dim lights or a flickering dashboard when starting, clicking when you turn the key, and needing jump starts. A battery that is over about 3 years old in a hot climate is more likely to fail.",
       "key_causes": [
@@ -7175,7 +7301,8 @@
           "name": "Vehicle-specific owner's manual and service information",
           "reference": "Intervals, capacities, fluid types and procedures are vehicle-specific; this entry gives general guidance only."
         }
-      ]
+      ],
+      "drive_safety": "Don't start a car that has been in water above the floor: water drawn into the engine can wreck it. Have it checked first."
     },
     {
       "id": "fuel_saving",
@@ -7646,7 +7773,15 @@
         "lost rental days",
         "breakdown cost rental",
         "unplanned downtime",
-        "how much does a breakdown cost"
+        "how much does a breakdown cost",
+        "reduce downtime",
+        "how can we reduce downtime",
+        "minimise downtime",
+        "minimize downtime",
+        "cut downtime",
+        "less downtime",
+        "keep cars on the road",
+        "fewer breakdowns"
       ],
       "answer": "In a rental fleet a breakdown costs far more than the repair: the lost rental days, the replacement car or refund for the customer, towing, rushed parts, and the customer you may not see again. A planned repair on a day with no booking costs only the repair.",
       "key_causes": [],
@@ -8391,6 +8526,1073 @@
           "reference": "General guidance; intervals and limits are vehicle-specific, so the owner's manual and service booklet decide."
         }
       ]
+    },
+    {
+      "id": "central_locking",
+      "title": "Central locking or door locks not working",
+      "category": "electrical",
+      "system": "body electrical",
+      "component": "door locks",
+      "keywords": [
+        "central locking not working",
+        "doors won't lock",
+        "doors will not lock",
+        "door won't unlock",
+        "door lock not working",
+        "one door won't lock",
+        "car won't lock",
+        "locks keep locking and unlocking",
+        "ayaw mag lock ng pinto",
+        "hindi nagla-lock ang pinto"
+      ],
+      "overview": "When the central locking stops working, one door or all of them won't lock or unlock with the remote or the button. One door on its own usually points to that door's lock actuator; all doors together point to the key fob, a fuse or the locking control unit.",
+      "possible_causes": [
+        "a weak key-fob battery (all doors, only from the remote)",
+        "a failed door lock actuator (one door)",
+        "a blown fuse or relay",
+        "a broken wire in the door hinge area",
+        "a door that is not fully closed, so the car refuses to lock"
+      ],
+      "symptoms": [
+        "Central locking or door locks not working."
+      ],
+      "checks": [
+        "Check that every door, the boot and the bonnet are fully shut.",
+        "Try the button on the door or the key in the driver's lock to tell a remote problem from a lock problem.",
+        "If only the remote fails, the fob battery is the usual cause (see key fob or remote not working)."
+      ],
+      "urgency": "Not urgent unless the car can't be secured; then don't leave valuables inside and have it fixed soon.",
+      "needed_information": [
+        "Whether one door or all doors are affected, and whether the remote, the door button and the key all fail."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "When the central locking stops working, one door or all of them won't lock or unlock with the remote or the button. One door on its own usually points to that door's lock actuator; all doors together point to the key fob, a fuse or the locking control unit.",
+      "key_causes": [
+        "a weak key-fob battery (all doors, only from the remote)",
+        "a failed door lock actuator (one door)",
+        "a blown fuse or relay",
+        "a broken wire in the door hinge area",
+        "a door that is not fully closed, so the car refuses to lock"
+      ],
+      "actions": [
+        "Check that every door, the boot and the bonnet are fully shut.",
+        "Try the button on the door or the key in the driver's lock to tell a remote problem from a lock problem.",
+        "If only the remote fails, the fob battery is the usual cause (see key fob or remote not working)."
+      ],
+      "stop": null,
+      "professional": "A workshop can test the actuator, fuse and wiring. On a rental, report it to the rental team rather than forcing the lock.",
+      "drive_safety": "Yes. A door that won't lock still closes; make sure it is fully latched before driving."
+    },
+    {
+      "id": "keys_locked_inside",
+      "title": "Keys locked inside the car",
+      "category": "electrical",
+      "system": "body electrical",
+      "component": "keys and locks",
+      "keywords": [
+        "locked my keys in the car",
+        "keys locked inside",
+        "keys inside the car",
+        "locked out of the car",
+        "locked out of my car",
+        "naiwan ang susi sa loob",
+        "nalock ko ang susi sa loob"
+      ],
+      "overview": "If the keys are locked inside, don't force a door or break a window: that costs far more than the call-out. Use a spare key, or call roadside assistance or a locksmith; on a rental, call the rental team first, since they may hold a spare and forced entry counts as damage.",
+      "possible_causes": [
+        "the doors locked automatically with the key inside",
+        "the key was left in the boot when it was closed"
+      ],
+      "symptoms": [
+        "Keys locked inside the car."
+      ],
+      "checks": [
+        "Check every door and the boot; one may still be unlocked.",
+        "If a child or pet is inside on a hot day, call emergency services at once."
+      ],
+      "urgency": "Urgent only if a person or animal is inside, or the engine is left running.",
+      "needed_information": [
+        "Whether the engine is running and whether anyone is inside."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "If the keys are locked inside, don't force a door or break a window: that costs far more than the call-out. Use a spare key, or call roadside assistance or a locksmith; on a rental, call the rental team first, since they may hold a spare and forced entry counts as damage.",
+      "key_causes": [
+        "the doors locked automatically with the key inside",
+        "the key was left in the boot when it was closed"
+      ],
+      "actions": [
+        "Check every door and the boot; one may still be unlocked.",
+        "If a child or pet is inside on a hot day, call emergency services at once."
+      ],
+      "stop": "If a child or pet is locked inside in the heat, call emergency services immediately; breaking a window is justified then.",
+      "professional": null,
+      "drive_safety": null
+    },
+    {
+      "id": "push_start_key_not_detected",
+      "title": "Push-button start won't start, or key not detected",
+      "category": "electrical",
+      "system": "electrical",
+      "component": "smart key and start button",
+      "keywords": [
+        "key not detected",
+        "push start not working",
+        "push button start not working",
+        "start button not working",
+        "smart key not detected",
+        "keyless start not working",
+        "car says no key",
+        "car won't start with push button",
+        "ayaw mag start ang push start"
+      ],
+      "overview": "With push-button start, a car that won't start or says the key is not detected usually can't sense the smart key, most often because its battery is weak. Most cars let you start by holding the key fob against the start button, which reads it without its battery.",
+      "possible_causes": [
+        "a weak smart-key battery",
+        "interference from phones, chargers or other keys near the fob",
+        "the brake (automatic) or clutch (manual) pedal not pressed fully",
+        "the gear selector not in Park or Neutral",
+        "a weak car battery or a fault in the immobiliser"
+      ],
+      "symptoms": [
+        "Push-button start won't start, or key not detected."
+      ],
+      "checks": [
+        "Press the brake pedal firmly (or the clutch in a manual) and make sure the gear selector is in Park or Neutral.",
+        "Hold the key fob right against the start button while pressing it; the owner's manual shows the exact spot.",
+        "Replace the fob's coin battery; if the dashboard lights are dim too, the car battery is the problem instead."
+      ],
+      "urgency": "Not dangerous, but the car may not restart after stopping, so replace the fob battery soon.",
+      "needed_information": [
+        "The message on the dash, whether the dash lights come on, and whether holding the fob on the button works."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "With push-button start, a car that won't start or says the key is not detected usually can't sense the smart key, most often because its battery is weak. Most cars let you start by holding the key fob against the start button, which reads it without its battery.",
+      "key_causes": [
+        "a weak smart-key battery",
+        "interference from phones, chargers or other keys near the fob",
+        "the brake (automatic) or clutch (manual) pedal not pressed fully",
+        "the gear selector not in Park or Neutral",
+        "a weak car battery or a fault in the immobiliser"
+      ],
+      "actions": [
+        "Press the brake pedal firmly (or the clutch in a manual) and make sure the gear selector is in Park or Neutral.",
+        "Hold the key fob right against the start button while pressing it; the owner's manual shows the exact spot.",
+        "Replace the fob's coin battery; if the dashboard lights are dim too, the car battery is the problem instead."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes once it is running, but avoid switching off away from help until the key or battery is sorted."
+    },
+    {
+      "id": "gear_selector_stuck_park",
+      "title": "Gear shifter stuck in Park",
+      "category": "transmission",
+      "system": "transmission",
+      "component": "gear selector and shift lock",
+      "keywords": [
+        "stuck in park",
+        "can't shift out of park",
+        "won't shift out of park",
+        "gear shifter stuck",
+        "shifter won't move",
+        "gear lever stuck in park",
+        "ayaw umalis sa park",
+        "stuck ang kambyo sa park"
+      ],
+      "overview": "An automatic that won't shift out of Park is usually held by the shift lock, which only releases when it senses the brake pedal. A failed brake-light switch or a blown fuse is the commonest cause, and the same fault often stops the brake lights working.",
+      "possible_causes": [
+        "a faulty brake-light switch (often the brake lights are out too)",
+        "a blown fuse for the brake lights or shift lock",
+        "a failed shift-lock solenoid",
+        "a weak battery",
+        "the car parked on a slope, putting weight on the parking pawl"
+      ],
+      "symptoms": [
+        "Gear shifter stuck in Park."
+      ],
+      "checks": [
+        "Press the brake pedal firmly before moving the lever; with the engine running, check whether the brake lights come on.",
+        "On a slope, apply the parking brake and rock the car gently while shifting.",
+        "Most cars have a shift-lock release slot near the lever (see the owner's manual) to move it out of Park in an emergency."
+      ],
+      "urgency": "Have it fixed soon; if the brake lights are not working too, that is a safety problem for the cars behind you.",
+      "needed_information": [
+        "Whether the brake lights work, and whether the car is on a slope."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "An automatic that won't shift out of Park is usually held by the shift lock, which only releases when it senses the brake pedal. A failed brake-light switch or a blown fuse is the commonest cause, and the same fault often stops the brake lights working.",
+      "key_causes": [
+        "a faulty brake-light switch (often the brake lights are out too)",
+        "a blown fuse for the brake lights or shift lock",
+        "a failed shift-lock solenoid",
+        "a weak battery",
+        "the car parked on a slope, putting weight on the parking pawl"
+      ],
+      "actions": [
+        "Press the brake pedal firmly before moving the lever; with the engine running, check whether the brake lights come on.",
+        "On a slope, apply the parking brake and rock the car gently while shifting.",
+        "Most cars have a shift-lock release slot near the lever (see the owner's manual) to move it out of Park in an emergency."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Only if the brake lights work. If they don't, drivers behind you can't see you braking, so don't drive until it's fixed."
+    },
+    {
+      "id": "gauges_not_working",
+      "title": "Speedometer, fuel gauge or other gauge not working",
+      "category": "electrical",
+      "system": "instrument cluster",
+      "component": "gauges and sensors",
+      "keywords": [
+        "speedometer not working",
+        "speedometer stopped working",
+        "speedometer stuck at zero",
+        "fuel gauge not working",
+        "fuel gauge stuck",
+        "odometer not working",
+        "gauges not working",
+        "dashboard gauges dead",
+        "rpm gauge not working",
+        "hindi gumagana ang speedometer"
+      ],
+      "overview": "A gauge that stops or reads wrong usually has lost its sensor signal rather than the instrument itself failing. A speedometer that drops to zero, often with the ABS or traction light on, points to a wheel-speed or vehicle-speed sensor; a fuel gauge that sticks points to the fuel-level sender in the tank. All gauges dying at once points to the cluster's fuse or connection.",
+      "possible_causes": [
+        "a failed wheel-speed or vehicle-speed sensor (speedometer, often with the ABS light)",
+        "a faulty fuel-level sender (fuel gauge)",
+        "a blown instrument-cluster fuse (all gauges)",
+        "a loose connector behind the cluster",
+        "a weak battery or charging fault"
+      ],
+      "symptoms": [
+        "Speedometer, fuel gauge or other gauge not working."
+      ],
+      "checks": [
+        "Note which gauges fail and which warning lights are on.",
+        "Use the trip meter and refuel by distance if the fuel gauge is unreliable.",
+        "Use a phone speed app until the speedometer is fixed."
+      ],
+      "urgency": "Have it checked soon: without a speedometer you can't keep to limits, and with a dead fuel gauge you can run out of fuel.",
+      "needed_information": [
+        "Which gauges are affected and which warning lights are on."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A gauge that stops or reads wrong usually has lost its sensor signal rather than the instrument itself failing. A speedometer that drops to zero, often with the ABS or traction light on, points to a wheel-speed or vehicle-speed sensor; a fuel gauge that sticks points to the fuel-level sender in the tank. All gauges dying at once points to the cluster's fuse or connection.",
+      "key_causes": [
+        "a failed wheel-speed or vehicle-speed sensor (speedometer, often with the ABS light)",
+        "a faulty fuel-level sender (fuel gauge)",
+        "a blown instrument-cluster fuse (all gauges)",
+        "a loose connector behind the cluster",
+        "a weak battery or charging fault"
+      ],
+      "actions": [
+        "Note which gauges fail and which warning lights are on.",
+        "Use the trip meter and refuel by distance if the fuel gauge is unreliable.",
+        "Use a phone speed app until the speedometer is fixed."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Carefully and only for a short while: keep to the speed of traffic, and refuel early if the fuel gauge can't be trusted."
+    },
+    {
+      "id": "parking_camera_sensors",
+      "title": "Reverse camera or parking sensors not working",
+      "category": "electrical",
+      "system": "driver assistance",
+      "component": "camera and parking sensors",
+      "keywords": [
+        "reverse camera not working",
+        "backup camera not working",
+        "rear camera blank",
+        "rear camera blurry",
+        "parking sensors not working",
+        "parking sensor beeping constantly",
+        "parking sensors beep for no reason",
+        "reverse sensor not working",
+        "hindi gumagana ang reverse camera"
+      ],
+      "overview": "Parking cameras and sensors fail most often because they are dirty, wet or blocked; they beep constantly or show a blurred or black picture. A sensor that stays silent or a camera that never shows a picture after cleaning points to a damaged unit, its wiring or a fuse.",
+      "possible_causes": [
+        "mud, dirt, water or a sticker over the camera or a sensor",
+        "a cracked or knocked sensor after a bump",
+        "a loose camera connector",
+        "a blown fuse",
+        "a setting or software fault in the screen"
+      ],
+      "symptoms": [
+        "Reverse camera or parking sensors not working."
+      ],
+      "checks": [
+        "Clean the camera lens and every sensor on the bumper with a soft cloth.",
+        "Check whether a tow bar, bike rack or bumper sticker is in the way.",
+        "Turn the car off and on again; if it is still faulty, have it checked."
+      ],
+      "urgency": "Not urgent, but reverse slowly and look behind you until it works again.",
+      "needed_information": [
+        "Whether it beeps constantly, never beeps, or the picture is blank or blurred."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "Parking cameras and sensors fail most often because they are dirty, wet or blocked; they beep constantly or show a blurred or black picture. A sensor that stays silent or a camera that never shows a picture after cleaning points to a damaged unit, its wiring or a fuse.",
+      "key_causes": [
+        "mud, dirt, water or a sticker over the camera or a sensor",
+        "a cracked or knocked sensor after a bump",
+        "a loose camera connector",
+        "a blown fuse",
+        "a setting or software fault in the screen"
+      ],
+      "actions": [
+        "Clean the camera lens and every sensor on the bumper with a soft cloth.",
+        "Check whether a tow bar, bike rack or bumper sticker is in the way.",
+        "Turn the car off and on again; if it is still faulty, have it checked."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes. The aids only help; check mirrors and look behind you when reversing."
+    },
+    {
+      "id": "cruise_control_not_working",
+      "title": "Cruise control not working",
+      "category": "electrical",
+      "system": "driver assistance",
+      "component": "cruise control",
+      "keywords": [
+        "cruise control not working",
+        "cruise control won't engage",
+        "cruise control won't set",
+        "cruise control keeps turning off",
+        "adaptive cruise control not working",
+        "cruise not working"
+      ],
+      "overview": "Cruise control refuses to set or switches itself off when a system it depends on reports a fault: most often the brake-light switch, a wheel-speed sensor or the ABS and stability system. Adaptive cruise also switches off when its radar or camera behind the grille or windscreen is dirty or blocked.",
+      "possible_causes": [
+        "a faulty brake-light switch",
+        "an ABS, traction or wheel-speed sensor fault (often with a warning light)",
+        "a dirty or blocked radar or camera (adaptive cruise)",
+        "speed below the system's minimum",
+        "a fault in the switch on the steering wheel"
+      ],
+      "symptoms": [
+        "Cruise control not working."
+      ],
+      "checks": [
+        "Check that you are above the minimum speed and that the brake lights work.",
+        "Clean the front radar area and the windscreen camera area.",
+        "Note any warning lights; fix those faults first."
+      ],
+      "urgency": "Not urgent, but have any related warning light checked.",
+      "needed_information": [
+        "Whether it won't set or keeps cancelling, and any warning lights."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "Cruise control refuses to set or switches itself off when a system it depends on reports a fault: most often the brake-light switch, a wheel-speed sensor or the ABS and stability system. Adaptive cruise also switches off when its radar or camera behind the grille or windscreen is dirty or blocked.",
+      "key_causes": [
+        "a faulty brake-light switch",
+        "an ABS, traction or wheel-speed sensor fault (often with a warning light)",
+        "a dirty or blocked radar or camera (adaptive cruise)",
+        "speed below the system's minimum",
+        "a fault in the switch on the steering wheel"
+      ],
+      "actions": [
+        "Check that you are above the minimum speed and that the brake lights work.",
+        "Clean the front radar area and the windscreen camera area.",
+        "Note any warning lights; fix those faults first."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes; drive without it until it's fixed. If the brake lights are also out, have that fixed before driving."
+    },
+    {
+      "id": "exterior_lights_bulbs",
+      "title": "Brake lights, turn signals, fog lights or one headlight not working",
+      "category": "electrical",
+      "system": "lighting",
+      "component": "bulbs and lamps",
+      "keywords": [
+        "brake lights not working",
+        "brake light out",
+        "turn signal blinking fast",
+        "indicator blinking fast",
+        "signal light fast",
+        "hyperflash",
+        "turn signal not working",
+        "fog lights not working",
+        "one headlight out",
+        "headlight not working",
+        "tail light out",
+        "patay ang signal light",
+        "mabilis ang kurap ng signal",
+        "patay ang brake light"
+      ],
+      "overview": "A turn signal that blinks much faster than normal almost always means a bulb on that side has failed. Brake lights that don't work at all point to the brake-light switch or its fuse, while one brake light, tail light, fog light or headlight out on its own is usually the bulb.",
+      "possible_causes": [
+        "a failed bulb (one lamp, or a fast-blinking signal on that side)",
+        "a faulty brake-light switch (all brake lights)",
+        "a blown fuse or relay",
+        "a corroded bulb holder or connector",
+        "a fog-light switch that is off or a blown fog-light fuse"
+      ],
+      "symptoms": [
+        "Brake lights, turn signals, fog lights or one headlight not working."
+      ],
+      "checks": [
+        "Walk around the car with the lights, signals and hazard lights on, and ask someone to press the brake.",
+        "A fast-blinking signal: check the bulbs front and rear on that side, including the side repeater.",
+        "If all brake lights are out, check the brake-light fuse and switch."
+      ],
+      "urgency": "Fix brake lights and turn signals promptly: other drivers rely on them and they are a common reason to be stopped.",
+      "needed_information": [
+        "Which lights are out, and whether a turn signal blinks fast."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A turn signal that blinks much faster than normal almost always means a bulb on that side has failed. Brake lights that don't work at all point to the brake-light switch or its fuse, while one brake light, tail light, fog light or headlight out on its own is usually the bulb.",
+      "key_causes": [
+        "a failed bulb (one lamp, or a fast-blinking signal on that side)",
+        "a faulty brake-light switch (all brake lights)",
+        "a blown fuse or relay",
+        "a corroded bulb holder or connector",
+        "a fog-light switch that is off or a blown fog-light fuse"
+      ],
+      "actions": [
+        "Walk around the car with the lights, signals and hazard lights on, and ask someone to press the brake.",
+        "A fast-blinking signal: check the bulbs front and rear on that side, including the side repeater.",
+        "If all brake lights are out, check the brake-light fuse and switch."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Not without brake lights. With a turn signal out, avoid lane changes until it's fixed; with one headlight out, replace the bulb before driving at night."
+    },
+    {
+      "id": "windows_fogging",
+      "title": "Windows fogging up or defogger not working",
+      "category": "hvac",
+      "system": "climate control",
+      "component": "defrost and defogger",
+      "keywords": [
+        "windows fogging up",
+        "windshield fogging up",
+        "windscreen fogs up",
+        "foggy windows",
+        "how to defog windshield",
+        "defogger not working",
+        "rear defogger not working",
+        "can't see out the windshield",
+        "nag fofog ang salamin",
+        "malabo ang windshield"
+      ],
+      "overview": "Windows fog up when moist cabin air meets cold glass. The quickest fix is the air conditioning with the vents on the windscreen and fresh air from outside (recirculation off): the A/C dries the air. A rear defogger that doesn't clear the back window usually has a broken heating line, a blown fuse or a failed relay.",
+      "possible_causes": [
+        "humid air with recirculation left on",
+        "wet floor mats or a damp cabin",
+        "a dirty inside of the windscreen",
+        "a clogged cabin air filter",
+        "a broken rear-defogger grid line, fuse or relay"
+      ],
+      "symptoms": [
+        "Windows fogging up or defogger not working."
+      ],
+      "checks": [
+        "Turn on the A/C, set the vents to the windscreen, switch recirculation off, and raise the fan speed.",
+        "Clean the inside of the glass; dirt holds moisture.",
+        "Dry wet floor mats, and check the cabin filter if it fogs up every time."
+      ],
+      "urgency": "Clear the glass before driving; not being able to see is dangerous.",
+      "needed_information": [
+        "Whether it is the windscreen or the rear window, and whether the A/C works."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "Windows fog up when moist cabin air meets cold glass. The quickest fix is the air conditioning with the vents on the windscreen and fresh air from outside (recirculation off): the A/C dries the air. A rear defogger that doesn't clear the back window usually has a broken heating line, a blown fuse or a failed relay.",
+      "key_causes": [
+        "humid air with recirculation left on",
+        "wet floor mats or a damp cabin",
+        "a dirty inside of the windscreen",
+        "a clogged cabin air filter",
+        "a broken rear-defogger grid line, fuse or relay"
+      ],
+      "actions": [
+        "Turn on the A/C, set the vents to the windscreen, switch recirculation off, and raise the fan speed.",
+        "Clean the inside of the glass; dirt holds moisture.",
+        "Dry wet floor mats, and check the cabin filter if it fogs up every time."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Only once you can see clearly through the windscreen. Pull over if it fogs up while driving."
+    },
+    {
+      "id": "turbo_problems",
+      "title": "Turbocharger problems: loss of boost, whistling or smoke",
+      "category": "engine",
+      "system": "engine",
+      "component": "turbocharger",
+      "keywords": [
+        "turbo not working",
+        "turbo problem",
+        "loss of boost",
+        "no boost",
+        "turbo whistling",
+        "turbo whining",
+        "turbo lag",
+        "turbo blue smoke",
+        "turbo failure",
+        "turbo diesel no power",
+        "mahina ang hatak ng turbo"
+      ],
+      "overview": "A turbo problem usually shows as a sudden loss of power (often with the engine light and limp mode), a loud whistle or siren-like whine, or blue-grey smoke from oil getting past worn turbo seals. A split boost hose or a stuck control valve is more common than the turbo itself failing.",
+      "possible_causes": [
+        "a split or loose boost hose or intercooler pipe",
+        "a stuck wastegate or boost control valve",
+        "a clogged diesel particulate filter or air filter",
+        "worn turbo bearings or seals (whine, oil smoke)",
+        "oil starvation from old or low oil"
+      ],
+      "symptoms": [
+        "Turbocharger problems: loss of boost, whistling or smoke."
+      ],
+      "checks": [
+        "Check the oil level, and look for oil around the turbo pipes.",
+        "Listen for a hiss under load, which points to a leaking hose.",
+        "Have the codes read if the engine light is on."
+      ],
+      "urgency": "Have it checked soon; a turbo running short of oil can fail completely and send debris into the engine.",
+      "needed_information": [
+        "Whether there is smoke and what colour, a new noise, and whether the engine light or limp mode is on."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A turbo problem usually shows as a sudden loss of power (often with the engine light and limp mode), a loud whistle or siren-like whine, or blue-grey smoke from oil getting past worn turbo seals. A split boost hose or a stuck control valve is more common than the turbo itself failing.",
+      "key_causes": [
+        "a split or loose boost hose or intercooler pipe",
+        "a stuck wastegate or boost control valve",
+        "a clogged diesel particulate filter or air filter",
+        "worn turbo bearings or seals (whine, oil smoke)",
+        "oil starvation from old or low oil"
+      ],
+      "actions": [
+        "Check the oil level, and look for oil around the turbo pipes.",
+        "Listen for a hiss under load, which points to a leaking hose.",
+        "Have the codes read if the engine light is on."
+      ],
+      "stop": "Stop if the engine starts revving on its own or there is heavy smoke: a failed turbo can let the engine run on its own oil.",
+      "professional": null,
+      "drive_safety": "Gently and a short distance if there is no smoke. Stop if there is heavy blue smoke or a loud metallic noise."
+    },
+    {
+      "id": "four_wheel_drive",
+      "title": "4WD and AWD: modes, warning light and binding",
+      "category": "transmission_drivetrain",
+      "system": "drivetrain",
+      "component": "4WD and AWD",
+      "keywords": [
+        "4wd not working",
+        "4x4 not working",
+        "4wd light flashing",
+        "awd light",
+        "four wheel drive not engaging",
+        "4h",
+        "4l",
+        "2h",
+        "when to use 4wd",
+        "4wd on the highway",
+        "4wd tight turns",
+        "how to use four wheel drive"
+      ],
+      "overview": "Part-time 4WD (common on pickups and SUVs) is for loose or slippery surfaces only: using it on dry pavement makes the drivetrain bind and hop on tight turns and can damage it. Use 2H normally, 4H on mud, gravel or sand at road speeds, and 4L only for slow, steep or deep going. A flashing 4WD light usually means the shift hasn't finished.",
+      "possible_causes": [
+        "using part-time 4WD on dry pavement (binding on turns)",
+        "shifting into 4L while moving",
+        "a stuck shift motor or actuator",
+        "worn hub locks",
+        "a sensor fault that keeps the 4WD light flashing"
+      ],
+      "symptoms": [
+        "4WD and AWD: modes, warning light and binding."
+      ],
+      "checks": [
+        "Switch back to 2H on dry roads.",
+        "Shift into or out of 4L only when stopped, with the transmission in Neutral (or as the manual says).",
+        "If the light keeps flashing, drive slowly straight ahead a short way so the shift can finish."
+      ],
+      "urgency": "Have a 4WD fault checked before relying on it off-road.",
+      "needed_information": [
+        "Which mode it is in, the surface, and whether the light is steady or flashing."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "Part-time 4WD (common on pickups and SUVs) is for loose or slippery surfaces only: using it on dry pavement makes the drivetrain bind and hop on tight turns and can damage it. Use 2H normally, 4H on mud, gravel or sand at road speeds, and 4L only for slow, steep or deep going. A flashing 4WD light usually means the shift hasn't finished.",
+      "key_causes": [
+        "using part-time 4WD on dry pavement (binding on turns)",
+        "shifting into 4L while moving",
+        "a stuck shift motor or actuator",
+        "worn hub locks",
+        "a sensor fault that keeps the 4WD light flashing"
+      ],
+      "actions": [
+        "Switch back to 2H on dry roads.",
+        "Shift into or out of 4L only when stopped, with the transmission in Neutral (or as the manual says).",
+        "If the light keeps flashing, drive slowly straight ahead a short way so the shift can finish."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes in 2H. Don't use part-time 4WD on dry roads."
+    },
+    {
+      "id": "seatbelt_problems",
+      "title": "Seat belt not retracting, latching or locking",
+      "category": "safety_systems",
+      "system": "restraints",
+      "component": "seat belts",
+      "keywords": [
+        "seat belt not retracting",
+        "seatbelt won't retract",
+        "seat belt stuck",
+        "seat belt won't latch",
+        "seatbelt won't buckle",
+        "seat belt locked",
+        "seatbelt won't pull out",
+        "ayaw bumalik ng seatbelt"
+      ],
+      "overview": "A seat belt that won't retract or pull out is usually twisted, dirty or caught in the retractor; one that won't latch usually has something stuck in the buckle. A belt that won't latch or hold must be fixed before that seat is used.",
+      "possible_causes": [
+        "a twisted belt or one caught at the pillar guide",
+        "dirt or a sticky film on the webbing",
+        "a coin or debris in the buckle",
+        "the retractor locked after a sharp stop or with the belt pulled out too fast",
+        "a retractor or buckle damaged in a crash"
+      ],
+      "symptoms": [
+        "Seat belt not retracting, latching or locking."
+      ],
+      "checks": [
+        "Pull the belt out slowly all the way, untwist it, and let it back in slowly.",
+        "Check the buckle for debris.",
+        "If it locks, let it retract a little and pull again slowly."
+      ],
+      "urgency": "A belt that doesn't latch or hold is a safety defect: fix it before anyone uses that seat.",
+      "needed_information": [
+        "Whether it won't retract, won't pull out or won't latch."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A seat belt that won't retract or pull out is usually twisted, dirty or caught in the retractor; one that won't latch usually has something stuck in the buckle. A belt that won't latch or hold must be fixed before that seat is used.",
+      "key_causes": [
+        "a twisted belt or one caught at the pillar guide",
+        "dirt or a sticky film on the webbing",
+        "a coin or debris in the buckle",
+        "the retractor locked after a sharp stop or with the belt pulled out too fast",
+        "a retractor or buckle damaged in a crash"
+      ],
+      "actions": [
+        "Pull the belt out slowly all the way, untwist it, and let it back in slowly.",
+        "Check the buckle for debris.",
+        "If it locks, let it retract a little and pull again slowly."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Not with anyone in a seat whose belt won't latch or hold."
+    },
+    {
+      "id": "driving_heavy_rain",
+      "title": "Driving in heavy rain and hydroplaning (aquaplaning)",
+      "category": "safety",
+      "system": "driving",
+      "component": "wet-road driving",
+      "keywords": [
+        "driving in heavy rain",
+        "driving in the rain",
+        "hydroplaning",
+        "aquaplaning",
+        "car skids on wet road",
+        "tires slipping on wet road",
+        "safe driving in rain",
+        "car floating on water",
+        "mabagyo magmaneho",
+        "magmaneho sa ulan"
+      ],
+      "overview": "In heavy rain, slow down, double the gap to the car ahead and turn on your headlights. If the car hydroplanes, the steering suddenly feels light because the tyres are riding on water: ease off the accelerator, hold the wheel straight and don't brake hard or jerk the steering until the tyres grip again.",
+      "possible_causes": [
+        "speed too high for the water on the road",
+        "worn tyres with shallow tread",
+        "under-inflated tyres",
+        "standing water and ruts"
+      ],
+      "symptoms": [
+        "Driving in heavy rain and hydroplaning (aquaplaning)."
+      ],
+      "checks": [
+        "Slow down before puddles and standing water.",
+        "Check that tyre tread is deep enough and pressures are correct.",
+        "Use headlights, not hazard lights, while moving; keep hazards for when you are stopped."
+      ],
+      "urgency": "If you can't see the road or the water is deep, pull over somewhere safe and wait.",
+      "needed_information": [
+        "Whether the car slid, how deep the water is, and the tyre condition."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "In heavy rain, slow down, double the gap to the car ahead and turn on your headlights. If the car hydroplanes, the steering suddenly feels light because the tyres are riding on water: ease off the accelerator, hold the wheel straight and don't brake hard or jerk the steering until the tyres grip again.",
+      "key_causes": [
+        "speed too high for the water on the road",
+        "worn tyres with shallow tread",
+        "under-inflated tyres",
+        "standing water and ruts"
+      ],
+      "actions": [
+        "Slow down before puddles and standing water.",
+        "Check that tyre tread is deep enough and pressures are correct.",
+        "Use headlights, not hazard lights, while moving; keep hazards for when you are stopped."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Slowly, with headlights on. Don't drive into floodwater whose depth you can't see (see car driven through deep water)."
+    },
+    {
+      "id": "emergency_kit_early_warning",
+      "title": "Early warning device and roadside emergency kit",
+      "category": "safety",
+      "system": "driving",
+      "component": "emergency equipment",
+      "keywords": [
+        "early warning device",
+        "ewd",
+        "warning triangle",
+        "reflective triangle",
+        "emergency kit",
+        "what to keep in the car",
+        "roadside emergency kit",
+        "what to do if the car breaks down on the road",
+        "car breakdown on highway"
+      ],
+      "overview": "Philippine traffic rules require an early warning device: a reflective triangle placed behind the car when it stops on the road. Keep it with a working spare tyre, jack and wrench, a flashlight, a basic first-aid kit and the roadside or rental contact number.",
+      "possible_causes": [
+        "no warning triangle in the car",
+        "a flat spare tyre",
+        "a missing jack or wheel wrench"
+      ],
+      "symptoms": [
+        "Early warning device and roadside emergency kit."
+      ],
+      "checks": [
+        "If you stop on the road, turn on the hazard lights, get everyone out on the side away from traffic where safe, and place the triangle well behind the car.",
+        "Check the spare tyre's pressure, the jack and the triangle before a long trip."
+      ],
+      "urgency": "Check the kit before any long trip.",
+      "needed_information": [
+        "Where the car is stopped, and whether anyone is hurt."
+      ],
+      "safety_critical": true,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "Philippine traffic rules require an early warning device: a reflective triangle placed behind the car when it stops on the road. Keep it with a working spare tyre, jack and wrench, a flashlight, a basic first-aid kit and the roadside or rental contact number.",
+      "key_causes": [
+        "no warning triangle in the car",
+        "a flat spare tyre",
+        "a missing jack or wheel wrench"
+      ],
+      "actions": [
+        "If you stop on the road, turn on the hazard lights, get everyone out on the side away from traffic where safe, and place the triangle well behind the car.",
+        "Check the spare tyre's pressure, the jack and the triangle before a long trip."
+      ],
+      "stop": "On an expressway, stand behind the barrier if there is one and call for help; don't stand between the car and traffic.",
+      "professional": null,
+      "drive_safety": "Not applicable; this is what to carry and do when stopped."
+    },
+    {
+      "id": "car_unused_long_time",
+      "title": "Car not used for weeks or months",
+      "category": "maintenance",
+      "system": "general",
+      "component": "storage and restart",
+      "keywords": [
+        "car not used for weeks",
+        "car not used for months",
+        "car sitting for a long time",
+        "car parked for a long time",
+        "car in storage",
+        "starting a car after long storage",
+        "car not driven for a month",
+        "matagal hindi nagamit ang sasakyan"
+      ],
+      "overview": "A car left unused for weeks most often has a flat battery, tyres that lost pressure, brake discs with surface rust that grinds for the first stops, and sometimes damage from rats chewing wiring. Check these before driving off.",
+      "possible_causes": [
+        "the battery slowly draining",
+        "tyres losing air",
+        "surface rust on the brake discs",
+        "rodents chewing wiring or nesting in the air filter",
+        "old fuel (after many months)"
+      ],
+      "symptoms": [
+        "Car not used for weeks or months."
+      ],
+      "checks": [
+        "Check tyre pressures and look under the bonnet for nests or chewed wires.",
+        "If it doesn't start, charge or jump-start the battery.",
+        "Drive gently for the first kilometres; a light grinding from the brakes should go after a few stops."
+      ],
+      "urgency": "Do the checks before the first drive.",
+      "needed_information": [
+        "How long it has been parked, whether it starts, and any warning lights."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A car left unused for weeks most often has a flat battery, tyres that lost pressure, brake discs with surface rust that grinds for the first stops, and sometimes damage from rats chewing wiring. Check these before driving off.",
+      "key_causes": [
+        "the battery slowly draining",
+        "tyres losing air",
+        "surface rust on the brake discs",
+        "rodents chewing wiring or nesting in the air filter",
+        "old fuel (after many months)"
+      ],
+      "actions": [
+        "Check tyre pressures and look under the bonnet for nests or chewed wires.",
+        "If it doesn't start, charge or jump-start the battery.",
+        "Drive gently for the first kilometres; a light grinding from the brakes should go after a few stops."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes once the checks pass; drive gently at first."
+    },
+    {
+      "id": "windshield_chip_crack",
+      "title": "Windscreen chip or crack",
+      "category": "body",
+      "system": "body",
+      "component": "windscreen",
+      "keywords": [
+        "windshield crack",
+        "windscreen crack",
+        "windshield chip",
+        "windscreen chip",
+        "crack in the windshield",
+        "stone chip on windshield",
+        "cracked windshield",
+        "may lamat ang windshield"
+      ],
+      "overview": "A small stone chip can usually be repaired cheaply if it is dealt with before it spreads; heat, cold air on hot glass and road bumps make chips grow into cracks. A crack in the driver's line of sight, or one longer than about a hand's width, normally needs a new windscreen.",
+      "possible_causes": [
+        "a stone thrown up by another vehicle",
+        "a chip spreading because of heat, A/C on hot glass or potholes"
+      ],
+      "symptoms": [
+        "Windscreen chip or crack."
+      ],
+      "checks": [
+        "Cover the chip with clear tape to keep dirt out until it is repaired.",
+        "Avoid blasting the A/C or defroster straight onto a chipped windscreen.",
+        "On a rental, report it to the rental team with a photo (see reporting damage to a rental vehicle)."
+      ],
+      "urgency": "Repair a chip soon, before it spreads; replace a cracked windscreen that blocks your view.",
+      "needed_information": [
+        "The size and position of the chip or crack."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Vehicle-specific owner's manual and service information",
+          "reference": "Procedures and limits are vehicle-specific; this entry gives general guidance only."
+        }
+      ],
+      "answer": "A small stone chip can usually be repaired cheaply if it is dealt with before it spreads; heat, cold air on hot glass and road bumps make chips grow into cracks. A crack in the driver's line of sight, or one longer than about a hand's width, normally needs a new windscreen.",
+      "key_causes": [
+        "a stone thrown up by another vehicle",
+        "a chip spreading because of heat, A/C on hot glass or potholes"
+      ],
+      "actions": [
+        "Cover the chip with clear tape to keep dirt out until it is repaired.",
+        "Avoid blasting the A/C or defroster straight onto a chipped windscreen.",
+        "On a rental, report it to the rental team with a photo (see reporting damage to a rental vehicle)."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": "Yes with a small chip outside your line of sight. Not if a crack blocks your view or the glass is badly damaged."
+    },
+    {
+      "id": "number_coding_ph",
+      "title": "Number coding (UVVRP) in Metro Manila",
+      "category": "rental_operations",
+      "system": "driving",
+      "component": "traffic rules",
+      "keywords": [
+        "number coding",
+        "coding",
+        "uvvrp",
+        "is my car coding today",
+        "coding scheme",
+        "plate number coding",
+        "anong coding ngayon",
+        "coding ba ako",
+        "number coding schedule"
+      ],
+      "overview": "Metro Manila's number coding (UVVRP) keeps cars off main roads on one weekday by the last digit of the plate: 1 and 2 on Monday, 3 and 4 on Tuesday, 5 and 6 on Wednesday, 7 and 8 on Thursday, and 9 and 0 on Friday. Hours, window exemptions and which roads and cities enforce it are set by the MMDA and local governments and change, so check the current rules before driving.",
+      "possible_causes": [
+        "driving on the plate's coding day during coding hours"
+      ],
+      "symptoms": [
+        "Number coding (UVVRP) in Metro Manila."
+      ],
+      "checks": [
+        "Check the last digit of the rental car's plate number (it is on your reservation).",
+        "Check the MMDA's and the city's current coding hours and exemptions before the trip."
+      ],
+      "urgency": "Check before every weekday trip in Metro Manila.",
+      "needed_information": [
+        "The plate's last digit, the day, and the city you are driving in."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Metropolitan Manila Development Authority (MMDA) Unified Vehicular Volume Reduction Program",
+          "reference": "The coding days by plate ending; hours and exemptions are set by the MMDA and local governments and change."
+        }
+      ],
+      "answer": "Metro Manila's number coding (UVVRP) keeps cars off main roads on one weekday by the last digit of the plate: 1 and 2 on Monday, 3 and 4 on Tuesday, 5 and 6 on Wednesday, 7 and 8 on Thursday, and 9 and 0 on Friday. Hours, window exemptions and which roads and cities enforce it are set by the MMDA and local governments and change, so check the current rules before driving.",
+      "key_causes": [
+        "driving on the plate's coding day during coding hours"
+      ],
+      "actions": [
+        "Check the last digit of the rental car's plate number (it is on your reservation).",
+        "Check the MMDA's and the city's current coding hours and exemptions before the trip."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": null
+    },
+    {
+      "id": "toll_rfid_ph",
+      "title": "Toll RFID: Autosweep and Easytrip",
+      "category": "rental_operations",
+      "system": "driving",
+      "component": "expressway tolls",
+      "keywords": [
+        "rfid",
+        "autosweep",
+        "easytrip",
+        "toll rfid",
+        "toll fee",
+        "toll gate",
+        "expressway toll",
+        "nlex toll",
+        "slex toll",
+        "skyway toll",
+        "may rfid ba",
+        "load rfid",
+        "rfid balance"
+      ],
+      "overview": "Philippine expressways collect tolls by RFID stickers, and there are two systems: Autosweep (SLEX, Skyway, STAR, TPLEX and NAIAX) and Easytrip (NLEX, SCTEX, CAVITEX and CALAX). The car needs the right sticker for the expressway, with enough load, before reaching the gate.",
+      "possible_causes": [
+        "no RFID sticker for that expressway",
+        "not enough load on the RFID account"
+      ],
+      "symptoms": [
+        "Toll RFID: Autosweep and Easytrip."
+      ],
+      "checks": [
+        "Check which expressways the trip uses and whether the car has the matching sticker.",
+        "Top up the RFID account before the trip."
+      ],
+      "urgency": "Sort it out before the trip; driving through without a valid RFID can mean a fine.",
+      "needed_information": [
+        "Which expressways the trip uses."
+      ],
+      "safety_critical": false,
+      "sources": [
+        {
+          "name": "Toll Regulatory Board and expressway operators (San Miguel Autosweep, Metro Pacific Easytrip)",
+          "reference": "Which expressways use each RFID system."
+        }
+      ],
+      "answer": "Philippine expressways collect tolls by RFID stickers, and there are two systems: Autosweep (SLEX, Skyway, STAR, TPLEX and NAIAX) and Easytrip (NLEX, SCTEX, CAVITEX and CALAX). The car needs the right sticker for the expressway, with enough load, before reaching the gate.",
+      "key_causes": [
+        "no RFID sticker for that expressway",
+        "not enough load on the RFID account"
+      ],
+      "actions": [
+        "Check which expressways the trip uses and whether the car has the matching sticker.",
+        "Top up the RFID account before the trip."
+      ],
+      "stop": null,
+      "professional": null,
+      "drive_safety": null
     }
   ]
 }
