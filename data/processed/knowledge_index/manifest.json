@@ -1,15 +1,15 @@
 {
-  "built_at": "2026-11-14T12:50:10.119106+00:00",
-  "chunk_count": 9939,
+  "built_at": "2026-11-16T09:26:49.258179+00:00",
+  "chunk_count": 9958,
   "chunks_by_source": {
     "obdex": 9665,
-    "automotive_knowledge": 141,
+    "automotive_knowledge": 160,
     "automotive_fault_flowcharts": 99,
     "system_guide": 20,
     "vehicle_service_records": 14
   },
   "chunks_by_trust": {
-    "verified_reference": 9806,
+    "verified_reference": 9825,
     "unverified_reference": 99,
     "system_documentation": 20,
     "derived_from_records": 14
@@ -21,8 +21,21 @@
     "rows_rejected_invalid_part_number": 9,
     "source": "masterparts.xlsx"
   },
-  "chunks_sha256": "894ce503053b6c998e181e9b1d824dd18e6692d4e1250bba68ac2af1f10fc326",
-  "index_sha256": "32608953456e8e6a1321d4b396f1c3942f154815ece5a42da3d6b1df696879da",
+  "chunks_sha256": "b6a86352e5fd8794703df686a76bf88274c3e5ef6599da1d44307ef18b043ee5",
+  "index_sha256": "5463c116f88d7841becc9b1e47ae58c2edbd3f4d20cec67ed8200b387e394f9b",
+  "semantic_vectors_sha256": "ce5ed953450c36e5b1b7b708aff32387bc4fb7a72235fb11a3ff47439a82d0d6",
+  "semantic_embeddings": {
+    "model_id": "intfloat/multilingual-e5-small",
+    "model_revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "model_url": "https://huggingface.co/intfloat/multilingual-e5-small/tree/614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "backend": "onnx",
+    "onnx_model_file": "onnx/model_qint8_avx512_vnni.onnx",
+    "dimensions": 384,
+    "count": 9958,
+    "max_sequence_length": 384,
+    "normalized": true,
+    "license": "MIT"
+  },
   "not_indexed": {
     "cvffad": "generated records (source='generated'); Chinese commercial-fleet content",
     "vehicle_diagnostic_sample": "generated diagnostics with random measurements",
