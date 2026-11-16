@@ -173,7 +173,7 @@ Evaluation set `data\evaluation\chatbot_eval_v2.json`: 220 author-written cases 
 | Pass rate | 0.9915 | 0.1532 |
 | Critical cases | 1.0 | 0.2 |
 | Permission leaks | 0/27 | 1/27 |
-| Latency p50/p95 ms | 469.9/1136.8 | 155.0/521.7 |
+| Latency p50/p95 ms | 564.8/985.0 | 77.1/363.1 |
 
 Retrieval on labelled cases: recall@3 0.9655, precision@3 0.4138, MRR 1.0.
 
