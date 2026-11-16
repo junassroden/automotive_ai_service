@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import math
 import re
 from functools import lru_cache
@@ -9,6 +10,7 @@ from django.conf import settings
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
+logger = logging.getLogger(__name__)
 MINIMUM_RETRIEVAL_SCORE = 0.12
 # Function words that say nothing about the topic; they don't count when checking how much of a question matched.
 COVERAGE_FILLER = {"did", "going", "goes", "went", "up", "down", "get", "gets", "getting", "got", "keeps", "really", "very", "just", "still",
@@ -28,8 +30,8 @@ CLEARLY_BETTER_COVERAGE = 0.5
 NAMED_TOPIC_RATIO = 0.7
 NAMED_TOPIC_COVERAGE = 0.75
 NAMED_TOPIC_GAIN = 0.25
-# One specific word in common is enough only with a reasonable retrieval score ("wheel" alone in a lug-nut torque question is not).
-MIN_SINGLE_TERM_SCORE = 0.15
+SEMANTIC_ONLY_MIN_SIMILARITY = 0.84
+SEMANTIC_SINGLE_TERM_MIN_SIMILARITY = 0.84
 # Words that ask about a topic without naming one.
 QUESTION_ONLY_TERMS = {"cause", "causes", "caused", "causing", "reason", "reasons", "happen", "happens", "happening", "mean", "means",
                        "serious", "safe", "fix", "fixed", "repair", "cost", "costs", "wrong", "else", "more", "bad", "dangerous",
@@ -50,6 +52,7 @@ QUERY_STOP_WORDS = {
     "maintenance", "problem", "issue", "symptom", "fault", "part",
     "component", "system", "check", "inspect", "need", "first",
     "make", "weather", "traffic", "last", "bulletin", "vin", "explain",
+    "include", "included", "includes", "including",
 }
 
 
@@ -82,6 +85,11 @@ def _term_variants(term):
 @lru_cache(maxsize=262144)
 def _terms_match(left, right):
     return not _term_variants(left).isdisjoint(_term_variants(right))
+
+
+def _phrase_terms_match(left, right):
+    # Phrase matching permits plurals without conflating distinct forms such as "brakes" and "braking".
+    return left == right or (left.endswith("s") and left[:-1] == right) or (right.endswith("s") and right[:-1] == left)
 
 
 def _document_passages(document):
@@ -209,6 +217,17 @@ def rank_knowledge(query):
         character_vectors,
     ) = _load_index()
     query = query.strip()
+    from .rag import KnowledgeIndexUnavailable, retrieve
+    try:
+        semantic_results = retrieve(query, top_k=50, source_types={"curated_reference"})
+    except KnowledgeIndexUnavailable as error:
+        logger.warning("semantic retrieval unavailable; using curated lexical matching: %s", error)
+        semantic_results = []
+    semantic_by_id = {
+        result["id"][3:]: result["semantic_similarity"]
+        for result in semantic_results
+        if result["semantic_similarity"] is not None
+    }
     query_terms = [
         term for term in _normalize(query).split()
         if term not in QUERY_STOP_WORDS
@@ -252,8 +271,8 @@ def rank_knowledge(query):
             keyword_length = len(keyword_words)
             if normalized_keyword in normalized_query:
                 weight = 1.0
-            elif keyword_length >= 3 and all(
-                any(_terms_match(word, term) for term in query_words) for word in keyword_words
+            elif keyword_length >= 2 and all(
+                any(_phrase_terms_match(word, term) for term in query_words) for word in keyword_words
             ):
                 # Every word of the keyword in another order ("check engine light is blinking"); on equal
                 # scores the longer, more specific keyword wins (see the sort below).
@@ -285,12 +304,18 @@ def rank_knowledge(query):
             + 0.35 * float(character_scores[index])
         )
         lexical_score = max(phrase_score * 0.9, keyword_coverage * 0.48)
-        score = max(vector_score, lexical_score)
+        semantic_score = semantic_by_id.get(document["id"], 0.0)
+        if semantic_by_id:
+            semantic_weight = 0.5 if phrase_length else 0.8
+            score = (1 - semantic_weight) * max(vector_score, lexical_score) + semantic_weight * semantic_score
+        else:
+            score = max(vector_score, lexical_score)
         ranked.append({
             "document": document,
             "field": passage["field"],
             "text": passage["text"],
             "score": round(score, 4),
+            "semantic_similarity": round(semantic_score, 4),
             "phrase_length": phrase_length,
             "topic_coverage": topic_coverage(document_index),
         })
@@ -298,7 +323,12 @@ def rank_knowledge(query):
     # On equal scores the document whose keyword phrase matched more of the question wins
     # ("white smoke from exhaust" over "smoke from exhaust"), then the one whose keywords and title
     # name more of the question's words ("leaking oil": the oil-leak topic over overheating).
-    ranked.sort(key=lambda item: (item["score"], item["phrase_length"], item["topic_coverage"]), reverse=True)
+    ranked.sort(
+        key=lambda item: (
+            item["score"], item["phrase_length"], item["semantic_similarity"], item["topic_coverage"]
+        ),
+        reverse=True,
+    )
     return ranked
 
 
@@ -320,9 +350,15 @@ def retrieve_knowledge(
     # clearly more of the question, wins (a document can score well only because its safety note mentions
     # another topic: "the red oil pressure light came on" vs. the oil-level entry).
     near = [item for item in ranked if item["score"] >= ranked[0]["score"] * NEAR_TIE_RATIO]
-    preferred = max(near, key=lambda item: (item["phrase_length"], item["topic_coverage"], item["score"]))
+    preferred = max(
+        near,
+        key=lambda item: (
+            item["phrase_length"], item["semantic_similarity"], item["topic_coverage"], item["score"]
+        ),
+    )
     if preferred["phrase_length"] > ranked[0]["phrase_length"] or (
             preferred["phrase_length"] == ranked[0]["phrase_length"]
+            and preferred["semantic_similarity"] >= ranked[0]["semantic_similarity"]
             and preferred["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE):
         ranked = [preferred] + [item for item in ranked if item is not preferred]
     elif ranked[0]["phrase_length"] == 0:
@@ -330,8 +366,11 @@ def retrieve_knowledge(
         # also wins from a little further back ("I smell gas in my car": the fuel-leak entry over a rotten-egg
         # smell entry that shares only "smell").
         wider = [item for item in ranked if item["score"] >= ranked[0]["score"] * COVERAGE_TIE_RATIO]
-        covering = max(wider, key=lambda item: (item["topic_coverage"], item["score"]))
-        if covering["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE:
+        covering = max(
+            wider, key=lambda item: (item["semantic_similarity"], item["topic_coverage"], item["score"])
+        )
+        if (covering["semantic_similarity"] >= ranked[0]["semantic_similarity"]
+                and covering["topic_coverage"] >= ranked[0]["topic_coverage"] + CLEARLY_BETTER_COVERAGE):
             ranked = [covering] + [item for item in ranked if item is not covering]
         else:
             # A topic whose own name covers most of the question beats one that only shares words in passing
@@ -339,8 +378,13 @@ def retrieve_knowledge(
             # whose overview happens to mention safe driving and overheating brakes).
             named = [item for item in ranked if item["score"] >= ranked[0]["score"] * NAMED_TOPIC_RATIO
                      and item["topic_coverage"] >= NAMED_TOPIC_COVERAGE]
-            best = max(named, key=lambda item: (item["topic_coverage"], item["score"]), default=None)
-            if best is not None and best["topic_coverage"] >= ranked[0]["topic_coverage"] + NAMED_TOPIC_GAIN:
+            best = max(
+                named, key=lambda item: (item["semantic_similarity"], item["topic_coverage"], item["score"]),
+                default=None,
+            )
+            if (best is not None
+                    and best["semantic_similarity"] >= ranked[0]["semantic_similarity"]
+                    and best["topic_coverage"] >= ranked[0]["topic_coverage"] + NAMED_TOPIC_GAIN):
                 ranked = [best] + [item for item in ranked if item is not best]
     query_terms = [
         term for term in _normalize(query).split()
@@ -363,7 +407,7 @@ def retrieve_knowledge(
         return matching
 
     primary = ranked[0]["document"]
-    if not matching_terms(primary):
+    if not matching_terms(primary) and ranked[0]["semantic_similarity"] < SEMANTIC_ONLY_MIN_SIMILARITY:
         return None
     if ranked[0]["phrase_length"] == 0:
         # Without a keyword phrase, one stray word in common ("who won the NBA finals" / "won't start")
@@ -371,7 +415,9 @@ def retrieve_knowledge(
         # Without a keyword phrase, at least one matched word must be specific to cars: generic words
         # ("not working", "won't go", "smells like", "no symptoms", "open safety recall") don't identify a topic.
         specific_matches = matching_terms(primary) - SYMPTOM_FILLER - COVERAGE_FILLER - GENERIC_ENGLISH
-        if not specific_matches or (len(specific_matches) == 1 and ranked[0]["score"] < MIN_SINGLE_TERM_SCORE):
+        if not specific_matches and ranked[0]["semantic_similarity"] < SEMANTIC_ONLY_MIN_SIMILARITY:
+            return None
+        if len(specific_matches) == 1 and ranked[0]["semantic_similarity"] < SEMANTIC_SINGLE_TERM_MIN_SIMILARITY:
             return None
     top_score = ranked[0]["score"]
     score_floor = max(minimum_score, top_score * RELATED_PASSAGE_SCORE_RATIO)
@@ -666,7 +712,7 @@ KIND_WEIGHTS = {
     "function": {"function": 2.6, "explain": 1.6},
     "interval": {"interval": 3.0, "explain": 0.6, "check": 0.8},
     "advice": {"explain": 1.6, "interval": 1.6, "check": 1.4, "function": 1.2},
-    "action": {"check": 2.0, "workshop": 1.3, "safety": 1.3, "clue": 1.0},
+    "action": {"check": 2.0, "workshop": 1.3, "safety": 1.3, "explain": 2.0, "clue": 1.0},
     "cause": {"cause": 2.0, "clue": 1.6, "explain": 1.2},
     "problem": {"explain": 1.5, "cause": 1.5, "clue": 1.4, "check": 1.2, "safety": 1.1},
 }
@@ -678,7 +724,10 @@ CONDITIONAL_WITHOUT_DETAIL = 0.2
 # A word in at most this share of the topic's statements is specific enough to pick out a condition.
 SPECIFIC_TERM_SHARE = 0.25
 # Fields written for technicians or as background count for less than plain advice to a driver.
-FIELD_WEIGHTS = {"answer": 1.3, "checks": 0.75, "diagnostic_steps": 0.5, "overview": 0.85, "possible_causes": 0.9}
+FIELD_WEIGHTS = {
+    "answer": 1.3, "checks": 0.75, "diagnostic_steps": 0.5, "overview": 0.85,
+    "possible_causes": 0.9, "triage": 1.15,
+}
 # Each further statement of a kind already in the answer counts this much less, so an answer covers what is
 # wrong, why and what to do rather than three ways of saying one of them.
 REPEATED_KIND_FACTOR = 0.55
@@ -688,7 +737,7 @@ KIND_LIMITS = {"safety": 1, "drive": 1, "cost": 1}
 READING_ORDER = ("drive", "explain", "function", "interval", "clue", "cause", "cost", "check", "workshop", "safety")
 MAX_STATEMENTS = 4
 # A follow-up adds to what was said, so it is shorter and only keeps what clearly answers it.
-FOLLOW_UP_STATEMENTS = 3
+FOLLOW_UP_STATEMENTS = 2
 FOLLOW_UP_SCORE_FLOOR = 0.45
 MAX_ANSWER_WORDS = 120
 # A statement much weaker than the best one doesn't answer the question.
@@ -705,6 +754,16 @@ STATEMENT_STOP = {
     "anymore", "though", "already", "go", "kasi", "din", "rin", "yung", "ito", "iyan", "lng", "pls",
 }
 NEGATION = re.compile(r"\b(?:not|no|never|cannot|without|hindi|ayaw|wala)\b|n'?t\b", re.IGNORECASE)
+QUESTION_KIND_DESCRIPTIONS = {
+    "drive": "The user asks whether it is safe to keep driving or operate the vehicle in this condition.",
+    "cost": "The user asks for an estimated price or cost to repair or maintain the vehicle.",
+    "function": "The user asks what a component does, how it works, or its purpose.",
+    "interval": "The user asks how often, when, or at what distance maintenance or replacement is due.",
+    "advice": "The user asks what is recommended, normal, correct, or best for the vehicle.",
+    "action": "The user asks what to do, how to fix, repair, inspect, or resolve the described vehicle problem.",
+    "cause": "The user asks why the problem happened or what may have caused the symptom.",
+    "problem": "The user describes or asks about a vehicle symptom without a more specific request.",
+}
 
 
 def has_chat_fields(document):
@@ -760,6 +819,8 @@ def question_kind(query):
     """What the question asks for: whether to drive, cost, what a part does, an interval, advice, what to do, why, or a problem."""
     if ASKS_DRIVE.search(query):
         return "drive"
+    if not isinstance(query, str) or not query.strip():
+        return "problem"
     if ASKS_PRICE.search(query) and not ASKS_INTERVAL.search(query):
         return "cost"
     if FUNCTION_QUESTION.search(query):
@@ -772,18 +833,48 @@ def question_kind(query):
         return "cause"
     if ASKS_ADVICE.search(query) or ASKS_DEFINITION.search(query):
         return "advice"
+    from .rag import KnowledgeIndexUnavailable, embed_texts
+    try:
+        labels, kind_vectors = _question_kind_vectors()
+        query_vector = embed_texts([query], "query")[0]
+        similarities = kind_vectors @ query_vector
+        best = int(similarities.argmax())
+        second = int(similarities.argsort()[-2])
+        if similarities[best] >= 0.48 and similarities[best] - similarities[second] >= 0.08:
+            return labels[best]
+    except KnowledgeIndexUnavailable as error:
+        logger.warning("semantic question analysis unavailable; using lexical question-kind checks: %s", error)
     return "problem"
+
+
+@lru_cache(maxsize=1)
+def _question_kind_vectors():
+    from .rag import embed_texts
+    labels = tuple(QUESTION_KIND_DESCRIPTIONS)
+    return labels, embed_texts([QUESTION_KIND_DESCRIPTIONS[label] for label in labels], "passage")
+
+
+@lru_cache(maxsize=256)
+def _statement_vectors(document_id):
+    document = knowledge_document(document_id)
+    if document is None:
+        return (), None
+    statements = knowledge_statements(document)
+    from .rag import embed_texts
+    return tuple(statement["key"] for statement in statements), embed_texts(
+        [statement["text"] for statement in statements], "passage",
+    )
 
 
 def _matches(term, statement):
     return any(_terms_match(term, word) for word in statement["terms"])
 
 
-def rank_statements(statements, query, kind=None, context="", exclude=(), topic_words=()):
+def rank_statements(statements, query, kind=None, context="", exclude=(), topic_words=(), semantic_scores=None):
     """(score, statement) pairs that share words with the question, best first.
 
     A word counts more the fewer statements share it ("traffic" says more than "engine" in the overheating
-    entry), words from the earlier question count less than the new message's, and a question that says
+    entry), words from the resolved topic context count less than the new message's, and a question that says
     something is not happening prefers statements about things not happening ("the fan doesn't spin")."""
     kind = kind or question_kind(query)
     terms = set(_content_terms(query))
@@ -806,6 +897,9 @@ def rank_statements(statements, query, kind=None, context="", exclude=(), topic_
             continue
         score = sum(weight[term] for term in terms if _matches(term, statement))
         score += 0.35 * sum(weight[term] for term in context_terms if _matches(term, statement))
+        semantic_score = (semantic_scores or {}).get(statement["key"], 0.0)
+        semantic_strength = max(0.0, (semantic_score - 0.25) / 0.45)
+        score += semantic_strength * suits.get(statement["kind"], OTHER_KIND_WEIGHT)
         if score <= 0:
             continue
         if negated and NEGATION.search(statement["text"]):
@@ -825,7 +919,7 @@ def _overlap(left, right):
     return len(left["terms"] & right["terms"]) / min(len(left["terms"]), len(right["terms"]))
 
 
-def _select(ranked, limit=MAX_STATEMENTS, floor=RELATIVE_SCORE_FLOOR):
+def _select(ranked, limit=MAX_STATEMENTS, floor=RELATIVE_SCORE_FLOOR, overlap_limit=0.6):
     """The best statements that say different things, within a readable length: each pick is the strongest
     remaining statement after discounting kinds the answer already has."""
     chosen, words, per_kind = [], 0, {}
@@ -834,7 +928,7 @@ def _select(ranked, limit=MAX_STATEMENTS, floor=RELATIVE_SCORE_FLOOR):
     while remaining and len(chosen) < limit:
         candidates = [(score * REPEATED_KIND_FACTOR ** per_kind.get(statement["kind"], 0), statement) for score, statement in remaining
                       if per_kind.get(statement["kind"], 0) < KIND_LIMITS.get(statement["kind"], 2)
-                      and not any(_overlap(statement, other) > 0.6 for other in chosen)
+                      and not any(_overlap(statement, other) > overlap_limit for other in chosen)
                       and (not chosen or words + len(statement["text"].split()) <= MAX_ANSWER_WORDS)]
         if not candidates:
             break
@@ -860,23 +954,39 @@ def _read(chosen, lead=None, safety_first=False):
     return "\n\n".join(" ".join(texts) for _, texts in paragraphs)
 
 
-def compose_chat_answer(document, query="", shown=(), context=""):
+def compose_chat_answer(document, query="", shown=(), context="", prior_kind=None):
     """(answer, keys of the statements used) for a question about this topic, built from its knowledge.
 
-    ``shown`` holds statements already given in this conversation, which are not repeated; ``context`` is the
-    earlier question, so a short follow-up ("in traffic", "what else?") is read in its light."""
+    ``shown`` holds statements already given in this conversation, which are not repeated; ``context`` contains
+    the resolved topic's knowledge terms, not stored user text."""
     query = query or ""
     statements = knowledge_statements(document)
     kind = question_kind(query)
+    if kind == "problem" and prior_kind in KIND_WEIGHTS:
+        kind = prior_kind
     exclude = set(shown or ())
     topic_words = frozenset(_content_terms(document.get("title", "")))
-    ranked = rank_statements(statements, query, kind, context, exclude, topic_words)
+    from .rag import KnowledgeIndexUnavailable, embed_texts
+    try:
+        contextual_query = " ".join(part for part in (query, context) if part)
+        query_vector = embed_texts([contextual_query], "query")[0]
+        statement_keys, statement_vectors = _statement_vectors(document["id"])
+        semantic_scores = dict(zip(statement_keys, statement_vectors @ query_vector))
+    except KnowledgeIndexUnavailable as error:
+        logger.warning("semantic statement ranking unavailable; using lexical statement ranking: %s", error)
+        semantic_scores = {}
+    ranked = rank_statements(statements, query, kind, context, exclude, topic_words, semantic_scores)
     if not ranked and context:
         # Nothing in the message itself to go on ("anything else?", "yes"): carry on with the earlier question.
-        ranked = rank_statements(statements, context, question_kind(context) if kind == "problem" else kind, "", exclude, topic_words)
+        ranked = rank_statements(
+            statements, context, question_kind(context) if kind == "problem" else kind, "",
+            exclude, topic_words, semantic_scores,
+        )
     if not ranked and not exclude:
         ranked = [(1.0, statement) for statement in statements if statement["kind"] == "explain"][:1]
-    chosen = _select(ranked, FOLLOW_UP_STATEMENTS, FOLLOW_UP_SCORE_FLOOR) if exclude else _select(ranked)
+    chosen = _select(
+        ranked, FOLLOW_UP_STATEMENTS, FOLLOW_UP_SCORE_FLOOR, overlap_limit=0.85,
+    ) if exclude else _select(ranked)
     if not chosen:
         return "", []
     stop = [statement for statement in statements if statement["field"] == "stop" and statement["key"] not in exclude]
@@ -889,10 +999,10 @@ def compose_chat_answer(document, query="", shown=(), context=""):
     return _read(chosen, lead, safety_first=bool(EMERGENCY.search(query))), [statement["key"] for statement in chosen]
 
 
-def compose_follow_up(document, message, shown=(), context=""):
+def compose_follow_up(document, message, shown=(), context="", prior_kind=None):
     """(answer, keys used) for a follow-up about the topic being discussed: what the knowledge says about the
     new message that hasn't been said yet, or None when the knowledge has nothing more on it."""
-    answer, keys = compose_chat_answer(document, message, shown, context)
+    answer, keys = compose_chat_answer(document, message, shown, context, prior_kind)
     if answer:
         return answer, keys
     return None
