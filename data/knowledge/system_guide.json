@@ -544,7 +544,7 @@
     },
     {
       "id": "sys_admin_reservations",
-      "title": "Approving and managing reservations (administrators)",
+      "title": "Managing reservations, handovers and returns (administrators)",
       "audience": "admin",
       "category": "booking_reservation",
       "keywords": [
@@ -564,7 +564,15 @@
         "mark as completed",
         "mark it completed",
         "complete a rental",
-        "how do i complete a reservation"
+        "how do i complete a reservation",
+        "record a vehicle return",
+        "how do i record a vehicle return",
+        "record the vehicle return",
+        "mark the vehicle returned",
+        "vehicle handover",
+        "hand over the car",
+        "check out the vehicle",
+        "how do i check out a vehicle"
       ],
       "text": "Administrators see reservations at Reservations (/admin/reservations), with past ones under Reservation History (/admin/reservations/history) and payments under Payment History (/admin/payments). Reservations are confirmed automatically by a verified payment, not by hand. An administrator can cancel an unpaid pending or confirmed reservation (a paid one cannot be cancelled in the system; its refund is arranged outside it), record the vehicle handover during the rental period once it is paid, and record the return, which marks the reservation completed. Dates and prices cannot be edited.",
       "code_references": [
