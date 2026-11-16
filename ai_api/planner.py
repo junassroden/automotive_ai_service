@@ -81,7 +81,8 @@ CONCEPTS = {
                               "predictions", "risk", "risky", "diagnostic", "diagnostics", "dtc", "condition", "history", "records",
                               "record", "logs", "activities", "activity", "worked", "work", "maintain", "breakdown", "breakdowns"},
                     "phrases": ["trouble code", "trouble codes", "fault code", "fault codes", "needs service", "need service",
-                                "break down", "breaks down", "been done", "done to", "work done", "was done"]},
+                                "break down", "breaks down", "been done", "done to", "work done", "was done",
+                                "oil change", "oil changes", "changed the oil", "tune up", "tune-up"]},
     "status": {"words": {"status", "rented", "unavailable", "reserved", "booked", "maintenance", "utilization", "how's"},
                "phrases": ["how many", "in maintenance", "under maintenance", "on rent", "not available", "out of service",
                            "out on rent", "in the shop", "being repaired", "under repair"]},
@@ -394,7 +395,8 @@ WHO_BOOKED = re.compile(r"\bwho(?! can\b| may\b| could\b| should\b| do\b| is all
 # Words that are never a customer's name in "bookings of ...".
 NOT_A_NAME = {"the", "my", "our", "all", "today", "tomorrow", "this", "next", "week", "pending", "approval", "confirmation", "now", "me", "us", "review", "later", "reservations",
               "reservation", "bookings", "booking", "rentals", "rental", "vehicles", "cars", "units", "price", "rate", "maintenance", "what", "who", "that", "it", "there", "here", "where", "how",
-              "when", "which", "let", "system", "everyone", "customers", "approving", "me", "completed", "cancelled", "confirmed", "rejected"}
+              "when", "which", "let", "system", "everyone", "customers", "approving", "me", "completed", "cancelled", "confirmed", "rejected",
+              "payment", "payments", "pickup", "return", "returns", "expired", "expiry", "handover", "verification"}
 # A reservation of a named status, in any common wording.
 NEEDS_APPROVAL = re.compile(r"\b(?:should|do|must|need to) i (?:approve|review)\b|\bi (?:need|have) to (?:approve|review)\b|\b(?:waiting|awaiting)\b|\bneed\w* (?:\w+ )?(?:approv\w*|review\w*)\b|\bfor approval\b|\b(?:to|for) (?:approve|review)\b|\bunapproved\b"
                             r"|\bnot (?:yet )?(?:been )?approved\b|\b(?:haven'?t|have not|hasn'?t) (?:been )?approved\b|\bhindi pa (?:na)?approved\b|\bpending approval\b")
@@ -413,6 +415,23 @@ REASSESSMENT = re.compile(r"\bre-?assess\w*\b|\bassessments? (?:are |is )?(?:due
 CUSTOMER_RANKING = re.compile(r"\b(?:who|which customers?|which renters?|sino)\b.*\b(?:most|pinakamaraming|pinakamadami)\b"
                               r"|\btop (?:customers?|renters?|clients?)\b|\b(?:best|frequent|loyal|regular) (?:customers?|renters?|clients?)\b"
                               r"|\bcustomers? with the most\b|\bmost (?:bookings|reservations) by\b")
+# Administrator questions about payment attempts and about customer accounts (payments.summary, customers.summary).
+PAYMENT_RECORDS = re.compile(r"\b(?:payments?|transactions?|refunds?|invoices?|checkouts?|bayad|binayaran)\b")
+PAYMENT_STATUS_WORDS = (
+    ("expired", r"\b(?:fail\w*|expired?|unsuccessful|declined|did not go through|didn't go through)\b"),
+    ("pending", r"\b(?:pending|waiting|unpaid|not yet paid|open|in progress)\b"),
+    ("paid", r"\b(?:paid|successful|succeeded|received|completed|went through|settled)\b(?! twice)"),
+)
+# "Can customers pay with GCash?", "what payment methods do you accept?": what the rules allow, answered from the guide.
+RULE_QUESTION = re.compile(r"\b(?:can|could|may|must|should) (?:a |the |our )?(?:customers?|clients?|renters?|users?|people|i|we|they)\b"
+                           r"|\b(?:do|does) (?:a |the |our )?(?:customers?|clients?|renters?|users?|people)\b"
+                           r"|\b(?:customers?|clients?|renters?|users?) (?:can|could|may|must|should|need to|have to)\b"
+                           r"|\b(?:methods?|options?|ways?) (?:of|to|for)? ?pay|\bpayment (?:methods?|options?)\b|\baccept\w*\b|\ballowed\b|\bpolicy\b")
+CUSTOMER_RECORDS = re.compile(r"\b(?:customers?|clients?|renters?|users?|accounts?|members?|sign[- ]?ups?|signed up|registered|registrations?"
+                              r"|mga customer|kostumer)\b")
+# Asks what something means or why it is so, not only what it is: the guide explains alongside the record.
+ASKS_EXPLANATION = re.compile(r"\b(?:mean|means|meaning|ibig sabihin|why|bakit|explain)\b|\b(?:but|pero)\b.*\b(?:still|pa rin|parin)\b"
+                              r"|\bstill (?:says|shows|showing|pending|unpaid|not)\b")
 OWE = re.compile(r"\b(?:owe|balance|still (?:need|have) to pay|need to pay|babayaran|bayaran ko|utang)\b")
 # Another person's records by name ("Ana Santos booking details") or by account id ("user_id=3").
 NAMED_RECORDS = re.compile(r"\b(?!My\b)[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+(?:'s)?\s+(?:bookings?|reservations?|rentals?|booking details|reservation details|account)\b")
@@ -583,7 +602,7 @@ class Understanding:
         year = re.search(r"\b(20[0-3]\d|19[89]\d)\s*(?:or )?(?:newer|and (?:newer|up|above)|pataas|onwards)\b", text)
         self.min_year = int(year.group(1)) if year else None
         self.needs_approval = bool(NEEDS_APPROVAL.search(text))
-        self.reservation_statuses = sorted({status for status in ("pending", "confirmed", "cancelled", "rejected", "completed")
+        self.reservation_statuses = sorted({status for status in ("pending", "confirmed", "cancelled", "rejected", "completed", "expired")
                                             if re.search(rf"\b{status}\b", text)}
                                            | ({"cancelled"} if re.search(r"\bcanceled\b", text) else set())
                                            | ({"rejected"} if re.search(r"\b(?:declined|denied)\b", text) else set())
@@ -766,6 +785,13 @@ def plan(message, role, vocabulary=None, memory=None):
         result = _plan("vehicles", u, [("vehicles.search", _vehicle_filters(u))], purpose="listing")
         result["count_question"] = True
         return result
+    # "How do returns work?", "how does the deposit work?": an explanation from the guide, not a records lookup.
+    if re.search(r"^(?:so |and |but )?how (?:do|does) (?:the |a |an )?[a-z-]+(?: [a-z-]+)? work\b", u.text) and not (u.makes or u.models):
+        return None
+    if admin and not HOW_TO_DO.search(u.text):
+        returns = _returns_plan(u)
+        if returns:
+            return returns
     if admin and _fleet_maintenance_question(u):
         return _maintenance_plan(u)
     if admin:
@@ -820,7 +846,7 @@ def plan(message, role, vocabulary=None, memory=None):
 
     if not admin and PAYMENT_STATUS.search(u.text) and not HOW_TO_DO.search(u.text):
         args = {"reservation_id": u.reservation_id} if u.reservation_id else {}
-        return _plan("own_bookings", u, [("bookings.mine", args)], purpose="payment")
+        return _plan("own_bookings", u, [("bookings.mine", args)], purpose="payment", guide=bool(ASKS_EXPLANATION.search(u.text)))
 
     # The signed-in customer's own bookings.
     own_booking =u.has("own") and u.has("booking") or re.search(r"\b(?:any|ba)\s+(?:bookings?|reservations?)\b", u.text) and u.has("own") \
@@ -846,6 +872,8 @@ def plan(message, role, vocabulary=None, memory=None):
         procedure = bool(re.search(r"\b(?:cancel|extend|extension|change|reschedule|modify|move|pay|payment)\b"
                                    r"|\badd (?:more |extra )?days\b|\bmore days\b|\blonger\b", u.text)) \
             and not re.search(r"\b(?:did i pay|i paid|how much (?:did|do) i (?:pay|owe))\b", u.text)
+        # "What does expired mean on my booking?", "why is it still pending?": the booking plus the guide's explanation.
+        explanation = bool(ASKS_EXPLANATION.search(u.text))
         asks_total = re.search(r"\b(?:total|cost|costs|paid|pay for|how much|magkano)\b", u.text)
         purpose, args = "list", {}
         if u.reservation_id:
@@ -871,7 +899,7 @@ def plan(message, role, vocabulary=None, memory=None):
             purpose = "status"
         elif u.has("upcoming") and not procedure:
             args = {"upcoming": True}
-        result = _plan("own_bookings", u, [("bookings.mine", args)], purpose=purpose, guide=procedure)
+        result = _plan("own_bookings", u, [("bookings.mine", args)], purpose=purpose, guide=procedure or explanation)
         if vehicle_record or named_vehicles and purpose in ("next", "total", "status"):
             result["vehicle_names"] = named_vehicles
         if u.reservation_statuses:
@@ -890,7 +918,8 @@ def plan(message, role, vocabulary=None, memory=None):
 
     # Fleet and maintenance records.
     records_question = u.has("maintenance") or (u.has("status") and (u.vehicle_statuses or u.has("listing")) and not u.has("availability"))
-    general_advice = re.search(r"\b(?:how often|should i|when should|what is a|what does|tips?)\b", u.text) \
+    general_advice = re.search(r"\b(?:how often|should i|when should|what is a|what does|tips?|best (?:time|way|practice\w*)"
+                               r"|how (?:can|do|should) we (?:reduce|improve|lower|avoid|prevent|plan|schedule)|advice)\b", u.text) \
         or GENERAL_MAINTENANCE_QUESTION.search(u.text)
     if records_question and not general_advice and not u.has("explain") and not HOW_TO_DO.search(u.text):
         if not admin:
@@ -1050,11 +1079,45 @@ def plan(message, role, vocabulary=None, memory=None):
     return result
 
 
+RETURN_RECORDS = re.compile(r"\b(?:due back|due for return|due to be returned|coming back|be returned|returning|returns?|returned"
+                            r"|drop[- ]?offs?|ibabalik|isasauli)\b")
+OVERDUE_RETURN = re.compile(r"\b(?:overdue|late|not (?:yet )?(?:been )?returned|(?:hasn'?t|haven'?t|has not|have not) (?:been )?returned"
+                            r"|still out|not back|hindi pa (?:na)?ibabalik)\b")
+SERVICE_WORDS = re.compile(r"\b(?:service\w*|maint\w*|oil|pms|inspect\w*|re-?assess\w*|repair\w*|tune[- ]?up|parts?)\b")
+
+
+def _returns_plan(u):
+    """Administrator questions about cars coming back: "which cars are due back tomorrow?", "any rentals overdue for return?".
+    "Due" alone is a maintenance word, so this is decided before the maintenance rules; service questions stay there."""
+    text = u.text
+    overdue = OVERDUE_RETURN.search(text)
+    if not (RETURN_RECORDS.search(text) or overdue and re.search(r"\b(?:rentals?|rented|cars?|vehicles?|units?|bookings?|reservations?)\b", text)):
+        return None
+    if SERVICE_WORDS.search(text) or u.has("price", "deposit", "policy") and not overdue:
+        return None
+    args = {}
+    today = timezone.localdate()
+    if overdue:
+        args = {"overdue": True, "statuses": ["confirmed"]}
+    elif re.search(r"\btoday|ngayon\b", text):
+        args["return_on"] = today.isoformat()
+    elif re.search(r"\btomorrow|bukas\b", text):
+        args["return_on"] = (today + timedelta(days=1)).isoformat()
+    elif u.single_date:
+        args["return_on"] = u.single_date
+    else:
+        period = _report_period(text) or ({"from": u.start_date, "to": u.end_date} if u.start_date else {})
+        if not period:
+            return None  # "how do returns work?" names no day: the guide explains returns
+        args.update(period)
+    return _plan("reservation_summary", u, [("reservations.summary", args)])
+
+
 def _admin_lookup_plan(u):
     """Administrator questions about one car, reservations, costs, revenue and utilisation."""
     text = u.text
-    if HOW_TO_DO.search(text):
-        return None  # "How do I mark a reservation as completed?" is a how-to question for the guide.
+    if HOW_TO_DO.search(text) or re.search(r"\bhow (?:do|does) (?:the )?[a-z]+(?: [a-z]+)? work\b", text):
+        return None  # "How do I mark a reservation as completed?", "how do returns work?": how-to questions for the guide.
     vehicle = {k: v for k, v in _vehicle_filters(u).items() if k in ("makes", "models", "categories")}
     if u.vehicle_ids:
         vehicle["vehicle_ids"] = u.vehicle_ids
@@ -1062,6 +1125,32 @@ def _admin_lookup_plan(u):
         return _plan("reassessment_due", u, [("assessments.due", vehicle)])
     period = {k: v for k, v in (("from", u.start_date), ("to", u.end_date)) if v}
     period.update(_report_period(text))
+    asks_policy = bool(RULE_QUESTION.search(text))
+    if PAYMENT_RECORDS.search(text) and not asks_policy and not re.search(r"\b(?:reservations?|bookings?)\b", text):
+        # "Which payments failed today?", "payments needing a refund", "latest transactions": the payment attempts.
+        args = dict(period)
+        statuses = [status for status, pattern in PAYMENT_STATUS_WORDS if re.search(pattern, text)]
+        if statuses:
+            args["statuses"] = statuses
+        if re.search(r"\b(?:review|refunds?|refunded|duplicates?|double|overpaid|paid twice)\b", text):
+            args["review_only"] = True
+        if u.reservation_id:
+            args["reservation_id"] = u.reservation_id
+        if re.search(r"\btoday|ngayon\b", text) and not period:
+            args["from"] = args["to"] = timezone.localdate().isoformat()
+        return _plan("payments", u, [("payments.summary", args)])
+    if CUSTOMER_RECORDS.search(text) and not asks_policy and not CUSTOMER_RANKING.search(text) \
+            and not re.search(r"\b(?:reservations?|bookings?|revenue)\b", text):
+        # "How many customers do we have?", "new sign-ups this week", "who hasn't uploaded a licence?".
+        args = dict(period)
+        if re.search(r"\b(?:licen[cs]es?|verif\w*|unverified|photo|id|documents?)\b", text):
+            args["missing_licence"] = True
+        elif re.search(r"\b(?:new|newest|latest|recent(?:ly)?|joined|signed up|sign[- ]?ups?|registered|registrations?)\b", text):
+            args["sort"] = "newest"
+        if re.search(r"\b(?:this week|ngayong linggo)\b", text) and not period:
+            today = timezone.localdate()
+            args.update({"from": (today - timedelta(days=today.weekday())).isoformat(), "to": today.isoformat()})
+        return _plan("customers", u, [("customers.summary", args)])
     if re.search(r"\b(?:revenue|income|earnings?|earns?|earned|earning|grossing|sales|kita|kinita)\b|\bbook(?:ed|ing|ings)? (?:value|amount|total)\b"
                  r"|\b(?:bookings|reservations) (?:are )?worth\b|\bvalue of (?:all )?(?:the )?(?:bookings|reservations)\b"
                  r"|\bhow much (?:money )?(?:have|did|do) (?:we|the business|the company)(?: \w+)? (?:make|made|earn|earned)\b|\bmoney (?:have |did )?we (?:make|made|earn|earned)\b", text):
@@ -1094,7 +1183,10 @@ def _admin_lookup_plan(u):
     # "My reservations" from an administrator is about their own (none), handled by the bookings rule.
     # "What's pending?" from an administrator asks about reservations.
     status_only = u.reservation_statuses and not (u.models or u.makes or u.has("maintenance"))
-    if (reservation_word or status_only or CUSTOMER_RANKING.search(text)) and not re.search(r"\b(?:my|mine|ko|akin)\b(?! approv)", text) and not u.has("explain") and not u.has("policy"):
+    # "Reservations waiting for payment", "expired without payment": a named status makes it a records question even
+    # though payment is also a policy word.
+    policy = u.has("policy") and not u.reservation_statuses
+    if (reservation_word or status_only or CUSTOMER_RANKING.search(text)) and not re.search(r"\b(?:my|mine|ko|akin)\b(?! approv)", text) and not u.has("explain") and not policy:
         args = {}
         if u.reservation_statuses:
             args["statuses"] = u.reservation_statuses
@@ -1144,6 +1236,12 @@ def _report_period(text):
         return {"from": start.isoformat(), "to": (first - timedelta(days=1)).isoformat()}
     if re.search(r"\bthis year\b|\bngayong taon\b", text):
         return {"from": today.replace(month=1, day=1).isoformat(), "to": today.isoformat()}
+    # Weeks start on Monday.
+    if re.search(r"\bthis week\b|\bngayong linggo\b", text):
+        return {"from": (today - timedelta(days=today.weekday())).isoformat(), "to": today.isoformat()}
+    if re.search(r"\blast week\b|\bnakaraang linggo\b", text):
+        start = today - timedelta(days=today.weekday() + 7)
+        return {"from": start.isoformat(), "to": (start + timedelta(days=6)).isoformat()}
     month = re.search(r"\bin (" + "|".join(sorted(MONTHS, key=len, reverse=True)) + r")\b", text)
     if month:
         number = MONTHS[month.group(1)]
@@ -1204,6 +1302,12 @@ def _maintenance_plan(u):
     named = bool(u.vehicle_ids or filters.get("makes") or filters.get("models"))
     if re.search(r"\b(?:recurring|repeated|repeat|again and again|keeps? (?:coming|happening)|same (?:issue|problem))\b", text):
         return _plan("maintenance_recurring", u, [("maintenance.recurring", dict(filters))])
+    # "Which vehicle has the most repairs?": how many maintenance records each car has, not what is due.
+    if re.search(r"\b(?:most|fewest|least|highest number of|lowest number of|how many)\b.*\b(?:repairs?|services|servicing|maintenance"
+                 r"|records?|fixes|work orders?)\b", text) and not re.search(r"\b(?:cost\w*|spent|spend|expensive|money)\b", text):
+        result = _plan("maintenance_costs", u, [("maintenance.costs", dict(filters))])
+        result["rank_by"] = "records"
+        return result
     # "Should we retire the Hiace?", "is it worth fixing?": the facts that decide repair or replace.
     if MAINTENANCE_RETIRE.search(text):
         return _plan("maintenance_retire", u, [("assessments.condition", dict(filters)), ("maintenance.costs", dict(filters)),
