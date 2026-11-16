@@ -115,7 +115,7 @@ def compose(plan, results, role, vocabulary=None, guide=None, fleet_risk=None, s
         "vehicle_status": _vehicle_status, "revenue": _revenue, "utilization": _utilization,
         "reassessment_due": _reassessment_due,
         "maintenance_condition": _maintenance_condition, "maintenance_priority": _maintenance_priority,
-        "maintenance_retire": _maintenance_retire,
+        "maintenance_retire": _maintenance_retire, "payments": _payments, "customers": _customers,
     }.get(intent)
     if handler is None:
         return "I couldn't work out which records answer that. Could you rephrase it?", data
@@ -975,13 +975,22 @@ def _reservation_summary(plan, by_tool, role, vocabulary, guide, fleet_risk, not
         return (f"Reservation #{r['id']} ({r.get('customer_name') or 'customer'}): {name(r)}, {r['start_date']} to {r['end_date']}, "
                 f"total " + (money(r["total_amount"]) if r.get("total_amount") is not None else "not recorded")
                 + f". Status {r['status']}" + (f": {meaning}." if meaning else "."))
+    if args.get("overdue"):
+        # "Any rentals overdue for return?": handed over, not returned, past the return date.
+        if not rows:
+            return "No rentals are overdue: every vehicle handed over has been returned or is still within its rental period."
+        lines = [f"{data.get('total_count', len(rows))} rental(s) are overdue for return:"]
+        lines += [f"- #{r['id']} {r.get('customer_name') or 'customer'}: {name(r)}, due back {r['end_date']}"
+                  + (f", {r['days_overdue']} day(s) late" if r.get("days_overdue") else "") for r in rows[:10]]
+        lines.append("Record the return on Reservations (/admin/reservations) once the vehicle is back.")
+        return "\n".join(lines)
     filters = []
     if args.get("statuses"):
         filters.append(" or ".join(args["statuses"]))
     if args.get("pickup_on"):
         filters.append(f"picked up on {args['pickup_on']}")
     if args.get("return_on"):
-        filters.append(f"returned on {args['return_on']}")
+        filters.append(f"due back on {args['return_on']}")
     if args.get("from"):
         filters.append(f"overlapping {args['from']} to {args.get('to') or args['from']}")
     if args.get("customer_name"):
@@ -1034,6 +1043,19 @@ def _reassessment_due(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=
 def _maintenance_costs(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
     data = by_tool["maintenance.costs"].get("data") or {}
     window = f" from {data['from'] or 'the first record'} to {data['to'] or 'today'}" if data.get("from") or data.get("to") else ""
+    if plan.get("rank_by") == "records":
+        # "Which vehicle has the most repairs?": vehicles by how many maintenance records they have.
+        if not data.get("records"):
+            return f"No maintenance records are stored{window}."
+        per_vehicle = sorted(data.get("per_vehicle") or [], key=lambda v: (-int(v.get("records") or 0), name(v)))
+        top = per_vehicle[0]["records"]
+        leaders = [name(v) for v in per_vehicle if v["records"] == top]
+        lines = [f"{'The ' if len(leaders) == 1 else ''}{_join(leaders)} {'has' if len(leaders) == 1 else 'have'} the most maintenance records"
+                 f"{window}: {top}."]
+        lines += [f"- {name(v)}" + (f" ({v['plate_number']})" if v.get("plate_number") else "") + f": {v['records']} record(s)"
+                  for v in per_vehicle[:10]]
+        lines.append(f"{data['records']} maintenance record(s) in total. Each record is one logged service or repair.")
+        return "\n".join(lines)
     if not data.get("records"):
         return f"No maintenance records with costs are stored{window}."
     if not float(data.get("total_cost") or 0) and data.get("records_without_cost") == data.get("records"):
@@ -1134,6 +1156,114 @@ def _utilization(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None)
                  f"at {top['utilization_percent']}% ({top['booked_days']} booked day(s))."]
     lines += [f"- {label[id(v)]}: {v['utilization_percent']}% ({v['booked_days']} day(s))" for v in vehicles]
     lines.append("Booked days count pending, confirmed and completed reservations.")
+    return "\n".join(lines)
+
+
+PAYMENT_STATUS_LABELS = {"paid": "paid", "pending": "pending (checkout started, not paid yet)", "expired": "failed or expired"}
+
+
+def _payment_line(row):
+    who = row.get("customer_name") or "a customer"
+    car = " ".join(str(part) for part in (row.get("make"), row.get("model")) if part)
+    amount = row.get("paid_amount") if row.get("status") == "paid" and row.get("paid_amount") not in (None, "") else row.get("amount")
+    line = (f"- {row.get('reference_number') or 'attempt #' + str(row.get('id'))}: {money(amount)}, reservation #{row.get('reservation_id')} "
+            f"({who}{', ' + car if car else ''}), {row.get('status')}, started {str(row.get('created_at') or '')[:16]}")
+    if row.get("paid_at"):
+        line += f", paid {str(row['paid_at'])[:16]}"
+    return line + "."
+
+
+def _payments(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    item = by_tool["payments.summary"]
+    data = item.get("data") or {}
+    args = item.get("args") or {}
+    window = f" from {data['from'] or 'the first record'} to {data['to'] or 'today'}" if data.get("from") or data.get("to") else ""
+    if args.get("reservation_id"):
+        window += f" for reservation #{args['reservation_id']}"
+    if not data.get("attempts"):
+        return (f"No payment attempts are recorded{window}. A payment attempt is created when a customer opens the Xendit checkout "
+                "for a reservation; it is confirmed automatically by the payment provider.")
+    counts = data.get("counts_by_status") or {}
+    lines = []
+    if args.get("review_only"):
+        review = data.get("needing_review") or []
+        if not review:
+            lines.append(f"No payments need review{window}: none was paid after its reservation was cancelled or expired, and none is a duplicate.")
+        else:
+            lines.append(f"{data['needing_review_count']} paid attempt(s) need review{window}. Contact each customer to refund or rebook:")
+            lines += [_payment_line(row)[:-1] + f". Reason: {row.get('review_reason') or 'flagged for review'}" for row in review]
+        lines.append("The same list is on Payment History (/admin/payments).")
+        return "\n".join(lines)
+    statuses = args.get("statuses") or []
+    if statuses:
+        label = " or ".join(PAYMENT_STATUS_LABELS.get(s, s) for s in statuses)
+        matching = data.get("matching") or []
+        if not matching:
+            lines.append(f"There are no {label} payment attempts{window}.")
+        else:
+            count = data["matching_count"]
+            lines.append(f"{count} payment attempt{'s are' if count != 1 else ' is'} {label}{window}:")
+            lines += [_payment_line(row) for row in matching[:10]]
+            if data["matching_count"] > 10:
+                lines.append(f"...and {data['matching_count'] - 10} more.")
+    else:
+        lines.append(f"Payment attempts{window}: {counts.get('paid', 0)} paid, {counts.get('pending', 0)} pending, "
+                     f"{counts.get('expired', 0)} failed or expired.")
+        latest = (data.get("matching") or [])[:5]
+        if latest:
+            lines.append("Latest attempts:")
+            lines += [_payment_line(row) for row in latest]
+    if counts.get("paid") and (not statuses or "paid" in statuses):
+        lines.append(f"Received through verified payments{window}: {money(data.get('paid_total', 0))}.")
+    if data.get("needing_review_count") and not args.get("review_only"):
+        lines.append(f"{data['needing_review_count']} paid attempt(s) need review for a refund or rebooking (Payment History, /admin/payments).")
+    if "expired" in statuses or not statuses:
+        lines.append("A failed checkout shows as expired: the invoice ran out without payment, so no money was taken.")
+    return "\n".join(lines)
+
+
+def _customers(plan, by_tool, role, vocabulary, guide, fleet_risk, notes=None):
+    item = by_tool["customers.summary"]
+    data = item.get("data") or {}
+    args = item.get("args") or {}
+    total = data.get("total_customers") or 0
+    if not total:
+        return "There are no customer accounts yet."
+    customers = data.get("customers") or []
+    lines = [f"There are {total} customer account(s); {data.get('with_bookings', 0)} have made at least one reservation."]
+    if args.get("missing_licence"):
+        missing = data.get("without_verified_licence") or 0
+        if not missing:
+            lines.append("Every customer has a driver's licence and a verification photo on file, and no licence has expired.")
+            return "\n".join(lines)
+        lines.append(f"{missing} customer(s) don't have a complete, valid driver's licence on file:")
+        for row in customers[:15]:
+            gaps = [text for flag, text in ((not row.get("has_licence"), "no licence details"), (not row.get("has_photo"), "no verification photo"),
+                                            (row.get("licence_expired"), "licence expired")) if flag]
+            lines.append(f"- {row['name']}: {', '.join(gaps)}" + (f" ({row['reservations']} reservation(s))" if row.get("reservations") else ""))
+        if missing > 15:
+            lines.append(f"...and {missing - 15} more.")
+        lines.append("Customers add these on their Profile page (/users/profile).")
+        return "\n".join(lines)
+    if data.get("joined_in_period") is not None:
+        lines.append(f"{data['joined_in_period']} joined from {data['from'] or 'the start'} to {data['to'] or 'today'}"
+                     + (":" if data["joined_in_period"] else "."))
+        lines += [f"- {row['name']}, joined {row['joined_on']}" for row in customers[:15]]
+    elif args.get("sort") == "newest":
+        lines.append("Newest customers:")
+        lines += [f"- {row['name']}, joined {row['joined_on']}" for row in customers[:10]]
+    else:
+        ranked = [row for row in customers if row.get("reservations")] or customers
+        heading = {"spend": "By verified payments:", "cancellations": "By cancellations:"}.get(args.get("sort"), "By number of reservations:")
+        lines.append(heading)
+        for row in ranked[:10]:
+            line = f"- {row['name']}: {row['reservations']} reservation(s) ({row['completed']} completed, {row['cancelled']} cancelled)"
+            if float(row.get("paid_total") or 0):
+                line += f", {money(row['paid_total'])} paid"
+            lines.append(line)
+    if data.get("without_verified_licence"):
+        lines.append(f"{data['without_verified_licence']} customer(s) have no complete, valid driver's licence on file.")
+    lines.append("Contact details are not shown in chat; open the customer's reservation to see them.")
     return "\n".join(lines)
 
 
