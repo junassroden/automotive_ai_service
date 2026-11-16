@@ -16,9 +16,12 @@ The viewer's role comes only from the Back-End (``viewer_role`` /
 contexts and documents are refused to everyone else here as well as in the
 Back-End.
 """
+import json
 import logging
 import re
 import time
+from functools import lru_cache
+from pathlib import Path
 
 from django.conf import settings
 from django.db import DatabaseError
@@ -37,6 +40,7 @@ from .automotive_knowledge import (
 ADMIN_RECORD_INTENTS = frozenset({
     "reservation_summary", "maintenance_records", "maintenance_costs", "maintenance_due", "maintenance_recurring",
     "maintenance_inspections", "vehicle_status", "revenue", "utilization", "fleet_status", "reassessment_due", "payments", "customers",
+    "demand",
 })
 
 # Words any car problem can use, so they show neither that a message stays on a topic nor that it leaves it.
@@ -60,7 +64,9 @@ FOLLOW_UP = re.compile(
     r"|^(?:what|why|how)\b[\w\s']{0,30}\b(?:it|that|this)\s*\??$",
     re.IGNORECASE,
 )
-RENTAL_OPERATION_TOPICS = {"pre_rental_inspection", "rental_damage_reporting", "rental_fault_reporting"}
+RENTAL_OPERATION_TOPICS = {"pre_rental_inspection", "rental_damage_reporting", "rental_fault_reporting",
+                           # Things that happen with the rental car itself: guidance, not booking policy.
+                           "keys_locked_inside", "windshield_chip_crack", "number_coding_ph", "toll_rfid_ph"}
 RENTAL_CAR = re.compile(r"\b(?:rental|rented|hired)\b", re.IGNORECASE)
 # Booking, price and inventory words: these questions belong to the database planner even when they name a car part.
 RENTAL_REQUEST = re.compile(
@@ -220,7 +226,8 @@ VEHICLE_ADMINISTRATION = re.compile(
 MECHANICAL = re.compile(
     r"\b(?:engine|brakes?|braking|smoke|smoking|noise|squeak\w*|squeal\w*|grind\w*|leak\w*|overheat\w*|tires?|tyres?"
     r"|oil|battery|alternator|starter|misfir\w*|stall\w*|vibrat\w*|warning light|check engine|coolant|transmission"
-    r"|exhaust|won'?t start|inspect\w*|parts?|repair\w*|maintenance|diagnos\w*|mechanic\w*|fault\w*|symptoms?|downtime|breakdowns?)\b",
+    r"|exhaust|won'?t start|inspect\w*|parts?|repair\w*|maintenance|diagnos\w*|mechanic\w*|fault\w*|symptoms?|downtime|breakdowns?"
+    r"|4h|4l|2h|4wd|4x4|awd|four[- ]wheel drive|turbo\w*|throttle|accelerator|speedometer|gauges?|seat ?belts?|defog\w*|fogg\w*)\b",
     re.IGNORECASE,
 )
 ADMIN_RECORDS_REQUEST = re.compile(
@@ -353,6 +360,12 @@ def answer_chat(message, vehicle=None, vehicles=None, rental_context=None, diagn
             # An administrator's question the rules read as a records question ("when was the last oil change on vehicle 2?",
             # "any rentals overdue for return?") is answered from the records, even though a car topic also matches its words.
             admin_records_plan = role == "admin" and bool(plan) and plan.get("intent") in ADMIN_RECORD_INTENTS
+            # "When should I use 4H and 4L on a pickup?" names a vehicle type the fleet has, but a car topic's keyword phrase
+            # matched and nothing asks to rent, price or list cars: it is a how-to question about driving one.
+            if explicit_rental_plan and car_problem and not RENTAL_REQUEST.search(message) and not plan.get("follow_up"):
+                strong = retrieve_knowledge(normalize_message(message))
+                if strong is not None and strong.get("phrase_length", 0) >= 2:
+                    explicit_rental_plan = False
             use_database_plan = not car_problem or explicit_rental_plan or admin_records_plan
             if plan and plan.get("direct") and plan["direct"] not in {"clarify_quote", "clarify_vehicle"}:
                 direct = _direct_response(plan["direct"], plan)
@@ -461,9 +474,36 @@ def _grounded_response(message, role, retrieval, vocabulary, memory=None, entiti
     return _with_evidence(response, "database_record" if ok else ("reference" if sources else "none"), sources), vehicles_seen[:5], updates
 
 
+# Rental rules the business has recorded in the system guide (2026-11-16), keyed by the planner's policy topic.
+POLICY_GUIDE_ENTRIES = {
+    "which licence types are accepted": "sys_policy_licence", "a driver or chauffeur service": "sys_policy_driver_service",
+    "smoking in the vehicle": "sys_policy_smoking", "pets in the vehicle": "sys_policy_pets",
+    "additional drivers": "sys_policy_additional_drivers", "insurance": "sys_policy_insurance",
+    "travel outside the area": "sys_policy_travel_area", "mileage or distance limits": "sys_policy_mileage",
+    "home delivery": "sys_policy_delivery", "business hours": "sys_policy_business_hours",
+    "late returns and late fees": "sys_policy_late_return", "cleaning and sanitising of vehicles": "sys_policy_cleaning",
+    "fuel-consumption figures for its vehicles": "sys_policy_fuel_economy", "the pickup and return location": "sys_policy_location",
+    "fuel rules when returning the car": "sys_policy_fuel_return", "contact details": "sys_policy_contact",
+}
+
+
+@lru_cache(maxsize=1)
+def _guide_entries():
+    path = Path(settings.BASE_DIR) / "data" / "knowledge" / "system_guide.json"
+    try:
+        return {d["id"]: d for d in json.loads(path.read_text(encoding="utf-8"))["documents"]}
+    except (OSError, ValueError, KeyError):
+        return {}
+
+
 def _direct_response(kind, plan=None):
     if kind == "policy_unrecorded":
         topic = (plan or {}).get("topic", "that")
+        entry = _guide_entries().get(POLICY_GUIDE_ENTRIES.get(topic, ""))
+        if entry:
+            # A rule the business recorded: answer with it, citing the guide entry.
+            return _with_evidence(core.build_response("rental_policy", 1.0, entry["text"]), "reference",
+                                  [{"id": f"sys:{entry['id']}", "name": "DriveRent rental rules", "file": "data/knowledge/system_guide.json"}])
         return _with_evidence(core.build_response("policy_unrecorded", 1.0,
             f"DriveRent has no information about {topic}. {UNRECORDED_NOTES.get(topic, UNRECORDED_POLICY)}"), "none", [])
     if kind == "refuse_sql":
@@ -862,6 +902,12 @@ def _specific_reference(message, role):
         return None
     system = next((passage for passage in passages if passage["source_type"] == "system_documentation"), None)
     curated = next((passage for passage in passages if passage["source_type"] == "curated_reference"), None)
+    if system and curated and passages[0] is curated:
+        # A car topic that ranks first and matched one of its keyword phrases ("when should I use 4H and 4L") is the answer;
+        # a rental-rule entry that only shares words with it ("pickup") does not take over.
+        knowledge = retrieve_knowledge(normalize_message(message))
+        if knowledge is not None and knowledge.get("phrase_length", 0) >= 2 and curated["id"] == f"kb:{knowledge['document']['id']}":
+            return None
     if system and system["support"] >= SPECIFIC_SOURCE_MIN_SUPPORT and (
         passages[0] is system or curated and system["support"] >= curated["support"] + 0.12
     ):
@@ -1215,6 +1261,13 @@ def _multi_knowledge_response(message):
         if part.strip(" ,.!?")
     ]
     if len(clauses) < 2:
+        return None
+    # A topic keyword that itself spans the "and" describes a single problem ("key not detected and it won't start"),
+    # so the message is not split into two. A keyword inside one clause ("when I turn the key") doesn't count.
+    normalized = normalize_message(message).casefold()
+    whole = retrieve_knowledge(normalized)
+    if whole is not None and any(" and " in keyword.casefold() and keyword.casefold() in normalized
+                                 for keyword in whole["document"].get("keywords") or []):
         return None
 
     retrieved, unresolved, requests, topics = [], [], [], []
