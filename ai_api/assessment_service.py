@@ -389,7 +389,7 @@ def lookup_fault_codes(codes, category_key):
 def symptom_guidance(category_key, symptom_labels):
     if not symptom_labels:
         return []
-    results = retrieve(" ".join(symptom_labels), top_k=12, source_types={"diagnostic_flowchart"})
+    results = retrieve(" ".join(symptom_labels), top_k=50)
     guidance = []
     for item in results:
         if FLOWCHART_CATEGORIES.get(item["metadata"].get("category")) == category_key and item["support"] >= MIN_GUIDANCE_SUPPORT:
