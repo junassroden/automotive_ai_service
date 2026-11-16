@@ -152,12 +152,13 @@ UNRECORDED_TOPICS = [
         r"\bchauffeur\w*\b|\bdriver service\b|\bdriver for hire\b|\b(?:with|include|includes|including|provide|provides|offer|offers|hire|rent|have) (?:a |an |your )?(?:own )?driver\b(?!'s|s)"
         r"|\bmay (?:kasamang )?driver\b|\bkasama(?:ng)? driver\b")),
     ("smoking in the vehicle", re.compile(
-        r"\b(?:can|may) (?:i|we) (?:smoke|vape)\b|\b(?:smoking|vaping) (?:ok\b|okay\b|fine\b|allowed|policy|inside|in the (?:car|vehicle))\b|\bno smoking\b"
+        r"\b(?:can|may) (?:i|we) (?:smoke|vape)\b|\b(?:smoking|vaping) (?:ok\b|okay\b|fine\b|allowed|policy|inside|in (?:the |a |your |rental )?(?:car|cars|vehicles?|rentals?))\b"
+        r"|\bno smoking\b|\b(?:allow|allowed|permit\w*)\b.*\b(?:smok\w*|vap\w*)\b|\b(?:manigarilyo|magsigarilyo|mag-?yosi|yosi|sigarilyo)\b"
         r"|\b(?:is|are) (?:smoking|vaping)\b"
         r"|\b(?:is it ok|allowed) to (?:smoke|vape)\b|\b(?:pwede|bawal)(?: ba)?(?: mag)?(?:-| )?(?:yosi|manigarilyo|smoke|vape)\b"
         r"|\b(?:manigarilyo|magsigarilyo|magyosi|mag yosi|mag-yosi)\b")),
     ("pets in the vehicle", re.compile(
-        r"\b(?:bring|take|travel with|allowed|pwede|isakay|isama)\b.*\b(?:pets?|dogs?|cats?|aso|pusa)\b"
+        r"\b(?:bring|take|travel with|allowed|pwede|isakay|isama|can i|can we)\b.*\b(?:pets?|dogs?|cats?|aso|pusa|alaga\w*)\b"
         r"|\b(?:pets?|dogs?|cats?)\b.*\b(?:ride|come|along|join)\b"
         r"|\b(?:pets?|dogs?|cats?) (?:are |is )?(?:allowed|friendly|policy|ok|okay|welcome)\b")),
     ("additional drivers", re.compile(r"\b(?:someone else|another person|another driver|additional drivers?|second driver|other drivers?|my (?:friend|wife|husband|brother|sister|kapatid|asawa)|ibang (?:tao|driver))\b.*\b(?:drive|driver|magmaneho|mag-drive)\b|\badditional drivers?\b")),
@@ -172,7 +173,8 @@ UNRECORDED_TOPICS = [
                                               r"|\b(?:limit|cap)s? (?:on|to|for) (?:the )?(?:mileage|distance|km|kilometers?|kilometres?)\b"
                                               r"|\bunlimited (?:mileage|km|kilometers)\b|\bhow far can (?:i|we) drive\b")),
     ("home delivery", re.compile(r"\b(?:deliver|delivery|drop[- ]?off at|drop the car (?:at|to|off)|bring the car to (?:me|my|our)|ihatid|i-deliver)\b")),
-    ("business hours", re.compile(r"\b(?:business hours|opening hours|office hours|what time do you (?:open|close)|are you open|open ba kayo|open kayo|open (?:on|at|today|sa)|anong oras)\b")),
+    ("business hours", re.compile(r"\b(?:business hours|opening hours|office hours|what time do you (?:open|close)|are you open|open ba kayo|open kayo|open (?:on|at|today|sa)|anong oras"
+                                  r"|(?:what|anong?) oras\b.*\b(?:kayo|bukas|open|sarado|nagbubukas|nagsasara)|bukas (?:ba )?kayo|sarado (?:ba )?kayo)\b")),
     ("late returns and late fees", re.compile(r"\blate (?:return|returns|fee|fees|charge|penalty)\b|\breturn\w* (?:the car |it )?late\b|\bhuli(?:ng)? (?:pagbalik|balik)\b"
                                               r"|\bpenalt(?:y|ies)\b.*\b(?:late|return\w*)\b|\bif i'?m late\b")),
     ("cleaning and sanitising of vehicles", re.compile(
@@ -731,6 +733,32 @@ def plan(message, role, vocabulary=None, memory=None):
         # The pickup date came in the previous message ("available on 2026-12-05?"); this one is the return date.
         u.start_date, u.end_date, u.single_date = pending, u.single_date, None
 
+    # Demand first: "forecast" is otherwise read as a question about the prediction models, and "how far ahead do customers
+    # book" as one about other people's bookings.
+    if admin and DEMAND_QUESTION.search(u.text) and not re.search(
+            r"\b(?:break\s?downs?|breaks? down|fail\w*|service\w*|maint\w*|repair\w*|wear|parts?|component\w*|condition)\b", u.text):
+        # "What demand do you expect in December?", "which months are busiest?": booking history and what is booked ahead.
+        args = {}
+        # "May" is also an everyday word ("may demand ba?"), so it counts as the month only after "in", "for", "of" or "sa".
+        names = sorted((name for name in MONTHS if name != "may"), key=len, reverse=True)
+        month = re.search(r"\b(" + "|".join(names) + r")\b", u.text) or re.search(r"\b(?:in|for|of|sa) (may)\b", u.text)
+        if month:
+            today = timezone.localdate()
+            number = MONTHS[month.group(1)]
+            if re.search(r"\b(?:last|nakaraang)\b", u.text):
+                year = today.year if number < today.month else today.year - 1  # "last December": the most recent one past
+            else:
+                year = today.year if number >= today.month else today.year + 1  # "December": the next one coming
+            args["month"] = f"{year}-{number:02d}"
+        elif re.search(r"\bnext month\b|\bsusunod na buwan\b", u.text):
+            upcoming = (timezone.localdate().replace(day=1) + timedelta(days=32)).replace(day=1)
+            args["month"] = upcoming.strftime("%Y-%m")
+        elif re.search(r"\bthis month\b|\bngayong buwan\b", u.text):
+            args["month"] = timezone.localdate().strftime("%Y-%m")
+        result = _plan("demand", u, [("demand.summary", args)])
+        if re.search(r"\b(?:how far (?:ahead|in advance)|lead time|booked ahead|how early)\b", u.text):
+            result["focus"] = "lead_time"
+        return result
     # Other people's records or contact details.
     contact = re.search(r"\b(?:phone|phones|email|emails|address|addresses|contact|contacts|personal information)\b", u.text)
     other_person = OTHER_PERSON_RECORDS.search(u.text) and not re.search(r"\b(?:my|mine|ko)\b", u.text)
@@ -772,6 +800,11 @@ def plan(message, role, vocabulary=None, memory=None):
 
     for topic, pattern in UNRECORDED_TOPICS:
         if topic == "business hours" and (u.models or u.makes):
+            continue
+        # "When should I use 4H and 4L on a pickup?": a pickup truck, not where to pick up the rental.
+        if topic == "the pickup and return location" and re.search(
+                r"\b(?:4h|4l|2h|4wd|4x4|awd|four[- ]wheel)\b|\b(?:a|the|my|our) pickup(?! (?:location|point|place|address|time))\b|\bpickup truck\b",
+                u.text):
             continue
         if pattern.search(u.text) and (not u.has("symptom") or topic in SYMPTOM_SAFE_TOPICS):
             result = _direct("policy_unrecorded", u)
@@ -919,6 +952,7 @@ def plan(message, role, vocabulary=None, memory=None):
     # Fleet and maintenance records.
     records_question = u.has("maintenance") or (u.has("status") and (u.vehicle_statuses or u.has("listing")) and not u.has("availability"))
     general_advice = re.search(r"\b(?:how often|should i|when should|what is a|what does|tips?|best (?:time|way|practice\w*)"
+                               r"|how many (?:km|kms|kilomet\w+|miles|months|years)|how long (?:between|until|before)|every how many|between oil changes"
                                r"|how (?:can|do|should) we (?:reduce|improve|lower|avoid|prevent|plan|schedule)|advice)\b", u.text) \
         or GENERAL_MAINTENANCE_QUESTION.search(u.text)
     if records_question and not general_advice and not u.has("explain") and not HOW_TO_DO.search(u.text):
@@ -1079,6 +1113,12 @@ def plan(message, role, vocabulary=None, memory=None):
     return result
 
 
+# Administrator questions about rental demand (demand.summary).
+DEMAND_QUESTION = re.compile(
+    r"\b(?:demand|forecast\w*|busiest|busy (?:months?|days?|season)|peak (?:season|months?|days?)|seasonal\w*|slow (?:months?|season)"
+    r"|booking trends?|trends? in (?:bookings?|reservations?|rentals?)|how far (?:ahead|in advance) (?:do )?(?:people|customers|renters) book"
+    r"|lead time|booked ahead|on the books|how many (?:bookings|reservations|rentals) (?:do|should|will|can) we (?:expect|get)"
+    r"|expect\w*\b.*\b(?:bookings?|reservations?|rentals?|demand))\b")
 RETURN_RECORDS = re.compile(r"\b(?:due back|due for return|due to be returned|coming back|be returned|returning|returns?|returned"
                             r"|drop[- ]?offs?|ibabalik|isasauli)\b")
 OVERDUE_RETURN = re.compile(r"\b(?:overdue|late|not (?:yet )?(?:been )?returned|(?:hasn'?t|haven'?t|has not|have not) (?:been )?returned"
