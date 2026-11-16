@@ -16,7 +16,7 @@ from django.test import Client, TestCase, override_settings
 from .assistant import answer_chat
 from .language import correct_typos, normalize_message
 from .planner import plan_message
-from .rag import KnowledgeIndexUnavailable
+from .rag import KnowledgeIndexUnavailable, retrieve
 
 
 INDEX_BUILT = (Path(settings.KNOWLEDGE_INDEX_PATH) / "index.joblib").exists()
@@ -1020,6 +1020,67 @@ class MechanicTriageTests(TestCase):
 class EverydayQuestionTests(TestCase):
     """Everyday questions that got a wrong or missing answer in a 157-question review (2026-11-13)."""
 
+    def test_semantic_brake_retrieval_preserves_general_and_specific_topics(self):
+        for query, topic in (
+            ("breaks has sounds, how to fix", "brake_noise"),
+            ("brakes have sounds", "brake_noise"),
+            ("my brakes are grinding against metal", "brake_grinding"),
+        ):
+            result = retrieve(query, top_k=1, source_types={"curated_reference"})
+            self.assertEqual(result[0]["id"], f"kb:{topic}")
+
+        for role in ("customer", "admin"):
+            loose = answer_chat("breaks has sounds, how to fix", viewer_role=role, retrieval_protocol=1)
+            general = answer_chat("brakes have sounds", viewer_role=role, retrieval_protocol=1)
+            grinding = answer_chat("my brakes are grinding against metal", viewer_role=role, retrieval_protocol=1)
+            self.assertEqual(loose["data"]["knowledge_id"], "brake_noise")
+            self.assertEqual(general["data"]["knowledge_id"], "brake_noise")
+            self.assertEqual(grinding["data"]["knowledge_id"], "brake_grinding")
+
+    def test_underspecified_follow_up_keeps_context_but_explicit_topic_switches(self):
+        conversation_id = "7a4c2a1e-0000-4000-8000-000000000193"
+        scope = "customer:follow-up-test"
+        answer_chat(
+            "My brakes squeak when I stop", viewer_role="customer",
+            conversation_id=conversation_id, conversation_scope=scope, retrieval_protocol=1,
+        )
+        front = answer_chat(
+            "What about the front ones?", viewer_role="customer",
+            conversation_id=conversation_id, conversation_scope=scope, retrieval_protocol=1,
+        )
+        self.assertEqual(front["data"]["knowledge_id"], "brake_noise")
+        self.assertEqual(front["data"]["resolved_from_conversation"]["topic"], "brake_noise")
+
+        tire = answer_chat(
+            "What about a flat tire?", viewer_role="customer",
+            conversation_id=conversation_id, conversation_scope=scope, retrieval_protocol=1,
+        )
+        self.assertEqual(tire["data"]["knowledge_id"], "tire_puncture")
+
+    def test_independent_symptoms_are_answered_from_separate_topics(self):
+        response = answer_chat(
+            "The engine is overheating and the brakes squeal; what should I do?",
+            viewer_role="customer", retrieval_protocol=1,
+        )
+        self.assertEqual(set(response["data"]["knowledge_ids"]), {"engine_overheating", "brake_noise"})
+        self.assertIn("engine overheating", response["answer"].casefold())
+        self.assertIn("brake", response["answer"].casefold())
+
+    def test_conversation_memory_does_not_store_question_text(self):
+        from .models import Conversation
+
+        conversation_id = "7a4c2a1e-0000-4000-8000-000000000192"
+        with self.assertLogs("ai_api.assistant", level="INFO") as captured:
+            answer_chat(
+                "what causes my car to overheat in heavy traffic?",
+                viewer_role="customer", conversation_id=conversation_id,
+                conversation_scope="customer:privacy-test", retrieval_protocol=1,
+            )
+        memory = Conversation.objects.get(id=conversation_id).memory
+        self.assertNotIn("query", memory["last_topic"])
+        self.assertNotIn("heavy traffic", str(memory).casefold())
+        self.assertNotIn("heavy traffic", "\n".join(captured.output).casefold())
+
     def test_car_questions_reach_the_right_topic(self):
         expected = {
             "what does the airbag light mean": "airbag_light", "SRS light on dashboard": "airbag_light",
@@ -1294,3 +1355,170 @@ class PredictiveMaintenanceKnowledgeTests(TestCase):
         self.assertEqual(len({a.splitlines()[0] for a in answers}), 3)
         self.assertTrue(answers[0].startswith("How accurate each model is"), answers[0])
         self.assertTrue(answers[1].startswith("The maintenance answers use four kinds of data"), answers[1])
+
+
+def _admin_answer(message, results):
+    """The administrator's final answer for results shaped like ChatRetrieval's (no PHP needed)."""
+    first = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1)
+    return first, answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1,
+                              retrieval={"plan": first["plan"], "results": results, "data_as_of": "2026-10-31T09:00:00+08:00"})
+
+
+PAYMENT_ROWS = [
+    {"id": 4, "reservation_id": 17, "reference_number": "INV-4", "amount": "3400.00", "paid_amount": "3400.00", "currency": "PHP",
+     "status": "paid", "created_at": "2026-09-01 08:00:00", "paid_at": "2026-09-01 08:02:00", "expires_at": None,
+     "review_reason": "Paid after the reservation was cancelled. Refund the customer.", "reservation_status": "cancelled",
+     "customer_name": "Ana Santos", "make": "Honda", "model": "City"},
+    {"id": 1, "reservation_id": 41, "reference_number": "INV-1", "amount": "4500.00", "paid_amount": None, "currency": "PHP",
+     "status": "expired", "created_at": "2026-10-29 09:00:00", "paid_at": None, "expires_at": "2026-10-29 10:00:00",
+     "review_reason": None, "reservation_status": "expired", "customer_name": "Ana Santos", "make": "Toyota", "model": "Vios"},
+]
+
+
+def _payments_result(args, matching):
+    return [{"tool": "payments.summary", "status": "ok", "args": {"limit": 20, "statuses": [], "review_only": False,
+                                                                  "reservation_id": None, "from": None, "to": None, **args},
+             "data": {"counts_by_status": {"pending": 0, "paid": 1, "expired": 1}, "attempts": 2, "paid_total": 3400.0,
+                      "needing_review_count": 1, "needing_review": [PAYMENT_ROWS[0]], "matching_count": len(matching),
+                      "matching": matching, "from": None, "to": None, "currency": "PHP", "today": "2026-10-31"}}]
+
+
+class AdminRecordsTests(TestCase):
+    """Payments and customers for administrators (payments.summary, customers.summary)."""
+
+    def plan(self, message):
+        result = plan_message(normalize_message(message), "admin", {}, {})
+        return result.get("plans", [result])[0] if result else None
+
+    def test_payment_and_customer_questions_reach_their_records(self):
+        expected = {
+            "Which payments failed today?": ("payments.summary", {"statuses": ["expired"]}),
+            "Are there payments that need review or refund?": ("payments.summary", {"review_only": True}),
+            "How many payments are still pending?": ("payments.summary", {"statuses": ["pending"]}),
+            "How many customers do we have?": ("customers.summary", {}),
+            "Which customers have not uploaded their driver's licence?": ("customers.summary", {"missing_licence": True}),
+            "how many users registered in October?": ("customers.summary", {"sort": "newest"}),
+        }
+        for message, (tool, args) in expected.items():
+            retrieval = self.plan(message)["retrievals"][0]
+            self.assertEqual(retrieval["tool"], tool, message)
+            for key, value in args.items():
+                self.assertEqual(retrieval["args"].get(key), value, message)
+
+    def test_rule_questions_stay_with_the_guide(self):
+        for message in ("Can customers pay with GCash?", "What payment methods do you accept?", "Do customers need a licence to rent?"):
+            plan = self.plan(message)
+            self.assertFalse(plan and plan.get("retrievals"), message)
+
+    def test_failed_payments_are_listed_without_the_received_total(self):
+        _, final = _admin_answer("Which payments failed?", _payments_result({"statuses": ["expired"]}, [PAYMENT_ROWS[1]]))
+        self.assertIn("1 payment attempt is failed or expired", final["answer"])
+        self.assertIn("INV-1", final["answer"])
+        self.assertNotIn("Received through", final["answer"])
+
+    def test_review_queue_gives_the_reason(self):
+        _, final = _admin_answer("Are there payments that need review or refund?",
+                                 _payments_result({"review_only": True}, [PAYMENT_ROWS[0]]))
+        self.assertIn("Refund the customer", final["answer"])
+        self.assertIn("PHP 3,400.00", final["answer"])
+
+    def test_customers_missing_a_licence_are_named_without_contact_details(self):
+        results = [{"tool": "customers.summary", "status": "ok", "args": {"limit": 20, "sort": "bookings", "missing_licence": True,
+                                                                          "from": None, "to": None},
+                    "data": {"total_customers": 2, "active_accounts": 2, "joined_in_period": None, "without_verified_licence": 1,
+                             "with_bookings": 2, "sort": "bookings", "from": None, "to": None, "currency": "PHP", "today": "2026-10-31",
+                             "customers": [{"id": 3, "name": "Ben Cruz", "joined_on": "2026-09-01", "active_account": True,
+                                            "has_licence": False, "licence_expired": False, "has_photo": False, "reservations": 1,
+                                            "completed": 0, "cancelled": 0, "expired": 0, "active": 1, "paid_total": 10500.0}]}}]
+        _, final = _admin_answer("Which customers have not uploaded their driver's licence?", results)
+        self.assertIn("Ben Cruz: no licence details, no verification photo", final["answer"])
+        self.assertNotIn("@", final["answer"])
+
+
+class AdminRoutingTests(TestCase):
+    """Administrator record questions that used to reach the wrong records or general knowledge (2026-11-16)."""
+    VOCABULARY = {"makes": ["Toyota", "Honda"], "categories": ["Sedan", "SUV"],
+                  "models": [{"make": "Toyota", "model": "Vios"}, {"make": "Honda", "model": "City"}]}
+
+    def plan(self, message):
+        response = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1, vocabulary=self.VOCABULARY)
+        self.assertEqual(response.get("status"), "needs_data", message)
+        return response["plan"]
+
+    def test_record_questions_reach_their_records(self):
+        expected = {
+            "Which cars are due back tomorrow?": ("reservations.summary", "return_on"),
+            "Are any rentals overdue for return?": ("reservations.summary", "overdue"),
+            "which cars are late to be returned": ("reservations.summary", "overdue"),
+            "How many reservations expired without payment this week?": ("reservations.summary", "statuses"),
+            "Show reservations waiting for payment": ("reservations.summary", "statuses"),
+            "What is the status of the Honda City?": ("vehicles.status", "models"),
+            "When was the last oil change on vehicle 2?": ("maintenance.records", "vehicle_ids"),
+            "Show the service history of vehicle 3": ("maintenance.records", "vehicle_ids"),
+        }
+        for message, (tool, arg) in expected.items():
+            retrieval = self.plan(message)["retrievals"][0]
+            self.assertEqual(retrieval["tool"], tool, message)
+            self.assertTrue(retrieval["args"].get(arg), message)
+        self.assertNotIn("customer_name", self.plan("Show reservations waiting for payment")["retrievals"][0]["args"])
+
+    def test_most_repairs_ranks_by_record_count(self):
+        plan = self.plan("Which vehicle has the most repairs?")
+        self.assertEqual((plan["retrievals"][0]["tool"], plan.get("rank_by")), ("maintenance.costs", "records"))
+
+    def test_service_questions_stay_with_maintenance_and_explanations_with_the_guide(self):
+        self.assertEqual(self.plan("which cars are overdue for service")["retrievals"][0]["tool"], "maintenance.due")
+        response = answer_chat("how do returns work?", viewer_role="admin", retrieval_protocol=1, vocabulary=self.VOCABULARY)
+        self.assertNotEqual(response.get("status"), "needs_data")
+
+    def test_overdue_rentals_name_the_days_late(self):
+        message = "Are any rentals overdue for return?"
+        first = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1, vocabulary=self.VOCABULARY)
+        results = [{"tool": "reservations.summary", "status": "ok", "args": first["plan"]["retrievals"][0]["args"],
+                    "data": {"reservations": [{"id": 52, "make": "Toyota", "model": "Vios", "start_date": "2026-11-01", "end_date": "2026-11-05",
+                                               "status": "confirmed", "customer_name": "Ben Cruz", "total_amount": 6000.0,
+                                               "handed_over": True, "returned": False, "days_overdue": 3}],
+                             "total_count": 1, "all_records_count": 3, "totals_by_status": {"confirmed": 6000.0}, "currency": "PHP"}}]
+        final = answer_chat(message, viewer_role="admin", conversation_scope="admin:1", retrieval_protocol=1, vocabulary=self.VOCABULARY,
+                            retrieval={"plan": first["plan"], "results": results, "data_as_of": "2026-11-08T09:00:00+08:00"})
+        self.assertIn("#52 Ben Cruz", final["answer"])
+        self.assertIn("3 day(s) late", final["answer"])
+
+
+class UnderstandingFixesTests(TestCase):
+    """Taglish words, explanation questions, vague messages and topic changes (2026-11-16)."""
+
+    def test_taglish_car_words_are_translated(self):
+        self.assertEqual(normalize_message(correct_typos("may tunog yung preno pag nagbreak ako, parang sumisipol")),
+                         "there is a noise the brakes when braking ako, like squealing")
+        self.assertIn("how often change", normalize_message("Gaano kadalas magpalit ng engine oil?"))
+        self.assertIn("for 3 days", normalize_message("pwede ba pag 3 araw"))  # a number after "pag" stays a rental length
+
+    def test_why_and_meaning_questions_add_the_guide_to_the_booking_lookup(self):
+        for message, guide in (("why is my booking still pending", True), ("what does expired mean on my booking", True),
+                               ("is my booking confirmed already", False)):
+            plan = plan_message(normalize_message(message), "customer", {}, {})
+            plan = plan.get("plans", [plan])[0]
+            self.assertEqual(plan["retrievals"][0]["tool"], "bookings.mine", message)
+            self.assertEqual(plan["guide"], guide, message)
+
+    def test_vague_messages_get_a_clarifying_question(self):
+        for message in ("something's wrong with my car", "there's a light on", "My car is acting weird lately, any thoughts?"):
+            self.assertEqual(answer_chat(message, viewer_role="customer", retrieval_protocol=1)["intent"], "clarification_needed", message)
+        for message in ("the breaks are making sounds, what is the problem?", "There are several warning lights on, what should I do first?",
+                        "something is wrong with my booking"):
+            # A booking question returns a lookup plan (no intent yet); either way it is not asked back.
+            self.assertNotEqual(answer_chat(message, viewer_role="customer", retrieval_protocol=1).get("intent"), "clarification_needed", message)
+
+    @skipUnless(INDEX_BUILT, "knowledge index not built")
+    def test_a_new_problem_is_not_answered_as_the_last_one(self):
+        conversation = "8f6c2a52-0d0e-4a3b-9b8e-6a2d1f4c7e01"
+
+        def ask(message):
+            return answer_chat(message, viewer_role="customer", conversation_id=conversation,
+                               conversation_scope="customer:topic-test", retrieval_protocol=1)
+
+        self.assertEqual(ask("my brakes squeak when I stop")["data"].get("knowledge_id"), "brake_noise")
+        self.assertEqual(ask("what about the front ones?")["data"].get("knowledge_id"), "brake_noise")
+        switched = ask("I have an engine light and my throttle is not working. What could be the problem?")
+        self.assertNotEqual(switched["data"].get("knowledge_id"), "brake_noise")
