@@ -1,0 +1,156 @@
+{"id":"dev001","category":"problem","expected":"kb:brake_noise","question":"breaks has sounds, how to fix"}
+{"id":"dev002","category":"problem","expected":"kb:brake_noise","question":"brakes have sounds"}
+{"id":"dev003","category":"problem","expected":"kb:brake_noise","question":"My brakes squeal when I come to a stop; what should I check?"}
+{"id":"dev004","category":"problem","expected":"kb:brake_grinding","question":"There is a metal scraping noise when I press the pedal"}
+{"id":"dev005","category":"problem","expected":"kb:brake_vibration","question":"The front brake shudders when I slow down"}
+{"id":"dev006","category":"problem","expected":"kb:brake_vibration","question":"Yung preno nanginginig pag pumipigil, ano kaya?"}
+{"id":"dev007","category":"problem","expected":"kb:high_speed_vibration","question":"steering wheel shaking on highway, how to fix"}
+{"id":"dev008","category":"problem","expected":"kb:cv_joint_clicking","question":"A clicking sound comes from a wheel when I turn tightly"}
+{"id":"dev009","category":"problem","expected":"kb:vehicle_pulling","question":"My car drifts to the right on a flat road"}
+{"id":"dev010","category":"problem","expected":"kb:engine_cranks_no_start","question":"engine cranks but wont start, any idea"}
+{"id":"dev011","category":"problem","expected":"kb:hard_starting_cold","question":"The car takes ages to start first thing in the morning"}
+{"id":"dev012","category":"problem","expected":"kb:engine_stalling","question":"Makina namamatay when I stop at traffic lights"}
+{"id":"dev013","category":"problem","expected":"kb:idle_vibration","question":"The car feels shaky when sitting at idle"}
+{"id":"dev014","category":"problem","expected":"kb:high_fuel_consumption","question":"My gas consumption suddenly got much worse"}
+{"id":"dev015","category":"problem","expected":"clarify","question":"My car is acting weird lately, any thoughts?"}
+{"id":"dev016","category":"warning","expected":"kb:check_engine_flashing","question":"check engine light blinking, can I drive?"}
+{"id":"dev017","category":"warning","expected":"kb:brake_warning_abs","question":"The red brake warning came on; ano ibig sabihin?"}
+{"id":"dev018","category":"warning","expected":"kb:battery_charging_light","question":"battery icon stays lit while driving"}
+{"id":"dev019","category":"warning","expected":"kb:tpms_light","question":"What does the tire pressure symbol on my dash mean?"}
+{"id":"dev020","category":"warning","expected":"kb:abs_system","question":"ABS light is on but brakes still work"}
+{"id":"dev021","category":"warning","expected":"kb:airbag_light","question":"airbag warning lamp appeared after I started the car"}
+{"id":"dev022","category":"warning","expected":"kb:eps_light","question":"steering wheel icon on the dashboard, what now"}
+{"id":"dev023","category":"warning","expected":"kb:engine_oil_level","question":"Red oil can light flashed while driving"}
+{"id":"dev024","category":"warning","expected":"kb:temperature_gauge_low","question":"Temperature gauge won't rise after a long drive"}
+{"id":"dev025","category":"warning","expected":"kb:dashboard_warning_obd","question":"There are several warning lights on, what should I do first?"}
+{"id":"dev026","category":"warning","expected":"kb:check_engine_flashing","question":"check engin light is flashin, safe ba?"}
+{"id":"dev027","category":"warning","expected":"kb:brake_warning_abs","question":"Brake fluid warning light came on, should I stop?"}
+{"id":"dev028","category":"warning","expected":"kb:battery_weak_signs","question":"Dash lights dim when I turn the key"}
+{"id":"dev029","category":"warning","expected":"kb:tpms_light","question":"Gulong warning light keeps coming back after I inflated them"}
+{"id":"dev030","category":"warning","expected":"kb:warning_chimes","question":"Why does my car beep when a door is open?"}
+{"id":"dev031","category":"dtc","expected":"dtc","question":"What does code P0420 mean?"}
+{"id":"dev032","category":"dtc","expected":"dtc","question":"Scanner says P0301, ano ibig sabihin?"}
+{"id":"dev033","category":"dtc","expected":"dtc","question":"P0171: what failed and how do I fix it?"}
+{"id":"dev034","category":"dtc","expected":"dtc","question":"Can you explain P0174 in simple terms?"}
+{"id":"dev035","category":"dtc","expected":"dtc","question":"What is U0100 and is it serious?"}
+{"id":"dev036","category":"dtc","expected":"dtc","question":"I got P0455 after filling up. Any ideas?"}
+{"id":"dev037","category":"dtc","expected":"dtc","question":"P0128 showed up; what does that code say?"}
+{"id":"dev038","category":"dtc","expected":"dtc","question":"What does P0700 mean on an automatic?"}
+{"id":"dev039","category":"dtc","expected":"dtc","question":"Explain C0035 from my scan tool"}
+{"id":"dev040","category":"dtc","expected":"dtc","question":"B0020 code meaning please"}
+{"id":"dev041","category":"dtc","expected":"dtc","question":"Scanner gave P0442, what should I look for?"}
+{"id":"dev042","category":"dtc","expected":"dtc","question":"What does random misfire code P0300 mean?"}
+{"id":"dev043","category":"dtc","expected":"dtc","question":"Ano ang ibig sabihin ng P0113?"}
+{"id":"dev044","category":"dtc","expected":"dtc","question":"U0121 popped up, can you explain it?"}
+{"id":"dev045","category":"dtc","expected":"dtc","question":"P0500, what is the system reporting?"}
+{"id":"dev046","category":"maintenance","expected":"kb:oil_change_schedule","question":"How often do I need to change the engine oil?"}
+{"id":"dev047","category":"maintenance","expected":"kb:engine_oil_level","question":"How do I check and top up oil safely?"}
+{"id":"dev048","category":"maintenance","expected":"kb:battery_maintenance","question":"How can I make a car battery last longer?"}
+{"id":"dev049","category":"maintenance","expected":"kb:tire_rotation","question":"When should I rotate my tires?"}
+{"id":"dev050","category":"maintenance","expected":"kb:coolant_maintenance","question":"How often should coolant be changed?"}
+{"id":"dev051","category":"maintenance","expected":"kb:brake_fluid_maintenance","question":"Brake fluid service interval, please"}
+{"id":"dev052","category":"maintenance","expected":"kb:service_schedule_pms","question":"PMS schedule for a car - what mileage?"}
+{"id":"dev053","category":"maintenance","expected":"kb:filters_routine_service","question":"What filters and plugs are part of regular service?"}
+{"id":"dev054","category":"maintenance","expected":"kb:tire_replacement","question":"How to know if my tires need replacing"}
+{"id":"dev055","category":"maintenance","expected":"kb:maintenance_schedule_overdue","question":"My service is overdue by 10,000 km, what should I do?"}
+{"id":"dev056","category":"maintenance","expected":"kb:pm_severe_service","question":"I drive in traffic and dust every day; does that change service intervals?"}
+{"id":"dev057","category":"maintenance","expected":"kb:pm_mileage_vs_time","question":"Should I service by mileage or by months?"}
+{"id":"dev058","category":"maintenance","expected":"kb:transmission_fluid","question":"How often to change automatic transmission fluid?"}
+{"id":"dev059","category":"maintenance","expected":"kb:oil_change_schedule","question":"Gaano kadalas magpalit ng engine oil?"}
+{"id":"dev060","category":"maintenance","expected":"kb:pre_rental_inspection","question":"What should staff check between rentals?"}
+{"id":"dev061","category":"vehicles","expected":"vehicles","question":"Which cars are available today?"}
+{"id":"dev062","category":"vehicles","expected":"vehicles","question":"May automatic SUV ba na 7 seater?"}
+{"id":"dev063","category":"vehicles","expected":"vehicles","question":"Is a Toyota Vios available for this weekend?"}
+{"id":"dev064","category":"vehicles","expected":"vehicles","question":"Show me the Honda cars in the fleet"}
+{"id":"dev065","category":"vehicles","expected":"vehicles","question":"Do you have a car with enough seats for six adults?"}
+{"id":"dev066","category":"vehicles","expected":"vehicles","question":"Does the Vios have air conditioning?"}
+{"id":"dev067","category":"vehicles","expected":"vehicles","question":"Which listed vehicle has GPS navigation?"}
+{"id":"dev068","category":"vehicles","expected":"vehicles","question":"Are any of the vehicles manual transmission?"}
+{"id":"dev069","category":"vehicles","expected":"vehicles","question":"Can I rent the Fortuner next week?"}
+{"id":"dev070","category":"vehicles","expected":"vehicles","question":"Show available sedans, not SUVs"}
+{"id":"dev071","category":"vehicles","expected":"vehicles","question":"Is the Honda City available right now?"}
+{"id":"dev072","category":"vehicles","expected":"vehicles","question":"I need a seven seater, what's on hand?"}
+{"id":"dev073","category":"vehicles","expected":"vehicles","question":"Do you have Toyota cars with automatic transmission?"}
+{"id":"dev074","category":"vehicles","expected":"vehicles","question":"Can you list the cars that are not available?"}
+{"id":"dev075","category":"pricing","expected":"vehicles","question":"How much per day for the Toyota Vios?"}
+{"id":"dev076","category":"pricing","expected":"vehicles","question":"What's the Fortuner rate for three days?"}
+{"id":"dev077","category":"pricing","expected":"vehicles","question":"Presyo ng Vios for two days, please"}
+{"id":"dev078","category":"pricing","expected":"vehicles","question":"Can you quote the Honda City for a week?"}
+{"id":"dev079","category":"pricing","expected":"vehicles","question":"Daily rate ng automatic SUV?"}
+{"id":"dev080","category":"pricing","expected":"vehicles","question":"Which sedan costs the least per day?"}
+{"id":"dev081","category":"pricing","expected":"vehicles","question":"How much would a Vios cost for 5 days including its deposit?"}
+{"id":"dev082","category":"pricing","expected":"vehicles","question":"What is the rental total for the Fortuner for two days?"}
+{"id":"dev083","category":"pricing","expected":"vehicles","question":"Budget is PHP 2,000 a day; which car fits?"}
+{"id":"dev084","category":"pricing","expected":"vehicles","question":"Is the Vios cheaper than the City?"}
+{"id":"dev085","category":"pricing","expected":"vehicles","question":"Give me a price estimate for a Toyota Fortuner"}
+{"id":"dev086","category":"pricing","expected":"vehicles","question":"How much for the cheapest car for one day?"}
+{"id":"dev087","category":"pricing","expected":"vehicles","question":"What deposit do I pay for renting the Vios?"}
+{"id":"dev088","category":"pricing","expected":"vehicles","question":"Magkano ang rent ng Honda City kada araw?"}
+{"id":"dev089","category":"pricing","expected":"vehicles","question":"Need the daily price and deposit for any available car"}
+{"id":"dev090","category":"bookings","expected":"ownbook","question":"Show my reservations"}
+{"id":"dev091","category":"bookings","expected":"ownbook","question":"May pending booking ba ako?"}
+{"id":"dev092","category":"bookings","expected":"ownbook","question":"What is the status of my latest rental?"}
+{"id":"dev093","category":"bookings","expected":"ownbook","question":"List my past and current bookings"}
+{"id":"dev094","category":"bookings","expected":"ownbook","question":"Have I got a confirmed reservation?"}
+{"id":"dev095","category":"bookings","expected":"ownbook","question":"Did my booking get approved?"}
+{"id":"dev096","category":"bookings","expected":"ownbook","question":"I want to see my rental history"}
+{"id":"dev097","category":"bookings","expected":"ownbook","question":"Can you check my booking details?"}
+{"id":"dev098","category":"bookings","expected":"ownbook","question":"What cars did I reserve before?"}
+{"id":"dev099","category":"bookings","expected":"ownbook","question":"Show my completed reservations"}
+{"id":"dev100","category":"bookings","expected":"allbook","question":"Show all reservations in the system"}
+{"id":"dev101","category":"bookings","expected":"allbook","question":"Which bookings are still pending?"}
+{"id":"dev102","category":"bookings","expected":"allbook","question":"How many reservations are confirmed?"}
+{"id":"dev103","category":"bookings","expected":"allbook","question":"List customers' bookings for this month"}
+{"id":"dev104","category":"bookings","expected":"allbook","question":"Find the reservation for vehicle 3"}
+{"id":"dev105","category":"payment","expected":"guide","question":"Can I pay online with GCash?"}
+{"id":"dev106","category":"payment","expected":"guide","question":"Does checkout accept credit card?"}
+{"id":"dev107","category":"payment","expected":"guide","question":"My payment is pending; when is it confirmed?"}
+{"id":"dev108","category":"payment","expected":"guide","question":"I paid but the booking still says unpaid, what now?"}
+{"id":"dev109","category":"payment","expected":"guide","question":"How do I pay for my reservation?"}
+{"id":"dev110","category":"payment","expected":"guide","question":"Is the security deposit charged online too?"}
+{"id":"dev111","category":"payment","expected":"guide","question":"Can I pay cash at pickup?"}
+{"id":"dev112","category":"payment","expected":"guide","question":"May GCash ba kayong payment?"}
+{"id":"dev113","category":"payment","expected":"guide","question":"My checkout page won't load after I click Pay Now"}
+{"id":"dev114","category":"payment","expected":"guide","question":"Is my card information saved by this system?"}
+{"id":"dev115","category":"payment","expected":"guide","question":"What happens if the online payment fails?"}
+{"id":"dev116","category":"payment","expected":"guide","question":"Can I split the rental payment into two payments?"}
+{"id":"dev117","category":"payment","expected":"guide","question":"How soon should I pay after booking?"}
+{"id":"dev118","category":"payment","expected":"guide","question":"Are deposits refundable after returning the car?"}
+{"id":"dev119","category":"payment","expected":"guide","question":"Do you accept bank transfer?"}
+{"id":"dev120","category":"policy","expected":"guide","question":"What documents do I need to rent a car?"}
+{"id":"dev121","category":"policy","expected":"guide","question":"How old must the driver be?"}
+{"id":"dev122","category":"policy","expected":"guide","question":"Can I extend my rental by one day?"}
+{"id":"dev123","category":"policy","expected":"guide","question":"How do I cancel a reservation?"}
+{"id":"dev124","category":"policy","expected":"guide","question":"Can I change my pickup date after booking?"}
+{"id":"dev125","category":"policy","expected":"guide","question":"Where do I pick up and return the vehicle?"}
+{"id":"dev126","category":"policy","expected":"guide","question":"What is the minimum rental period?"}
+{"id":"dev127","category":"policy","expected":"guide","question":"Can someone else drive the rental car?"}
+{"id":"dev128","category":"policy","expected":"guide","question":"What is your cancellation and refund policy?"}
+{"id":"dev129","category":"policy","expected":"guide","question":"Are pets allowed inside the vehicle?"}
+{"id":"dev130","category":"policy","expected":"guide","question":"Do you allow smoking in rental cars?"}
+{"id":"dev131","category":"policy","expected":"guide","question":"Pwede bang i-reschedule ang booking ko?"}
+{"id":"dev132","category":"policy","expected":"guide","question":"What happens if I bring the car back late?"}
+{"id":"dev133","category":"policy","expected":"guide","question":"Do I need to sign a rental agreement?"}
+{"id":"dev134","category":"policy","expected":"guide","question":"How can I report damage to a rental car?"}
+{"id":"dev135","category":"admin","expected":"admin","question":"Which vehicles are currently under maintenance?"}
+{"id":"dev136","category":"admin","expected":"admin","question":"Show the vehicles that are due for service"}
+{"id":"dev137","category":"admin","expected":"admin","question":"How many cars are overdue for inspection?"}
+{"id":"dev138","category":"admin","expected":"admin","question":"List fleet maintenance records for the Fortuner"}
+{"id":"dev139","category":"admin","expected":"admin","question":"What repairs were done to vehicle 3?"}
+{"id":"dev140","category":"admin","expected":"admin","question":"Which reservations are waiting for approval?"}
+{"id":"dev141","category":"admin","expected":"admin","question":"How much revenue did the fleet make this month?"}
+{"id":"dev142","category":"admin","expected":"admin","question":"What is the fleet utilisation this month?"}
+{"id":"dev143","category":"admin","expected":"admin","question":"Which vehicle has the most maintenance costs?"}
+{"id":"dev144","category":"admin","expected":"admin","question":"Show upcoming scheduled services"}
+{"id":"dev145","category":"admin","expected":"admin","question":"Are there recurring failures on any vehicle?"}
+{"id":"dev146","category":"admin","expected":"admin","question":"Which cars are in poor condition?"}
+{"id":"dev147","category":"admin","expected":"admin","question":"How many vehicles are available versus rented?"}
+{"id":"dev148","category":"admin","expected":"admin","question":"Show reservation details for vehicle 3"}
+{"id":"dev149","category":"admin","expected":"admin","question":"Can you show customer phone numbers from the database?"}
+{"id":"dev150","category":"vehicles","expected":"vehicles","question":"Any Honda City still free for a day?"}
+{"id":"dev151","category":"follow_up","expected":"kb:brake_noise","seed":"My brakes squeak when I stop","question":"What about the front ones?"}
+{"id":"dev152","category":"follow_up","expected":"kb:engine_overheating","seed":"The temperature gauge is in the red","question":"Can I still drive it?"}
+{"id":"dev153","category":"follow_up","expected":"kb:hesitation_jerking","seed":"My car jerks when accelerating","question":"What else could cause that?"}
+{"id":"dev154","category":"follow_up","expected":"dtc","seed":"What does P0420 mean?","question":"What about the causes?"}
+{"id":"dev155","category":"follow_up","expected":"kb:battery_weak_signs","seed":"My car will not start","question":"And what about the battery?"}
+{"id":"dev156","category":"multi","expected":"multi","question":"The engine is overheating and the brakes squeal; what should I do?"}
