@@ -1,0 +1,3 @@
+88313df522edc700cd57d419e86645a4c7b0448fff9b5027a913ba3e7c351acf *data/evaluation/sealed_2026-11-17/questions.json
+4d2abb0d5e55316eefa3dfaae6c663cd9fd9d6d7726c10bd5d29573fbfbeb878 *data/evaluation/sealed_2026-11-17/baseline_topic_ids.json
+3042c124d3c222db2b7f483174f96a610e7563324301d4c570583b3125f0b431 *scripts/evaluate_sealed.py
