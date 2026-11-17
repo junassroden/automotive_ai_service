@@ -113,6 +113,48 @@ def embed_texts(texts, kind):
     ).astype(np.float32)
 
 
+@lru_cache(maxsize=512)
+def query_vector(text):
+    """The embedding of one question, cached: a chat turn ranks topics, then statements, with the same text."""
+    return embed_texts([text], "query")[0]
+
+
+@lru_cache(maxsize=1)
+def load_phrase_index():
+    """Short descriptions of each curated topic and their vectors (data_pipeline/knowledge_index.py), or None
+    when the index was built before they existed; topic ranking then uses the whole-entry vectors only."""
+    root = Path(settings.KNOWLEDGE_INDEX_PATH)
+    try:
+        phrases = json.loads((root / "curated_phrases.json").read_text(encoding="utf-8"))
+        vectors = np.load(root / "curated_phrase_vectors.npy")
+    except (OSError, ValueError):
+        logger.warning("curated phrase vectors are missing; rebuild the knowledge index")
+        return None
+    if vectors.ndim != 2 or vectors.shape[0] != len(phrases):
+        logger.warning("curated phrase vectors are out of sync; rebuild the knowledge index")
+        return None
+    return phrases, vectors
+
+
+def phrase_similarity(query):
+    """{document id: (similarity, best phrase)} between the question and each topic's short descriptions. The similarity
+    is the mean of the topic's two closest phrases, so one phrase that happens to share the question's wording
+    ("brakes are overheating" for "my car is overheating") can't outrank a topic that several phrases describe."""
+    loaded = load_phrase_index()
+    if loaded is None:
+        return {}
+    phrases, vectors = loaded
+    # Question and phrases are both short, user-style texts, embedded with the same "query: " prefix.
+    similarities = vectors @ query_vector(query)
+    found = {}
+    for position in np.argsort(-similarities):
+        document_id = phrases[position]["document_id"]
+        top = found.setdefault(document_id, [])
+        if len(top) < 2:
+            top.append((float(similarities[position]), phrases[position]["text"]))
+    return {document_id: (sum(score for score, _ in top) / len(top), top[0][1]) for document_id, top in found.items()}
+
+
 @lru_cache(maxsize=1)
 def load_parts_lookup():
     path = Path(settings.KNOWLEDGE_INDEX_PATH) / "parts_lookup.json"
@@ -170,8 +212,7 @@ def retrieve(query, role="customer", top_k=5, source_types=None):
 
     bm25 = _bm25_scores(index, query)
     char = (index["char_matrix"] @ index["char_vectorizer"].transform([query.casefold()]).T).toarray().ravel()
-    query_vector = embed_texts([query], "query")[0]
-    semantic = np.asarray(index["semantic_vectors"] @ query_vector, dtype=np.float32)
+    semantic = np.asarray(index["semantic_vectors"] @ query_vector(query), dtype=np.float32)
     bm25[~allowed], char[~allowed], semantic[~allowed] = -1, -1, -1
     candidates = np.union1d(
         np.union1d(np.argsort(-bm25)[:SEMANTIC_CANDIDATES], np.argsort(-char)[:SEMANTIC_CANDIDATES]),
