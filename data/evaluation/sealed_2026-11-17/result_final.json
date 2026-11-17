@@ -1,0 +1,3127 @@
+{
+  "label": "final",
+  "summary": {
+    "cases_passed": 64,
+    "cases": 110,
+    "metrics": {
+      "abstention": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "accuracy": {
+        "passed": 91,
+        "total": 111,
+        "rate": 0.82
+      },
+      "answered": {
+        "passed": 101,
+        "total": 108,
+        "rate": 0.935
+      },
+      "causes": {
+        "passed": 53,
+        "total": 63,
+        "rate": 0.841
+      },
+      "context": {
+        "passed": 5,
+        "total": 6,
+        "rate": 0.833
+      },
+      "identification": {
+        "passed": 82,
+        "total": 107,
+        "rate": 0.766
+      },
+      "relevance": {
+        "passed": 82,
+        "total": 107,
+        "rate": 0.766
+      },
+      "repetition": {
+        "passed": 115,
+        "total": 116,
+        "rate": 0.991
+      },
+      "retrieval": {
+        "passed": 66,
+        "total": 99,
+        "rate": 0.667
+      },
+      "safety": {
+        "passed": 16,
+        "total": 21,
+        "rate": 0.762
+      },
+      "usefulness": {
+        "passed": 91,
+        "total": 103,
+        "rate": 0.883
+      }
+    },
+    "by_tag": {
+      "brakes": {
+        "passed": 5,
+        "total": 8
+      },
+      "cooling": {
+        "passed": 4,
+        "total": 6
+      },
+      "dtc": {
+        "passed": 2,
+        "total": 5
+      },
+      "electrical": {
+        "passed": 2,
+        "total": 6
+      },
+      "engine": {
+        "passed": 8,
+        "total": 10
+      },
+      "exhaust": {
+        "passed": 3,
+        "total": 4
+      },
+      "follow_up": {
+        "passed": 2,
+        "total": 5
+      },
+      "hvac": {
+        "passed": 3,
+        "total": 4
+      },
+      "maintenance": {
+        "passed": 5,
+        "total": 8
+      },
+      "misspelled": {
+        "passed": 2,
+        "total": 2
+      },
+      "multi_symptom": {
+        "passed": 4,
+        "total": 4
+      },
+      "noise_smell": {
+        "passed": 3,
+        "total": 4
+      },
+      "out_of_domain": {
+        "passed": 3,
+        "total": 3
+      },
+      "paraphrase": {
+        "passed": 26,
+        "total": 41
+      },
+      "rental": {
+        "passed": 0,
+        "total": 4
+      },
+      "safety": {
+        "passed": 5,
+        "total": 11
+      },
+      "starting": {
+        "passed": 1,
+        "total": 4
+      },
+      "steering": {
+        "passed": 4,
+        "total": 6
+      },
+      "suspension": {
+        "passed": 2,
+        "total": 3
+      },
+      "taglish": {
+        "passed": 8,
+        "total": 17
+      },
+      "tires": {
+        "passed": 4,
+        "total": 6
+      },
+      "topic_change": {
+        "passed": 1,
+        "total": 1
+      },
+      "transmission": {
+        "passed": 3,
+        "total": 6
+      },
+      "unknown": {
+        "passed": 2,
+        "total": 2
+      },
+      "vague": {
+        "passed": 0,
+        "total": 1
+      },
+      "warning_light": {
+        "passed": 5,
+        "total": 9
+      },
+      "wheels": {
+        "passed": 1,
+        "total": 1
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "s001",
+      "tags": [
+        "paraphrase",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "Every time I slow down there's a squeal coming from the front wheels",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s002",
+      "tags": [
+        "paraphrase",
+        "brakes",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "metal on metal scraping sound when i brake",
+          "answer": "A grinding or metal-on-metal scraping sound when braking usually means the brake friction material is worn through, so the metal pad backing plate is rubbing the rotor, or something such as a stone is caught between the pad, rotor or dust shield. It can quickly damage the rotors and reduce braking performance.\n\nA grinding noise that is also present when not braking can come from a worn wheel bearing.\n\nDo not rely on sound alone to judge what is left of the pads; have them and the rotors measured.\n\nGrinding brakes can lose stopping power and quickly damage the rotors: stop using the car and have it inspected or towed.",
+          "kind": "answer",
+          "topic": "brake_grinding",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s003",
+      "tags": [
+        "paraphrase",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "The whole car shudders when I press the brake pedal at highway speed",
+          "answer": "Brake pads and rotors wear with use. Squealing, grinding, vibration when braking or a longer stopping distance are signs they need inspecting.\n\nSquealing, grinding, vibration while braking, pulling, longer stopping distance, or a changed pedal feel.\n\nCommon causes include pads worn down to the wear indicator, worn or uneven rotors, a sticking caliper or slide pin or pads contaminated with oil or brake fluid.\n\nIf braking feels weaker, the pedal goes soft or you hear grinding, stop driving when it's safe and have the brakes inspected before using the car again.",
+          "kind": "answer",
+          "topic": "brake_wear",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s004",
+      "tags": [
+        "taglish",
+        "brakes",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "Lumulubog yung brake pedal pag inaapakan ko, delikado ba?",
+          "answer": "Not for long. Worn brakes stop the car less well; if you hear grinding or the pedal feels different, stop driving and have them inspected.\n\nGrinding, reduced braking, a soft pedal, pulling, or a brake warning requires stopping safely and prompt inspection.",
+          "kind": "answer",
+          "topic": "brake_wear",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s005",
+      "tags": [
+        "paraphrase",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "I have to push the brake really hard before the car stops",
+          "answer": "A brake pedal that's hard to press usually means the brake booster isn't assisting, often because of a vacuum leak or a failed booster. The brakes still work, but they need much more force.\n\nA seized caliper or brake component.\n\nNote whether the pedal is hard only with the engine off; it's normal for the pedal to be firm after a few presses with the engine off.\n\nBraking needs much more effort and stopping distances get longer, so drive carefully to a safe place and have it inspected before driving normally.",
+          "kind": "answer",
+          "topic": "brake_pedal_hard",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s006",
+      "tags": [
+        "paraphrase",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "When I brake the car veers to the left",
+          "answer": "A car that pulls or drifts to one side usually has uneven tire pressure, wheel misalignment, a dragging brake or a worn steering or suspension part.\n\nCommon causes include uneven or low tire pressure, wheel misalignment, a sticking brake caliper or uneven tire wear.\n\nNote whether it pulls all the time or only when braking; pulling only when braking points to the brakes.\n\nIf the pull is sudden or strong, or happens when braking, have it inspected before driving further.",
+          "kind": "answer",
+          "topic": "vehicle_pulling",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s007",
+      "tags": [
+        "paraphrase",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "my handbrake won't release properly and the rear wheel feels hot",
+          "answer": "A parking brake that sticks, drags or doesn't hold usually has a seized cable or caliper, worn rear brakes or, on electronic parking brakes, a motor or switch fault. A dragging brake makes a wheel hot and can smell of burning.\n\nLever or switch released but the car feels held back, one rear wheel hot or smelling, the car rolls on a slope with the brake on, a parking brake warning light.\n\nCommon causes include a seized or stretched cable, corroded rear brake mechanisms, worn rear pads or shoes or an electronic parking brake motor or switch fault.\n\nAfter a short drive, carefully feel near (not on) each wheel for one much hotter than the others.",
+          "kind": "answer",
+          "topic": "parking_brake_problems",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s008",
+      "tags": [
+        "warning_light",
+        "brakes"
+      ],
+      "turns": [
+        {
+          "message": "the red brake warning light stays on even after I release the handbrake",
+          "answer": "The ABS light means the anti-lock system has a fault. Normal braking usually still works, but the wheels can lock under hard braking. A red brake warning is more serious and can mean low brake fluid or a hydraulic problem. An ABS warning doesn't mean the normal brakes are definitely fine.\n\nCommon causes include a faulty wheel-speed sensor or its wiring, low brake fluid, a fault in the ABS pump or control unit or a blown fuse.\n\nIf the red brake warning is on, the pedal feels soft or the car stops poorly, pull over safely and don't drive further; arrange a tow.",
+          "kind": "answer",
+          "topic": "brake_warning_abs",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s009",
+      "tags": [
+        "paraphrase",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "Turning the wheel feels like lifting weights when I'm parking",
+          "answer": "A clicking or popping noise when turning is most often a worn outer CV joint on a front-wheel-drive car, usually after its rubber boot has torn.\n\nLoose brake or suspension hardware, or something rubbing the wheel. Worn wheel bearings, suspension joints or strut mounts.\n\nLook behind the front wheels for a torn rubber boot or grease spray, with the engine off and the car parked safely.",
+          "kind": "answer",
+          "topic": "cv_joint_clicking",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s010",
+      "tags": [
+        "taglish",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "Ang tigas iliko ng manibela ko pag mabagal ang takbo",
+          "answer": "Steering that suddenly becomes heavy usually means power-steering assistance has been reduced or lost, or a front tire is low.\n\nWorn or binding steering or suspension joints.\n\nLook for a steering warning light on the dashboard.\n\nIf steering becomes hard while driving, slow down, hold the wheel firmly and stop somewhere safe. Don't continue if steering is difficult or unpredictable.",
+          "kind": "answer",
+          "topic": "steering_heavy",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s011",
+      "tags": [
+        "paraphrase",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "There's a whining noise whenever I turn the steering wheel",
+          "answer": "A whining or groaning noise when turning the wheel on a car with hydraulic power steering often means low power-steering fluid or a worn pump.\n\nWhining that rises when turning, sometimes with heavier steering.\n\nCommon causes include low power-steering fluid or a leak, a worn power-steering pump or a slipping drive belt.\n\nIf the steering also becomes heavy, drive carefully to a safe place and have it inspected.",
+          "kind": "answer",
+          "topic": "power_steering_noise",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s012",
+      "tags": [
+        "paraphrase",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "the steering wheel is crooked when I drive straight",
+          "answer": "Wheel alignment sets the angles of the wheels. Signs it's off include pulling to one side, a crooked steering wheel when driving straight, and uneven tire wear.\n\nWorn steering or suspension parts.",
+          "kind": "answer",
+          "topic": "wheel_alignment",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s013",
+      "tags": [
+        "paraphrase",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "My steering feels loose, there's a lot of play before the wheels respond",
+          "answer": "Steering and suspension problems show up as clunks over bumps, a wandering or loose feel, uneven tire wear, a humming wheel bearing or the car pulling. Steering and suspension symptoms affect vehicle control.\n\nTire pressure or wear, wheel alignment, worn suspension joints, worn shock absorbers, wheel bearings or a dragging brake can all play a part.\n\nIf the steering feels loose or unpredictable, or there's a sudden loud noise, stop driving and have it inspected.",
+          "kind": "answer",
+          "topic": "steering_suspension",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s014",
+      "tags": [
+        "paraphrase",
+        "steering"
+      ],
+      "turns": [
+        {
+          "message": "clicking sound from the front when I make a tight U-turn",
+          "answer": "A clicking or popping noise when turning is most often a worn outer CV joint on a front-wheel-drive car, usually after its rubber boot has torn.\n\nClicking that gets faster with speed in a tight turn; grease splattered around the inside of the wheel; vibration when accelerating can point to an inner CV joint.\n\nCommon causes include a worn CV joint, a torn CV boot that let grease out and dirt in or worn suspension or steering parts.\n\nWith the engine off, look behind the front wheels for a torn boot or grease sprayed around.",
+          "kind": "answer",
+          "topic": "cv_joint_clicking",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s015",
+      "tags": [
+        "paraphrase",
+        "suspension"
+      ],
+      "turns": [
+        {
+          "message": "Loud clunk from the front every time I go over a speed bump",
+          "answer": "Steering and suspension problems show up as clunks over bumps, a wandering or loose feel, uneven tire wear, a humming wheel bearing or the car pulling.\n\nPulling, wandering, excessive bounce, clunks, vibration, uneven tire wear, or humming that changes with speed.\n\nCommon causes include worn ball joints, tie-rod ends or bushings, worn shock absorbers or struts, a worn wheel bearing or incorrect wheel alignment.\n\nNote when it happens: over bumps, when turning, or at certain speeds.\n\nIf the steering feels loose or unpredictable, or there's a sudden loud noise, stop driving and have it inspected.",
+          "kind": "answer",
+          "topic": "steering_suspension",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s016",
+      "tags": [
+        "paraphrase",
+        "suspension"
+      ],
+      "turns": [
+        {
+          "message": "the car keeps bouncing up and down after bumps like a boat",
+          "answer": "Worn shock absorbers or struts make the car keep bouncing after bumps, dive when braking and lean more in corners, and they can lengthen stopping distances.\n\nBouncing, nose-dive under braking, knocking over bumps.\n\nCommon causes include worn or leaking shock absorbers or struts, a broken spring or worn mounts or bushings.",
+          "kind": "answer",
+          "topic": "shock_absorbers",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s017",
+      "tags": [
+        "paraphrase",
+        "wheels"
+      ],
+      "turns": [
+        {
+          "message": "humming noise that gets louder the faster I go, especially when turning",
+          "answer": "A hum or growl that gets louder with speed, and changes when you turn one way, is the classic sign of a worn wheel bearing. A grinding noise when turning can also come from a stone in the brake shield or a worn CV joint.\n\nCommon causes include a worn wheel bearing, a stone or debris in the brake dust shield or a worn CV joint.\n\nNote whether the noise gets louder when turning left or right: a bearing usually gets louder on the opposite side from the turn.",
+          "kind": "answer",
+          "topic": "wheel_bearing",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s018",
+      "tags": [
+        "taglish",
+        "suspension"
+      ],
+      "turns": [
+        {
+          "message": "May kumakalog sa ilalim ng sasakyan pag dumadaan sa lubak",
+          "answer": "A rattle from under the car is most often a loose exhaust heat shield, a broken exhaust hanger or clamp, or loose parts inside the catalytic converter. If it happens over bumps instead, it's usually suspension: worn sway-bar links or bushings.\n\nCommon causes include a loose or rusted heat shield, a broken exhaust hanger or clamp, loose parts inside the catalytic converter or worn sway-bar links or suspension bushings (over bumps).",
+          "kind": "answer",
+          "topic": "rattle_underneath",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s019",
+      "tags": [
+        "paraphrase",
+        "tires",
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "How often should the wheels be balanced?",
+          "answer": "Wheel balancing evens out the weight around each wheel and tire so they spin smoothly. Unbalanced wheels usually cause vibration through the steering wheel at certain speeds.\n\nHave the wheels balanced when fitting new tires, after a puncture repair, or if vibration appears.",
+          "kind": "answer",
+          "topic": "wheel_balancing",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s020",
+      "tags": [
+        "paraphrase",
+        "tires"
+      ],
+      "turns": [
+        {
+          "message": "The inside edges of my front tires are wearing out way faster than the rest",
+          "answer": "Uneven wear has typical patterns: both edges worn usually means under-inflation, the centre worn means over-inflation, one edge worn usually means misalignment, and patchy or cupped wear points to suspension or balance problems.\n\nWear concentrated on edges, the centre, one side or in patches.\n\nSkipped tire rotations.\n\nHave the alignment and suspension checked, and rotate the tires as scheduled.\n\nReplace any tire worn down to its wear indicators or with exposed cords.",
+          "kind": "answer",
+          "topic": "uneven_tire_wear",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s021",
+      "tags": [
+        "paraphrase",
+        "tires",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "there's a bulge on the side of my tire, can I still drive to work?",
+          "answer": "No. A tire with a sidewall bulge or deep cut can burst without warning; fit the spare before driving on.",
+          "kind": "answer",
+          "topic": "sidewall_damage",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "safety": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s022",
+      "tags": [
+        "taglish",
+        "tires"
+      ],
+      "turns": [
+        {
+          "message": "Na-flatan ako sa highway, ano gagawin ko?",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "safety": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s023",
+      "tags": [
+        "paraphrase",
+        "tires"
+      ],
+      "turns": [
+        {
+          "message": "How do I know when my tyres need replacing?",
+          "answer": "Replace a tire when the tread is worn down to the wear bars (about 1.6 mm), when it has a bulge, a deep cut or cracks in the sidewall, or when it's more than about 5 to 6 years old even if the tread looks fine.\n\nReplace tires in pairs on the same axle so grip stays even. Look for the small raised wear bars in the tread grooves; if the tread is level with them, the tire is worn out.\n\nDon't drive on a tire with a bulge, a cut down to the cords, or worn-through tread; fit the spare.",
+          "kind": "answer",
+          "topic": "tire_replacement",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s024",
+      "tags": [
+        "warning_light",
+        "tires"
+      ],
+      "turns": [
+        {
+          "message": "a horseshoe shaped light with an exclamation mark came on",
+          "answer": "The TPMS light means one or more tires is well below its correct pressure. On many cars, a light that flashes for about a minute and then stays on means the monitoring system itself has a fault.\n\nA slow leak or puncture. A faulty TPMS sensor or system.\n\nLook for a nail, cut or a tire that's visibly low.\n\nIf a tire looks flat or the car handles strangely, slow down and stop somewhere safe; don't drive on a flat tire.",
+          "kind": "answer",
+          "topic": "tpms_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s025",
+      "tags": [
+        "paraphrase",
+        "cooling",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "The temperature gauge shot up to red while I was stuck in traffic",
+          "answer": "Treat a high-temperature warning as real until a check proves otherwise.\n\nIf the heater blows cold while the temperature gauge climbs, coolant may be low or not circulating. That is an urgent warning.\n\nA faulty cooling fan, fan relay, fuse, wiring or temperature sensor means too little air at idle or in traffic. Temperature that drops once you're moving is a clue, but not proof.\n\nIf the gauge is in the red or you see steam, pull over safely and switch off the engine. Never open the radiator cap while the engine is hot; hot coolant can cause severe burns.",
+          "kind": "answer",
+          "topic": "engine_overheating",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s026",
+      "tags": [
+        "taglish",
+        "cooling"
+      ],
+      "turns": [
+        {
+          "message": "Nag-overheat yung kotse ko tapos may usok sa hood",
+          "answer": "Engine overheating and cooling-system concerns: Overheating means the cooling system isn't removing heat fast enough, or coolant isn't circulating properly. An overheating warning means the engine's heat isn't being carried away properly, or the temperature reading is wrong.\n\nA coolant-pump circulation or drive problem can reduce coolant flow and cause overheating at different speeds; leaks or noise may be present but are not required.\n\nIf the gauge is in the red or you see steam, pull over safely and switch off the engine. Never open the radiator cap while the engine is hot; hot coolant can cause severe burns.\n\nSmoke from under the hood or engine compartment: Smoke from under the bonnet can be steam from overheating coolant, oil burning on hot parts, or an electrical fire. Pull over safely, switch off the engine and get everyone out of the car.\n\nOil leaking onto the hot exhaust (blue-grey smoke, burnt-oil smell).\n\nDon't open the bonnet while smoke is coming out; opening it can feed a fire.\n\nHave it checked at the next convenient service.",
+          "kind": "answer",
+          "topic": "engine_bay_smoke",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s027",
+      "tags": [
+        "paraphrase",
+        "cooling"
+      ],
+      "turns": [
+        {
+          "message": "There's a puddle of pink liquid under the front of my car",
+          "answer": "The colour of a leak is a useful clue: clear water is usually A/C condensation, green, orange or pink can be coolant, brown or black is often engine oil, red can be transmission or power-steering fluid, and a clear-to-yellowish slippery fluid near a wheel can be brake fluid, and blue is usually windscreen-washer fluid.\n\nClear, odourless water under the front passenger side is normal A/C condensation. Green, pink or orange fluid near the front is coolant. Check the reservoir level and the hoses; don't drive far if the level keeps dropping.\n\nPut a light-coloured sheet under the car to see the colour and where it drips from.\n\nA suspected brake-fluid or fuel leak means don't drive the car.",
+          "kind": "answer",
+          "topic": "fluid_leak_colors",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s028",
+      "tags": [
+        "paraphrase",
+        "cooling"
+      ],
+      "turns": [
+        {
+          "message": "I keep having to top up the coolant but I can't see any leak",
+          "answer": "Coolant protects the engine from overheating, freezing and corrosion. Check the level in the reservoir with the engine cold, and replace it at the interval in the owner's manual using the specified coolant type.\n\nCoolant below the minimum mark, or needing frequent top-ups.\n\nNot applicable: this entry is general guidance.\n\nA level that keeps dropping points to a leak; have it checked.\n\nNever open the radiator or reservoir cap on a hot engine.",
+          "kind": "answer",
+          "topic": "coolant_maintenance",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s029",
+      "tags": [
+        "paraphrase",
+        "cooling"
+      ],
+      "turns": [
+        {
+          "message": "The radiator fan never seems to turn on even when the engine is hot",
+          "answer": "The radiator fan pulls air through the radiator when the car is slow or stopped. If it doesn't work, the engine usually stays cool on the highway but overheats in traffic or at idle, and the A/C may also blow warm when stopped.\n\nTemperature rises in traffic and drops when driving faster, the fan doesn't run when the engine is hot or the A/C is switched on.\n\nCommon causes include a blown fuse or failed relay, a failed fan motor, a faulty coolant temperature sensor or switch or a damaged connector or wiring.\n\nIf the temperature gauge climbs toward red, pull over safely and switch off the engine.",
+          "kind": "answer",
+          "topic": "radiator_fan",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s030",
+      "tags": [
+        "paraphrase",
+        "cooling"
+      ],
+      "turns": [
+        {
+          "message": "Sweet syrupy smell inside the cabin and the windows fog up",
+          "answer": "Heater core leak: sweet smell and foggy windows inside: The heater core is a small radiator behind the dashboard that heats the cabin. When it leaks, coolant vapour causes a sweet smell inside, a greasy fog on the windscreen and sometimes a wet floor on the passenger side.\n\nSweet smell in the cabin, oily fog on the inside of the windscreen, damp carpet, slowly falling coolant level.\n\nCommon causes include corrosion inside the heater core or a leaking heater hose or connection.\n\nWindows fogging up or defogger not working: Windows fog up when moist cabin air meets cold glass. The quickest fix is the air conditioning with the vents on the windscreen and fresh air from outside (recirculation off): the A/C dries the air. A rear defogger that doesn't clear the back window usually has a broken heating line, a blown fuse or a failed relay.\n\nA dirty inside of the windscreen. Humid air with recirculation left on.\n\nDry wet floor mats, and check the cabin filter if it fogs up every time.",
+          "kind": "answer",
+          "topic": "windows_fogging",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s031",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "My car keeps losing power when going uphill",
+          "answer": "Jerking, hesitation or loss of power when you accelerate usually comes from the engine not getting enough spark, fuel or air, or from the transmission slipping.\n\nA blocked catalytic converter. A clogged fuel filter or weak fuel pump.",
+          "kind": "answer",
+          "topic": "hesitation_jerking",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s032",
+      "tags": [
+        "misspelled",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "enigne is shakking and runing rough at idel",
+          "answer": "A misfire means one or more cylinders isn't burning fuel properly, which causes shaking, a rough idle, hesitation or loss of power. A misfire or rough running means the engine isn't producing smooth, even power.\n\nCommon causes include worn spark plugs or a failing ignition coil, a clogged or leaking fuel injector, an air (vacuum) leak or low fuel pressure.\n\nNote when it happens (cold start, idle, accelerating) and whether the check-engine light is on or flashing.\n\nIf the check-engine light is flashing or the car loses power, slow down and stop somewhere safe; a severe misfire can overheat and damage the catalytic converter.",
+          "kind": "answer",
+          "topic": "engine_misfire",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s033",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "tapping noise from the top of the engine that speeds up when I rev",
+          "answer": "Engine noises point to different problems depending on the sound: knocking or pinging when accelerating, ticking from the top of the engine, rattling at start-up, or squealing from a belt.\n\nA new noise that follows engine speed.\n\nWorn engine bearings (deep knocking).\n\nNote when the noise happens (cold start, idle, accelerating) and whether it changes with engine speed.\n\nA loud knock together with the oil-pressure light means switch the engine off as soon as it's safe.",
+          "kind": "answer",
+          "topic": "engine_noises",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s034",
+      "tags": [
+        "paraphrase",
+        "engine",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "Deep knocking from the bottom of the engine and the oil light flickers",
+          "answer": "Knocking, ticking or rattling engine noises: A deep knock from the bottom of the engine that gets louder under load can mean worn engine bearings, often from low oil. Check the oil level right away; if the knock stays, stop driving and have it checked, because continuing can destroy the engine.\n\nCommon causes include a low oil level or low oil pressure (ticking or knocking), worn engine bearings (deep knocking), pre-ignition from fuel quality or carbon build-up (pinging when accelerating) or a worn timing chain or tensioner (rattle at start-up).\n\nA loud knock together with the oil-pressure light means switch the engine off as soon as it's safe.\n\nEngine oil pressure, leaks, and oil consumption: A red oil-pressure warning means the engine may not be getting enough oil pressure, which can damage it within minutes. Leaks and oil burning lower the oil level more gradually.\n\nCommon causes include a low oil level, an oil leak from a gasket, seal or the drain plug, a worn oil pump or blocked oil pickup or a faulty oil-pressure sensor.\n\nLook under the car for fresh oil drips and note any burning-oil smell.\n\nIf the red oil-pressure light comes on while driving, stop safely and switch off the engine as soon as possible. Don't restart it until the oil level has been checked.",
+          "kind": "answer",
+          "topic": "oil_pressure_leak",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s035",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "My car smokes white and smells sweet from the tailpipe",
+          "answer": "Thin white vapour that clears once the engine warms up is usually just condensation. Thick white smoke that keeps coming, especially with a sweet smell, can mean coolant is burning in the engine; a failed head gasket is one possible cause.\n\nWarning signs that point toward a coolant problem: the coolant level keeps dropping with no visible leak, the engine overheats or the temperature gauge climbs, a sweet smell from the exhaust, bubbles in the coolant reservoir, a milky or creamy residue in the oil, or misfiring after a cold start.\n\nIf the engine starts to overheat or the coolant level keeps dropping, stop driving and have it inspected.",
+          "kind": "answer",
+          "topic": "exhaust_smoke_color",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s036",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "the engine dies whenever I come to a stop at a red light",
+          "answer": "An engine that dies at idle usually has an idle that's too low or unstable: a dirty throttle body or idle control valve, an air leak, or a fuel delivery problem. A misfire or a failing sensor can do it too.\n\nDying as you come to a stop points to idle control (dirty throttle body or idle valve) or a vacuum leak; on automatics, a torque-converter clutch that doesn't release can also stall it.\n\nA failing sensor (crankshaft, mass-airflow).\n\nNote whether it stalls hot or cold, with the A/C on, and whether the check-engine light comes on.",
+          "kind": "answer",
+          "topic": "engine_stalling",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s037",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "Hissing sound from under the hood with the engine running",
+          "answer": "A vacuum leak lets unmeasured air into the engine through a cracked hose, loose connection or leaking gasket. It often causes a hissing sound, a high or uneven idle and a lean-mixture code.\n\nHissing with the engine running, rough or high idle, hesitation, check-engine light with lean codes such as P0171.\n\nCommon causes include a cracked or disconnected vacuum hose, a leaking intake gasket, a faulty PCV valve or hose or a leaking brake-booster hose.\n\nListen around the engine with it idling to find where the hiss comes from.",
+          "kind": "answer",
+          "topic": "vacuum_leak",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s038",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "a high pitched squeal from the engine when I first start it in the morning",
+          "answer": "A car that cranks a long time before starting usually has a weak battery, fuel pressure that drains away overnight, or (on a diesel) worn glow plugs. In the morning a cold engine needs more from all of them.\n\nOn a diesel, slow morning starts with white smoke are typical of worn glow plugs or a faulty glow-plug relay. Wait for the coil light to go out before cranking.\n\nA faulty coolant-temperature sensor.\n\nNote whether it cranks fast or slowly, and whether it starts better on the second try.",
+          "kind": "answer",
+          "topic": "hard_starting_cold",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s039",
+      "tags": [
+        "taglish",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "Bakit malakas kumain ng gasolina yung oto ko ngayon?",
+          "answer": "A car that suddenly uses more fuel usually has a simple cause you can check first, such as low tire pressure, before an engine fault is likely.\n\nHeavy traffic, short trips, extra load or constant A/C use. A dragging brake.",
+          "kind": "answer",
+          "topic": "high_fuel_consumption",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s040",
+      "tags": [
+        "paraphrase",
+        "engine"
+      ],
+      "turns": [
+        {
+          "message": "the turbo makes a loud whistle and the car feels gutless",
+          "answer": "A turbo problem usually shows as a sudden loss of power (often with the engine light and limp mode), a loud whistle or siren-like whine, or blue-grey smoke from oil getting past worn turbo seals. A split boost hose or a stuck control valve is more common than the turbo itself failing.\n\nCommon causes include a split or loose boost hose or intercooler pipe, a stuck wastegate or boost control valve, a clogged diesel particulate filter or air filter or worn turbo bearings or seals (whine, oil smoke).\n\nStop if the engine starts revving on its own or there is heavy smoke: a failed turbo can let the engine run on its own oil.",
+          "kind": "answer",
+          "topic": "turbo_problems",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s041",
+      "tags": [
+        "paraphrase",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "Engine revs climb but the car barely picks up speed",
+          "answer": "A slipping clutch lets the engine rev without the car speeding up as it should, usually in a high gear or going uphill. It's most often a worn clutch plate, and it gets worse over time.\n\nEngine revs rising without matching speed, a burning smell, or the clutch biting very high.\n\nOil leaking onto the clutch.",
+          "kind": "answer",
+          "topic": "clutch_slipping",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s042",
+      "tags": [
+        "paraphrase",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "My automatic hesitates for a few seconds before it goes into drive",
+          "answer": "Jerking, hesitation or loss of power when you accelerate usually comes from the engine not getting enough spark, fuel or air, or from the transmission slipping.\n\nRevs climbing without matching speed is the transmission or clutch slipping, not the engine. Check the transmission fluid (automatic) or have the clutch checked (manual).\n\nA blocked catalytic converter.\n\nNote whether the check-engine light is on, and whether the revs rise without the car speeding up (that points to the transmission).",
+          "kind": "answer",
+          "topic": "hesitation_jerking",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s043",
+      "tags": [
+        "paraphrase",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "Crunching noise when I put it into second gear",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s044",
+      "tags": [
+        "taglish",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "Yung clutch ko parang mataas na ang kagat tapos amoy sunog",
+          "answer": "A slipping clutch lets the engine rev without the car speeding up as it should, usually in a high gear or going uphill.\n\nEngine revs rising without matching speed, a burning smell, or the clutch biting very high.\n\nA worn clutch plate.\n\nHave it checked soon: a badly slipping clutch can leave you unable to drive the car.",
+          "kind": "answer",
+          "topic": "clutch_slipping",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s045",
+      "tags": [
+        "paraphrase",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "The car jolts hard when it shifts from first to second",
+          "answer": "Transmission slipping is when the engine revs rise but the car doesn't speed up as it should, or gears engage late or harshly.\n\nIn an automatic or CVT, check the fluid level first (with the engine running, as the manual says). If it's correct, the codes and a road test by a transmission specialist are next.\n\nCommon causes include low or worn-out transmission fluid, a fluid leak, worn clutches or bands inside the transmission or a faulty solenoid, sensor or control module.\n\nAvoid towing or continued hard driving when a warning or severe symptom occurs.\n\nIf the car loses drive, the transmission smells burnt or an over-temperature warning appears, stop safely; continuing can cause major damage.",
+          "kind": "answer",
+          "topic": "transmission_slip",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s046",
+      "tags": [
+        "paraphrase",
+        "transmission"
+      ],
+      "turns": [
+        {
+          "message": "I can't get the shifter out of park",
+          "answer": "An automatic that won't shift out of Park is usually held by the shift lock, which only releases when it senses the brake pedal. A failed brake-light switch or a blown fuse is the commonest cause, and the same fault often stops the brake lights working.\n\nThe car parked on a slope, putting weight on the parking pawl. A weak battery.\n\nOn a slope, apply the parking brake and rock the car gently while shifting.",
+          "kind": "answer",
+          "topic": "gear_selector_stuck_park",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s047",
+      "tags": [
+        "paraphrase",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "When I turn the key all I hear is rapid clicking",
+          "answer": "A clicking or popping noise when turning is most often a worn outer CV joint on a front-wheel-drive car, usually after its rubber boot has torn. Other parts can also make noises when turning, so it needs an inspection to confirm.\n\nLoose brake or suspension hardware, or something rubbing the wheel.\n\nNote which side the noise comes from and whether it happens turning left, right or both.",
+          "kind": "answer",
+          "topic": "cv_joint_clicking",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s048",
+      "tags": [
+        "paraphrase",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "My battery goes flat if the car sits for two days",
+          "answer": "A battery that goes flat after sitting for a day or two is either weak or something keeps drawing current with the car off: a light left on, a glovebox or boot light, an aftermarket accessory, a module that doesn't go to sleep, or a stuck relay.\n\nFlat battery after the car is parked, especially after a few days; a battery that tests good when charged.\n\nCommon causes include an interior, boot or glovebox light staying on, aftermarket accessories such as dashcams or alarms, a module not sleeping or a stuck relay or a weak battery that can no longer hold charge.",
+          "kind": "answer",
+          "topic": "parasitic_drain",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s049",
+      "tags": [
+        "paraphrase",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "headlights get dim and brighten again when I rev the engine",
+          "answer": "Dim headlights: Dim headlights usually come from cloudy or yellowed lenses or ageing bulbs. If the lights also dim when the engine idles or other electrics act up, the battery or charging system may be weak.\n\nCommon causes include cloudy or yellowed headlight lenses, ageing bulbs, a poor earth (ground) connection or a weak battery or a failing alternator.\n\nClean the lenses and check both headlights; if only one is dim, its bulb or connection is the likely cause.\n\nFlashing (blinking) check-engine light: A flashing (blinking) check-engine light usually means a severe misfire that can quickly overheat and damage the catalytic converter.\n\nA severe engine misfire, for example from a failed ignition coil or spark plug, a fuel-delivery problem, or low compression; the exact cause needs a scan and inspection.\n\nPull over and stop safely as soon as possible, and switch off the engine if it is running very rough.\n\nReduce speed and load, stop in a safe place as soon as you can, and avoid continued driving until the vehicle is inspected or towed.",
+          "kind": "answer",
+          "topic": "check_engine_flashing",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s050",
+      "tags": [
+        "taglish",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "Ayaw mag start ng kotse, walang ilaw sa dashboard",
+          "answer": "If nothing happens at all when you try to start, with no click and no dashboard lights, the most likely causes are a completely flat battery or a disconnected or corroded battery terminal. If the lights work but nothing happens, check the gear selector and clutch or brake pedal first.\n\nCommon causes include a completely flat battery, a loose or corroded battery terminal, the gear selector not fully in Park or Neutral or a faulty ignition switch, starter relay or neutral safety switch.\n\nTry starting in Neutral, or press the clutch or brake fully.",
+          "kind": "answer",
+          "topic": "no_crank_no_click",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s051",
+      "tags": [
+        "paraphrase",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "The radio and the cigarette lighter both stopped working at the same time",
+          "answer": "If a fuse blows again straight away there's a short circuit: don't fit a bigger fuse, have the wiring checked.\n\nWhen one electrical item stops working, such as a light, the radio, a power outlet or a window, a blown fuse is a common cause.\n\nOne circuit stops working while the rest of the car is normal.\n\nA faulty relay.\n\nReplace it only with a fuse of the same rating.",
+          "kind": "answer",
+          "topic": "blown_fuse",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s052",
+      "tags": [
+        "paraphrase",
+        "electrical"
+      ],
+      "turns": [
+        {
+          "message": "my left turn signal blinks super fast",
+          "answer": "A turn signal that blinks much faster than normal almost always means a bulb on that side has failed. Brake lights that don't work at all point to the brake-light switch or its fuse, while one brake light, tail light, fog light or headlight out on its own is usually the bulb.\n\nA failed bulb (one lamp, or a fast-blinking signal on that side).\n\nA fast-blinking signal: check the bulbs front and rear on that side, including the side repeater.\n\nFix brake lights and turn signals promptly: other drivers rely on them and they are a common reason to be stopped.",
+          "kind": "answer",
+          "topic": "exterior_lights_bulbs",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s053",
+      "tags": [
+        "warning_light"
+      ],
+      "turns": [
+        {
+          "message": "What does it mean when the oil can light comes on while driving?",
+          "answer": "If the red oil-pressure light comes on while driving, stop safely and switch off the engine as soon as possible. Don't restart it until the oil level has been checked.\n\nA red oil-pressure warning means the engine may not be getting enough oil pressure, which can damage it within minutes. Leaks and oil burning lower the oil level more gradually. Oil level, oil pressure, and oil condition are different checks.\n\nIf an oil-pressure warning appears while running, stop the engine as soon as it is safe.",
+          "kind": "answer",
+          "topic": "oil_pressure_leak",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s054",
+      "tags": [
+        "warning_light"
+      ],
+      "turns": [
+        {
+          "message": "a car with squiggly lines behind it is flashing on my dashboard",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "accuracy": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s055",
+      "tags": [
+        "warning_light",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Umiilaw yung battery sign habang nagdadrive ako",
+          "answer": "The usual signs of a weak battery are slow or laboured cranking, especially in the morning, dim lights or a flickering dashboard when starting, clicking when you turn the key, and needing jump starts. A battery that is over about 3 years old in a hot climate is more likely to fail.\n\nShort trips that never fully recharge the battery. Age: most car batteries last about 2 to 4 years in a hot climate.",
+          "kind": "answer",
+          "topic": "battery_weak_signs",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s056",
+      "tags": [
+        "warning_light"
+      ],
+      "turns": [
+        {
+          "message": "my diesel has a coil shaped orange light that won't go out",
+          "answer": "On a diesel, the glow plug light (a coil symbol) comes on briefly at start-up while the glow plugs heat; wait for it to go out before cranking. If it flashes or stays on while driving, many diesels use it to warn of an engine-management fault.\n\nCommon causes include normal pre-heating at start-up, failed glow plugs or relay or an engine-management fault on cars that share the light.",
+          "kind": "answer",
+          "topic": "glow_plug_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s057",
+      "tags": [
+        "warning_light",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "check engine light is blinking and the car is shaking",
+          "answer": "Flashing (blinking) check-engine light: A flashing (blinking) check-engine light usually means a severe misfire that can quickly overheat and damage the catalytic converter.\n\nCommon causes include a failed spark plug or ignition coil, a fuel-injector fault, an air leak or low compression.\n\nReduce speed and load, stop in a safe place as soon as you can, and avoid continued driving until the vehicle is inspected or towed.\n\nSudden severe shaking or vibration: Sudden, severe shaking can mean a tire is failing, a wheel is loose, or there's a serious engine or drivetrain fault. Slow down gradually and stop somewhere safe.\n\nA damaged or separating tire. A broken engine mount or driveshaft.\n\nDon't continue until the cause is found; arrange an inspection or a tow.",
+          "kind": "answer",
+          "topic": "severe_vibration",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s058",
+      "tags": [
+        "warning_light"
+      ],
+      "turns": [
+        {
+          "message": "the airbag light stays on after I start the car",
+          "answer": "The airbag (SRS) light means the car has found a fault in the airbag system, so the airbags or seat-belt pretensioners may not work in a crash. It's normal for it to light briefly when you start the car and then go out.\n\nA low battery voltage event or a fault stored after earlier repairs.\n\nThe car is usually still drivable, but have the airbag system scanned and repaired soon.\n\nIf the airbag light stays on, the airbags may not deploy in a crash, so have it repaired as soon as possible and don't let a child ride in the front seat in the meantime.",
+          "kind": "answer",
+          "topic": "airbag_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s059",
+      "tags": [
+        "warning_light"
+      ],
+      "turns": [
+        {
+          "message": "a thermometer light in red came on",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": true,
+            "safety": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s060",
+      "tags": [
+        "dtc"
+      ],
+      "turns": [
+        {
+          "message": "my scanner shows P0420, what does that usually mean?",
+          "answer": "P0420: Catalyst System Efficiency Below Threshold Bank 1. Common causes: catalyst aged or poisoned (oil consumption, silicone, coolant); catalyst overheated by misfire or rich running; rear oxygen sensor sluggish, dirty or unsuitable. Typical signs: check engine light on, otherwise often no change in driving; emission test failed (higher HC, CO, NOx). This code normally turns on the check-engine (MIL) light.\n\nA code shows which circuit or test failed, so confirm the cause with an inspection before replacing parts.",
+          "kind": "dtc",
+          "topic": null,
+          "checks": {
+            "accuracy": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s061",
+      "tags": [
+        "dtc"
+      ],
+      "turns": [
+        {
+          "message": "I got codes P0171 and P0174 together",
+          "answer": "P0171: System Too Lean Bank 1. Common causes: air leak after the air flow sensor (intake manifold gasket, vacuum hoses, throttle body gasket, brake booster line); crankcase ventilation leaking or faulty (PCV hose, diaphragm in valve cover, oil cap, dipstick); air flow sensor dirty or drifting (measures too little air). Typical signs: check engine light on (after two drive cycles); rough or unsteady idle, possibly stalling. This code normally turns on the check-engine (MIL) light.\n\nP0174: System Too Lean Bank 2. Common causes: air leak after the air flow sensor on bank 2 (intake manifold gasket, vacuum hoses, throttle body gasket, brake booster line); crankcase ventilation leaking or faulty (PCV hose, diaphragm in valve cover, oil cap, dipstick); air flow sensor dirty or drifting (measures too little air). Typical signs: check engine light on (after two drive cycles); rough or unsteady idle, possibly stalling. This code normally turns on the check-engine (MIL) light.\n\nA code shows which circuit or test failed, so confirm the cause with an inspection before replacing parts.",
+          "kind": "dtc",
+          "topic": null,
+          "checks": {
+            "accuracy": true,
+            "repetition": false
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s062",
+      "tags": [
+        "dtc"
+      ],
+      "turns": [
+        {
+          "message": "What's P0455?",
+          "answer": "P0455: EVAP System Leak Detected - Large Leak. Common causes: fuel cap missing, not clicked in or seal faulty (or capless flap); hose off or cracked (canister, filler neck, purge line); vent valve stuck open or purge valve stuck closed. Typical signs: check engine light on (possibly a check fuel cap message); possibly fuel smell. This code normally turns on the check-engine (MIL) light.\n\nA code shows which circuit or test failed, so confirm the cause with an inspection before replacing parts.",
+          "kind": "dtc",
+          "topic": null,
+          "checks": {
+            "accuracy": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s063",
+      "tags": [
+        "dtc"
+      ],
+      "turns": [
+        {
+          "message": "check engine came on after refueling and the code is about evap, could it be the gas cap?",
+          "answer": "Which diagnostic trouble code do you mean? Please type it exactly as the scanner shows it, for example P0420.",
+          "kind": "clarify",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "accuracy": false,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s064",
+      "tags": [
+        "dtc"
+      ],
+      "turns": [
+        {
+          "message": "what do the letters P, B, C and U at the start of a trouble code mean?",
+          "answer": "Fleet and maintenance records are limited to administrators, so I can't show them for this account. I can help with vehicle listings, prices, availability, your own reservations and general car questions.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s065",
+      "tags": [
+        "exhaust"
+      ],
+      "turns": [
+        {
+          "message": "my exhaust suddenly got really loud like a motorbike",
+          "answer": "If you smell exhaust fumes inside the car, open the windows, stop and get out; carbon monoxide is dangerous.\n\nExhaust leaks, emission-control faults and a blocked diesel particulate filter (DPF) can cause loud exhaust noise, fumes, warning lights or reduced power.\n\nCommon causes include a leaking exhaust pipe, gasket or manifold, a DPF blocked by short trips, a faulty oxygen or exhaust sensor or a failing catalytic converter. An exhaust leak, damaged wiring, a faulty sensor, a fuel-mixture problem, a misfire, a blocked exhaust or the exhaust cleaning system's own operation can set off an emissions warning or change the exhaust.",
+          "kind": "answer",
+          "topic": "exhaust_emissions_dpf",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s066",
+      "tags": [
+        "exhaust"
+      ],
+      "turns": [
+        {
+          "message": "Smells like rotten eggs when I accelerate",
+          "answer": "A rotten-egg (sulfur) smell usually comes from the catalytic converter, often because the engine is running rich, or from an overcharged battery releasing gas.\n\nA catalytic converter that's overheating or failing.\n\nNote whether the smell comes from the exhaust or from under the bonnet near the battery.\n\nIf the smell comes from the battery, or the battery is hot, swollen or hissing, switch off the engine and keep away; battery gas is flammable.",
+          "kind": "answer",
+          "topic": "rotten_egg_smell",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s067",
+      "tags": [
+        "exhaust",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Maitim na usok lumalabas sa tambutso pag inaapakan ko",
+          "answer": "Black or dark sooty exhaust smoke means the engine is burning too much fuel for the air it gets: a rich mixture. On diesel engines a little smoke under hard acceleration can be normal, but persistent black smoke is not.\n\nCommon causes include a clogged air filter, a leaking or sticking fuel injector, a faulty mass-airflow or oxygen sensor or on diesels, a turbo or injector fault.",
+          "kind": "answer",
+          "topic": "exhaust_black_smoke",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s068",
+      "tags": [
+        "exhaust"
+      ],
+      "turns": [
+        {
+          "message": "blueish smoke comes out of the exhaust when I start the car",
+          "answer": "Blue or blue-grey exhaust smoke means the engine is burning oil.\n\nWorn piston rings or cylinder walls (often more smoke under acceleration). Worn valve stem seals or valve guides (often a puff of smoke at startup or after idling).\n\nIf the oil level drops quickly or the oil-pressure light comes on, stop driving.",
+          "kind": "answer",
+          "topic": "exhaust_blue_smoke",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s069",
+      "tags": [
+        "hvac"
+      ],
+      "turns": [
+        {
+          "message": "The aircon only blows warm air now",
+          "answer": "Weak or warm air from the A/C usually comes from low refrigerant, a compressor problem, a blocked cabin filter or condenser, or a blower or control fault. A warm vent or weak airflow doesn't by itself mean the compressor has failed or the refrigerant is leaking.\n\nWarm air with normal airflow can come from the control settings, a stuck air flap, the heater, the refrigerant system or a faulty sensor.\n\nCheck whether air is blowing strongly; weak airflow points to the blower or cabin filter rather than the refrigerant.",
+          "kind": "answer",
+          "topic": "hvac_air_conditioning",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s070",
+      "tags": [
+        "hvac",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Ang baho ng aircon parang amag",
+          "answer": "A musty or mouldy smell from the vents usually comes from moisture and mould on the A/C evaporator, or a dirty cabin air filter.\n\nA blocked A/C drain that keeps water in the system.\n\nReplace the cabin air filter as the owner's manual describes.\n\nHave it checked at the next convenient service.",
+          "kind": "answer",
+          "topic": "ac_musty_smell",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s071",
+      "tags": [
+        "hvac"
+      ],
+      "turns": [
+        {
+          "message": "water dripping under the passenger side after using the AC, is that bad?",
+          "answer": "The colour of a leak is a useful clue: clear water is usually A/C condensation, green, orange or pink can be coolant, brown or black is often engine oil, red can be transmission or power-steering fluid, and a clear-to-yellowish slippery fluid near a wheel can be brake fluid, and blue is usually windscreen-washer fluid.\n\nClear, odourless water near the front passenger side after using the air conditioning: usually normal condensation.\n\nA suspected brake-fluid or fuel leak means don't drive the car.",
+          "kind": "answer",
+          "topic": "fluid_leak_colors",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s072",
+      "tags": [
+        "hvac"
+      ],
+      "turns": [
+        {
+          "message": "the heater blows cold air even after the engine warms up",
+          "answer": "Cabin heat comes from engine coolant passing through the heater core. A heater that blows cold usually means low coolant, a thermostat stuck open, a blocked heater core or a faulty blend door that won't move to hot.\n\nCold air even when the engine is warm, temperature gauge low, clicking behind the dashboard.\n\nCommon causes include low coolant level, a thermostat stuck open, a blocked heater core or a faulty blend-door actuator or controls.\n\nCheck the coolant level when the engine is cold.",
+          "kind": "answer",
+          "topic": "heater_not_working",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s073",
+      "tags": [
+        "starting"
+      ],
+      "turns": [
+        {
+          "message": "Engine turns over fine but just won't catch",
+          "answer": "If the engine cranks normally but won't start, it usually isn't getting fuel, spark or enough air, or the immobiliser is blocking it.\n\nThe starter turns the engine at normal speed but it never fires.\n\nA flooded engine. An ignition fault.",
+          "kind": "answer",
+          "topic": "engine_cranks_no_start",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s074",
+      "tags": [
+        "starting"
+      ],
+      "turns": [
+        {
+          "message": "the car starts then immediately dies after a second",
+          "answer": "An engine that fires and dies within a second or two is often being stopped by the immobiliser (security light flashing), or isn't getting steady fuel or air: a weak fuel pump, a dirty throttle body or idle control, a vacuum leak or a failing sensor.\n\nCommon causes include the immobiliser not recognising the key, a weak fuel pump or low fuel pressure, a dirty throttle body or idle air control or a vacuum leak.\n\nHave the codes read.",
+          "kind": "answer",
+          "topic": "starts_then_dies",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s075",
+      "tags": [
+        "starting",
+        "misspelled"
+      ],
+      "turns": [
+        {
+          "message": "car is hard to start in the moring takes many tries",
+          "answer": "A car that cranks a long time before starting usually has a weak battery, fuel pressure that drains away overnight, or (on a diesel) worn glow plugs. In the morning a cold engine needs more from all of them.\n\nCar is hard to start or takes long to start.\n\nA faulty coolant-temperature sensor.\n\nNote whether it cranks fast or slowly, and whether it starts better on the second try.",
+          "kind": "answer",
+          "topic": "hard_starting_cold",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s076",
+      "tags": [
+        "starting"
+      ],
+      "turns": [
+        {
+          "message": "nothing happens at all when I press the start button",
+          "answer": "If nothing happens at all when you try to start, with no click and no dashboard lights, the most likely causes are a completely flat battery or a disconnected or corroded battery terminal. If the lights work but nothing happens, check the gear selector and clutch or brake pedal first.\n\nCommon causes include a completely flat battery, a loose or corroded battery terminal, the gear selector not fully in Park or Neutral or a faulty ignition switch, starter relay or neutral safety switch.\n\nTry starting in Neutral, or press the clutch or brake fully.",
+          "kind": "answer",
+          "topic": "no_crank_no_click",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s077",
+      "tags": [
+        "noise_smell"
+      ],
+      "turns": [
+        {
+          "message": "Smells like burning plastic from the dashboard area",
+          "answer": "A burning smell has a few common sources, and the kind of smell tells them apart: burning rubber, burnt oil, hot brakes, melting plastic or a sweet syrupy smell.\n\nA coolant leak (sweet smell). An electrical fault (burning plastic).\n\nIf you see smoke, or smell burning plastic, pull over safely, switch off the engine and get everyone out.",
+          "kind": "answer",
+          "topic": "burning_smell",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s078",
+      "tags": [
+        "noise_smell"
+      ],
+      "turns": [
+        {
+          "message": "I can smell gas inside the car after filling up",
+          "answer": "A strong fuel smell or a fuel leak is a fire risk. Don't start or keep running the engine, keep away from ignition sources such as sparks, flames and cigarettes, and move away from the car.\n\nA smell of petrol or diesel inside or around the car, or fuel dripping underneath.\n\nA damaged fuel tank.\n\nIf the smell is faint and only right after refuelling, check that the fuel cap is closed properly.",
+          "kind": "answer",
+          "topic": "fuel_leak_smell",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s079",
+      "tags": [
+        "noise_smell"
+      ],
+      "turns": [
+        {
+          "message": "Whole car vibrates when I accelerate but it's smooth when coasting",
+          "answer": "A vibration that appears under acceleration and fades when coasting usually comes from the driveline: worn inner CV joints, a driveshaft or U-joint problem, or worn engine or transmission mounts.\n\nShudder or vibration under load, smooth when coasting; a check-engine light suggests a misfire instead.\n\nCommon causes include worn inner CV joints, a worn driveshaft centre bearing or U-joints, worn engine or transmission mounts or a misfire under load.\n\nNote the speed range and whether it happens only under acceleration.",
+          "kind": "answer",
+          "topic": "vibration_when_accelerating",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s080",
+      "tags": [
+        "noise_smell",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "may amoy sunog na goma pag nagpapark ako",
+          "answer": "A burning smell has a few common sources, and the kind of smell tells them apart: burning rubber, burnt oil, hot brakes, melting plastic or a sweet syrupy smell.\n\nA coolant leak (sweet smell). An electrical fault (burning plastic).\n\nIf you see smoke, or smell burning plastic, pull over safely, switch off the engine and get everyone out.",
+          "kind": "answer",
+          "topic": "burning_smell",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s081",
+      "tags": [
+        "multi_symptom"
+      ],
+      "turns": [
+        {
+          "message": "The battery light is on, the steering got heavy and now the temperature is climbing",
+          "answer": "A battery or charging light while driving means the charging system has a fault, usually an alternator that isn't charging, so the car is running on battery power and may stop.\n\nDimming lights, electrical items working poorly, a whining or squealing belt noise, and on some engines a rising temperature if the same belt drives the water pump.\n\nLoose or corroded battery terminals or charging wires.\n\nDrive only as far as a safe place nearby, then stop; the car can lose power and stall when the battery runs down. If the temperature gauge also rises, stop straight away, because the same belt may drive the water pump.",
+          "kind": "answer",
+          "topic": "battery_charging_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s082",
+      "tags": [
+        "multi_symptom"
+      ],
+      "turns": [
+        {
+          "message": "Rough idle, check engine light on and my fuel economy dropped",
+          "answer": "Dashboard warning lights and OBD diagnostic trouble codes: Warning lights mean a system needs attention. Red lights (oil pressure, temperature, brakes, charging) usually mean stop soon; amber lights such as the check-engine light mean get it checked soon.\n\nCommon causes include a fault detected by one of the car's control modules, a sensor or wiring fault or a loose fuel cap (check-engine light).\n\nIf a red warning appears or the car behaves abnormally, stop safely and check the owner's manual before continuing.\n\nCar uses more fuel than usual: A car that suddenly uses more fuel usually has a simple cause you can check first, such as low tire pressure, before an engine fault is likely.\n\nA dragging brake. Under-inflated tires.",
+          "kind": "answer",
+          "topic": "high_fuel_consumption",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s083",
+      "tags": [
+        "multi_symptom"
+      ],
+      "turns": [
+        {
+          "message": "car pulls to the right and the steering wheel vibrates at 80 km/h",
+          "answer": "Car pulls or drifts to one side: A car that pulls or drifts to one side usually has uneven tire pressure, wheel misalignment, a dragging brake or a worn steering or suspension part.\n\nA sticking brake caliper or brake hose problem (pulling mainly when braking, sometimes with a hot wheel or burning smell).\n\nNote whether it pulls all the time or only when braking; pulling only when braking points to the brakes.\n\nIf the pull is sudden or strong, or happens when braking, have it inspected before driving further.\n\nSteering wheel shakes or vibrates at high speed: A steering wheel that shakes at higher speeds is most often caused by unbalanced wheels, and sometimes by a damaged tire, a bent wheel or worn steering parts.\n\nA shake that appears around 80 to 100 km/h and doesn't change when you coast is classic wheel imbalance. A tire shop can balance the wheels quickly and cheaply.\n\nWorn tie-rod ends, ball joints, wheel bearings or other steering and suspension parts.\n\nHave the wheels balanced and the tires checked for bulges.\n\nIf the vibration is sudden or severe, slow down and stop safely; a tire may be failing.",
+          "kind": "answer",
+          "topic": "high_speed_vibration",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s084",
+      "tags": [
+        "multi_symptom",
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "white smoke from under the hood and the temperature needle is maxed out",
+          "answer": "Smoke from under the hood or engine compartment: Smoke from under the bonnet can be steam from overheating coolant, oil burning on hot parts, or an electrical fire. Pull over safely, switch off the engine and get everyone out of the car.\n\nCommon causes include overheating and coolant boiling (white, sweet-smelling steam), oil leaking onto the hot exhaust (blue-grey smoke, burnt-oil smell) or an electrical fault (acrid smell of burning plastic).\n\nDon't open the bonnet while smoke is coming out; opening it can feed a fire. If there are flames or the smoke keeps increasing, move well away from the car and call emergency services.\n\nEngine overheating and cooling-system concerns: Treat a high-temperature warning as real until a check proves otherwise. An overheating warning means the engine's heat isn't being carried away properly, or the temperature reading is wrong.\n\nA faulty cooling fan, fan relay, fuse, wiring or temperature sensor means too little air at idle or in traffic. Temperature that drops once you're moving is a clue, but not proof.\n\nIf the gauge is in the red or you see steam, pull over safely and switch off the engine. Never open the radiator cap while the engine is hot; hot coolant can cause severe burns.",
+          "kind": "answer",
+          "topic": "engine_overheating",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s085",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "how often should I get the wheels aligned?",
+          "answer": "Wheel alignment sets the angles of the wheels. Signs it's off include pulling to one side, a crooked steering wheel when driving straight, and uneven tire wear.\n\nHave the alignment checked after a hard impact or when fitting new tires. Check the tire pressures first, because uneven pressure can feel like misalignment.",
+          "kind": "answer",
+          "topic": "wheel_alignment",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s086",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "when should I change the cabin air filter?",
+          "answer": "Air, cabin and fuel filters, spark plugs and other wear items are replaced at intervals set by the vehicle maker, by distance or time.\n\nThe cabin air filter cleans air entering the passenger compartment where fitted. The engine air filter limits intake contaminants.\n\nReplace the engine air filter sooner if you drive in dusty conditions.",
+          "kind": "answer",
+          "topic": "filters_routine_service",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s087",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "Is it necessary to replace the serpentine belt and what happens if it breaks?",
+          "answer": "The drive (serpentine or fan) belt turns the alternator, and on many cars the water pump, power-steering pump and A/C compressor. A squeal, especially at start-up or when turning the wheel, usually means the belt is slipping because it is worn, loose or contaminated.\n\nCommon causes include a worn, glazed or cracked belt, a weak belt tensioner, a worn idler or tensioner pulley or oil or coolant on the belt.\n\nReplace the belt and check the tensioner as the manual recommends.\n\nIf the battery light comes on, the steering turns heavy or the temperature rises together, the belt may have broken: stop safely and switch off the engine.",
+          "kind": "answer",
+          "topic": "serpentine_belt",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s088",
+      "tags": [
+        "maintenance",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Kailan dapat palitan ang brake fluid?",
+          "answer": "Brake fluid transmits the pedal pressure to the brakes. It absorbs moisture over time, so it's replaced at the interval in the owner's manual. A slowly dropping level can be pad wear; a fast drop means a leak.\n\nNot applicable: this entry is general guidance.\n\nUse only the brake-fluid type printed on the reservoir cap or in the owner's manual.\n\nIf the level drops quickly or the red brake warning comes on, don't drive the car; have the brakes checked.",
+          "kind": "answer",
+          "topic": "brake_fluid_maintenance",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s089",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "What should I check before a long road trip?",
+          "answer": "Travel is allowed within Luzon (the Luzon island group, which includes Mindoro). Because leaving Mindoro needs a ferry, any ferry or RoRo crossing, and any travel outside the approved area, needs the rental team's authorization before the trip.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s090",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "Do I really need to warm up my car every morning before driving?",
+          "answer": "Modern fuel-injected engines don't need a long idle to warm up. Starting the engine, letting the oil circulate briefly and then driving gently until the temperature gauge reaches normal warms it faster and wastes less fuel.\n\nNot applicable: this entry is general guidance.\n\nDrive off gently after a short moment, avoiding high revs and hard acceleration until the engine is warm.",
+          "kind": "answer",
+          "topic": "engine_warm_up",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s091",
+      "tags": [
+        "maintenance"
+      ],
+      "turns": [
+        {
+          "message": "What is BLOWBAGETS?",
+          "answer": "BLOWBAGETS is a common Philippine checklist for a quick check before a trip: Battery, Lights, Oil, Water (coolant), Brakes, Air (tire pressure), Gas (fuel), Engine, Tires and Self (the driver is fit and rested).\n\nBattery: terminals clean and tight. Lights: headlights, brake lights and signals work. Engine: no warning lights or unusual noises. Self: rested, documents and emergency kit with you.",
+          "kind": "answer",
+          "topic": "blowbagets",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s092",
+      "tags": [
+        "rental"
+      ],
+      "turns": [
+        {
+          "message": "I got into a minor accident with the rental car, what should I do?",
+          "answer": "If you are in an accident:\n- Stop in a safe place if you can, switch on the hazard lights and check whether anyone is hurt.\n- Call emergency services if anyone is injured or the vehicle is a hazard to traffic.\n- Follow local requirements for reporting the accident, and note the time, place, other vehicles and any witnesses.\n- Notify the rental team as soon as you can, and follow your rental agreement.\nThe system does not record accident procedures, insurance coverage or liability terms, so confirm those with the rental team.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s093",
+      "tags": [
+        "rental",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Nasiraan ako sa daan gamit yung nirentahan kong sasakyan",
+          "answer": "If the rental car breaks down:\n- Move to a safe place if you can, switch on the hazard lights, and stay clear of traffic.\n- Do not keep driving if there is smoke, a red warning light, overheating, or a brake or steering problem.\n- Contact the rental team as soon as you can and tell them what happened and where you are; ask them before arranging any repair.\nThe system does not record a breakdown or roadside-assistance procedure, so confirm the next steps with the rental team.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s094",
+      "tags": [
+        "rental"
+      ],
+      "turns": [
+        {
+          "message": "I lost the key of the rental car",
+          "answer": "Each reservation records a pickup date and a return date; the return date is not counted as a rental day, and the rental agreement requires the vehicle back on the stated return date. An administrator records the handover during the rental period, and only after the reservation is paid; when the vehicle comes back, the administrator records the return and the reservation is marked completed. Pickup and return are at the rental office in San Jose, Occidental Mindoro, during business hours (Monday to Saturday, 8:00 AM to 6:00 PM). Return the car with the same fuel level and reasonably clean; the rental team charges refuelling, cleaning and late-return fees separately. The system stores no pickup or return times, so agree the time with the rental team.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s095",
+      "tags": [
+        "rental"
+      ],
+      "turns": [
+        {
+          "message": "There's a dent on the rental that was already there when I picked it up",
+          "answer": "Each reservation records a pickup date and a return date; the return date is not counted as a rental day, and the rental agreement requires the vehicle back on the stated return date. An administrator records the handover during the rental period, and only after the reservation is paid; when the vehicle comes back, the administrator records the return and the reservation is marked completed. Pickup and return are at the rental office in San Jose, Occidental Mindoro, during business hours (Monday to Saturday, 8:00 AM to 6:00 PM). Return the car with the same fuel level and reasonably clean; the rental team charges refuelling, cleaning and late-return fees separately. The system stores no pickup or return times, so agree the time with the rental team.",
+          "kind": "answer",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s096",
+      "tags": [
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "my brakes stopped working while driving downhill",
+          "answer": "If your brakes fail while driving, pump the brake pedal firmly, shift to a lower gear, and apply the parking brake gradually while steering to a safe place. Turn on your hazard lights and use the horn to warn others.\n\nA major brake-fluid leak. Overheated brakes on a long descent (brake fade).\n\nOnce stopped, don't drive the car again; have it towed for inspection.",
+          "kind": "answer",
+          "topic": "brake_failure",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s097",
+      "tags": [
+        "safety",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "May apoy na lumalabas sa ilalim ng hood!",
+          "answer": "A rattle from under the car is most often a loose exhaust heat shield, a broken exhaust hanger or clamp, or loose parts inside the catalytic converter. If it happens over bumps instead, it's usually suspension: worn sway-bar links or bushings.\n\nCommon causes include a loose or rusted heat shield, a broken exhaust hanger or clamp, loose parts inside the catalytic converter or worn sway-bar links or suspension bushings (over bumps).\n\nWith the car cold and parked, tap the exhaust and heat shields underneath and listen for the same rattle.\n\nHave it checked soon.",
+          "kind": "answer",
+          "topic": "rattle_underneath",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "causes": false,
+            "usefulness": true,
+            "safety": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s098",
+      "tags": [
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "the steering suddenly locked and I can't turn the wheel while moving",
+          "answer": "When the key won't turn, the steering lock is usually holding the ignition. Turn the steering wheel gently left and right while you turn the key; it releases the lock. On an automatic, make sure the selector is fully in Park.\n\nCommon causes include the steering lock engaged, not fully in Park (automatics) or a worn key or ignition cylinder.",
+          "kind": "answer",
+          "topic": "key_wont_turn",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": false,
+            "usefulness": true,
+            "safety": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s099",
+      "tags": [
+        "safety"
+      ],
+      "turns": [
+        {
+          "message": "I drove through deep flood water and now the engine won't start",
+          "answer": "Car caught in a flood or driven through deep water: If the car has been in a flood, don't try to start it: water in the engine can bend internal parts the moment it turns over, and wet electrics can short. Have it towed and inspected first.\n\nWet brakes after driving through water. Water drawn into the engine through the air intake.\n\nIf you drove through water and the car still runs, test the brakes gently at low speed until they dry and work normally.\n\nNever drive into floodwater you can't see the bottom of; if water reaches the bottom of the doors, the engine can stall or the car can float. Don't start a car that was submerged.\n\nBattery, alternator, starter, and charging-system problems: A car that won't start or cranks slowly usually has a weak battery, a poor battery connection, or a starter or charging problem.\n\nCommon causes include a discharged or worn-out battery, loose or corroded battery terminals, something draining the battery while parked or a failing starter motor or relay.\n\nWith the engine off, check that the battery terminals are tight and free of corrosion.\n\nIf you smell burning or see smoke from the wiring or battery, stop trying to start the car.",
+          "kind": "answer",
+          "topic": "battery_charging_starting",
+          "checks": {
+            "answered": true,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s100",
+      "tags": [
+        "follow_up"
+      ],
+      "turns": [
+        {
+          "message": "My engine temperature warning light turned on",
+          "answer": "A red thermometer symbol means the engine is overheating; a blue one (on some cars) means the engine is still cold. A red temperature light needs immediate action to avoid serious engine damage.\n\nCommon causes include low coolant from a leak, a radiator fan not working, a stuck thermostat or a failing water pump.\n\nSwitch off the A/C and turn the heater to hot and fan to full to draw heat away while you find a safe place to stop. Stop, switch off the engine and let it cool for at least half an hour.\n\nPull over safely, switch off the engine and let it cool; don't open the radiator or reservoir cap while hot.",
+          "kind": "answer",
+          "topic": "coolant_temp_warning_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "usefulness": true,
+            "safety": true,
+            "repetition": true
+          },
+          "passed": false
+        },
+        {
+          "message": "What should I do now?",
+          "answer": "A red temperature light needs immediate action to avoid serious engine damage.\n\nCheck the coolant level only when cold; never open a hot cap.",
+          "kind": "answer",
+          "topic": "coolant_temp_warning_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "context": true,
+            "repetition": true
+          },
+          "passed": false
+        },
+        {
+          "message": "how much would it cost to fix?",
+          "answer": "What it costs depends on the cause and the car, so have it diagnosed first and ask for a written quote before any parts are replaced.",
+          "kind": "answer",
+          "topic": "coolant_temp_warning_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": false,
+            "accuracy": true,
+            "context": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s101",
+      "tags": [
+        "follow_up"
+      ],
+      "turns": [
+        {
+          "message": "my brakes squeak in the morning",
+          "answer": "A steady squeal when braking is usually the pad wear indicator telling you the pads are nearly worn out. A squeak only on the first stops of a damp morning is surface rust and harmless.\n\nCommon causes include pads worn down to the wear indicator, moisture or light surface rust, often in the morning or after rain, brake dust or debris between pad and rotor or glazed pads or rotors.\n\nGrinding or a metal-on-metal sound usually means the pads are worn through; stop driving when it's safe and have the brakes checked.",
+          "kind": "answer",
+          "topic": "brake_noise",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        },
+        {
+          "message": "is it safe to keep driving?",
+          "answer": "A brief squeak in damp weather is usually harmless. A constant squeal means the pads should be checked soon, and grinding means stop driving and have the brakes inspected.\n\nGrinding, a soft or sinking pedal, pulling to one side, vibration, a brake warning light or longer stopping distances are safety-critical: stop driving the vehicle when it is safe to do so and have it inspected before further use.",
+          "kind": "answer",
+          "topic": "brake_noise",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "context": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s102",
+      "tags": [
+        "follow_up"
+      ],
+      "turns": [
+        {
+          "message": "Transmission feels like it's slipping",
+          "answer": "Transmission slipping is when the engine revs rise but the car doesn't speed up as it should, or gears engage late or harshly. Slipping or delayed engagement describes a driving symptom, not a confirmed transmission failure.\n\nCommon causes include low or worn-out transmission fluid, a fluid leak, worn clutches or bands inside the transmission or a faulty solenoid, sensor or control module.\n\nNote when it slips (cold, hot, a particular gear) and whether a transmission warning light is on.\n\nIf the car loses drive, the transmission smells burnt or an over-temperature warning appears, stop safely; continuing can cause major damage.",
+          "kind": "answer",
+          "topic": "transmission_slip",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        },
+        {
+          "message": "I already checked the fluid and it's full",
+          "answer": "Different transmission designs have different fluid-check and service requirements.\n\nCheck the fluid only if the owner's manual gives a procedure; many modern transmissions have no dipstick.",
+          "kind": "answer",
+          "topic": "transmission_slip",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": false,
+            "context": true,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s103",
+      "tags": [
+        "follow_up",
+        "topic_change"
+      ],
+      "turns": [
+        {
+          "message": "My tire pressure light is on",
+          "answer": "The TPMS light means one or more tires is well below its correct pressure. On many cars, a light that flashes for about a minute and then stays on means the monitoring system itself has a fault.\n\nA drop in pressure in cold weather.\n\nCheck all the tire pressures when cold and inflate them to the figures on the door-jamb sticker or in the owner's manual. Look for a nail, cut or a tire that's visibly low.\n\nIf a tire looks flat or the car handles strangely, slow down and stop somewhere safe; don't drive on a flat tire.",
+          "kind": "answer",
+          "topic": "tpms_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        },
+        {
+          "message": "also my battery light just came on",
+          "answer": "A battery or charging light while driving means the charging system has a fault, usually an alternator that isn't charging, so the car is running on battery power and may stop. The car is then running on battery power alone and may stall when the battery runs down.\n\nLoose or corroded battery terminals or charging wires. Common causes include a failing alternator, a broken or slipping drive belt, loose or corroded battery connections or a wiring or fuse fault.\n\nDrive only as far as a safe place nearby, then stop; the car can lose power and stall when the battery runs down. If the temperature gauge also rises, stop straight away, because the same belt may drive the water pump.",
+          "kind": "answer",
+          "topic": "battery_charging_light",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "usefulness": true,
+            "context": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s104",
+      "tags": [
+        "follow_up",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Mahina ang lamig ng aircon ko",
+          "answer": "Weak or warm air from the A/C usually comes from low refrigerant, a compressor problem, a blocked cabin filter or condenser, or a blower or control fault.\n\nWeak airflow can result from a blower, control, filter, door, or electrical issue. Odor, water, noise, or intermittent behavior may have several causes and requires inspection.\n\nCheck whether the fan in front of the radiator runs when the A/C is on.",
+          "kind": "answer",
+          "topic": "hvac_air_conditioning",
+          "checks": {
+            "answered": true,
+            "identification": true,
+            "relevance": true,
+            "retrieval": true,
+            "accuracy": true,
+            "causes": true,
+            "usefulness": true,
+            "repetition": true
+          },
+          "passed": true
+        },
+        {
+          "message": "magkano kaya magpagawa?",
+          "answer": "Which vehicle do you mean, and for how many days? Tell me both (for example Toyota Vios for 3 days) and I'll work out the estimate from its current rate.",
+          "kind": "clarify",
+          "topic": null,
+          "checks": {
+            "answered": false,
+            "identification": false,
+            "relevance": false,
+            "retrieval": false,
+            "accuracy": true,
+            "context": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    },
+    {
+      "id": "s105",
+      "tags": [
+        "unknown"
+      ],
+      "turns": [
+        {
+          "message": "What's the exact torque spec for the cylinder head bolts on a 2019 Toyota Vios?",
+          "answer": "",
+          "kind": "needs_data",
+          "topic": null,
+          "checks": {
+            "abstention": true,
+            "accuracy": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s106",
+      "tags": [
+        "unknown"
+      ],
+      "turns": [
+        {
+          "message": "Exactly how much will a new transmission cost for my car?",
+          "answer": "Which vehicle do you mean, and for how many days? Tell me both (for example Toyota Vios for 3 days) and I'll work out the estimate from its current rate.",
+          "kind": "clarify",
+          "topic": null,
+          "checks": {
+            "abstention": true,
+            "accuracy": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s107",
+      "tags": [
+        "out_of_domain"
+      ],
+      "turns": [
+        {
+          "message": "Who won the last NBA finals?",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "abstention": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s108",
+      "tags": [
+        "out_of_domain"
+      ],
+      "turns": [
+        {
+          "message": "Can you give me a recipe for chicken adobo?",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "abstention": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s109",
+      "tags": [
+        "out_of_domain",
+        "taglish"
+      ],
+      "turns": [
+        {
+          "message": "Ano ang magandang laptop para sa school?",
+          "answer": "I can only answer from this system's data and its automotive references, and I don't have anything reliable on that. I can help with car problems, warning lights, trouble codes and maintenance, and with vehicles, prices and your bookings.",
+          "kind": "abstain",
+          "topic": null,
+          "checks": {
+            "abstention": true,
+            "repetition": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "s110",
+      "tags": [
+        "vague"
+      ],
+      "turns": [
+        {
+          "message": "my car is making a weird noise",
+          "answer": "What kind of noise is it, and when does it happen? For example: squealing when braking, clicking when turning, knocking from the engine, or a hum that gets louder with speed.",
+          "kind": "clarify",
+          "topic": null,
+          "checks": {
+            "answered": true,
+            "usefulness": false,
+            "repetition": true
+          },
+          "passed": false
+        }
+      ],
+      "passed": false
+    }
+  ]
+}
