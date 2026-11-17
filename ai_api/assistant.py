@@ -432,11 +432,17 @@ def _grounded_response(message, role, retrieval, vocabulary, memory=None, entiti
         for part in parts]
 
     answers, sources, all_status, vehicles_seen = [], [], {}, []
+    abstained_parts, answered_topics = 0, set()
     for text, sub_plan, sub_results in pieces:
         if not sub_plan or not sub_plan.get("retrievals"):
             # A part that needs no records ("and can I pay with GCash?") is answered from the guide or references.
             reply = _direct_response(sub_plan["direct"], sub_plan) if sub_plan and sub_plan.get("direct") else _route(
                 normalize_message(text), extract_entities(text), role, None, None, None, None)
+            if parts is not None and (reply.get("data") or {}).get("abstained"):
+                # Not added: a part that found nothing ("what now?" after a symptom) says nothing on its own.
+                abstained_parts += 1
+                continue
+            answered_topics.add((reply.get("data") or {}).get("knowledge_id"))
             answers.append(reply["answer"])
             sources += ((reply.get("data") or {}).get("evidence") or {}).get("sources", [])
             continue
@@ -457,6 +463,25 @@ def _grounded_response(message, role, retrieval, vocabulary, memory=None, entiti
         vehicles_seen += [{"make": v.get("make"), "model": v.get("model")}
                           for item in sub_results if isinstance(item, dict) and item.get("status") == "ok"
                           for v in (item.get("data") or {}).get("vehicles", []) if isinstance(v, dict) and v.get("model")]
+    if abstained_parts:
+        # Split apart, a part can lose the meaning the whole message has ("the temperature needle is up after a
+        # hill; what now?"): the whole message is tried once, and its answer is used when it adds a topic.
+        whole = _route(normalize_message(message), extract_entities(message), role, None, None, None, None)
+        whole_data = whole.get("data") or {}
+        if not whole_data.get("abstained") and whole_data.get("knowledge_id") not in answered_topics:
+            answers.append(whole["answer"])
+            sources += (whole_data.get("evidence") or {}).get("sources", [])
+            answered_topics.add(whole_data.get("knowledge_id"))
+        if not answers:
+            # Nothing in any part: one abstention, recorded as one, rather than the same apology per part.
+            abstained = _with_evidence(core.build_response("unknown", 0.0, OUT_OF_SCOPE_ANSWER), "none", [])
+            abstained["data"].update(abstained=True, abstain_reason="no_relevant_evidence")
+            return abstained, [], {"notes_shown": sorted(set(shown))}
+        if len(answered_topics - {None}) == 1 and len(answers) == 1 and whole_data.get("knowledge_id"):
+            # The whole message was one car problem: answer it as that topic, so follow-ups build on it.
+            whole["data"]["viewer_role"] = role
+            return whole, vehicles_seen[:5], {"notes_shown": sorted(set(shown))}
+    answers = list(dict.fromkeys(answer for answer in answers if answer))
     response = core.build_response(plan.get("intent") or "database_answer", 1.0, "\n\n".join(answers),
                                    {"plan_intent": plan.get("intent"), "retrieval_status": all_status})
     ok = any(status == "ok" for status in all_status.values())
@@ -909,7 +934,11 @@ def _specific_reference(message, role):
         if knowledge is not None and knowledge.get("phrase_length", 0) >= 2 and curated["id"] == f"kb:{knowledge['document']['id']}":
             return None
     if system and system["support"] >= SPECIFIC_SOURCE_MIN_SUPPORT and (
-        passages[0] is system or curated and system["support"] >= curated["support"] + 0.12
+        passages[0] is system
+        # A guide page outranked by a car topic takes over only for a rental or system question: "write me a
+        # python script" shares words with the error-messages page, which doesn't make it a question about it.
+        or curated and system["support"] >= curated["support"] + 0.12
+        and (_is_guide_question(message) or GUIDE_TERMS.search(message))
     ):
         passages = [system]
     if passages[0]["support"] < SPECIFIC_SOURCE_MIN_SUPPORT:
@@ -965,7 +994,15 @@ def _grounded_answer(message, role, core_response, passages=None, source_types=F
         # ("my car caught fire" vs. brake grinding) is not used from this index either.
         agreed = retrieve_knowledge(message)
         agreed_id = f"kb:{agreed['document']['id']}" if agreed is not None else None
-        passages = [p for p in passages if p["source_type"] != "curated_reference" or p["id"] == agreed_id]
+        kept = [p for p in passages if p["source_type"] != "curated_reference" or p["id"] == agreed_id]
+        if kept and kept[0] is not passages[0] and not (
+                kept[0]["source_type"] == "system_documentation" and _is_guide_question(message)
+                or kept[0]["source_type"] not in {"system_documentation", "curated_reference"}
+                and kept[0]["support"] >= settings.CHATBOT_STRONG_RETRIEVAL_SUPPORT):
+            # The best matches were car topics the stricter check rejected, so what ranked below them only
+            # answers when it is clearly what was asked ("write me a python script" is not the error-messages page).
+            kept = []
+        passages = kept
     if not passages or passages[0]["support"] < settings.CHATBOT_MIN_RETRIEVAL_SUPPORT:
         return None
     best = passages[0]
@@ -1247,6 +1284,13 @@ def _is_car_problem(message, entities):
     return knowledge is not None
 
 
+# Words that ask what the rental includes or allows ("is fuel included", "are pets allowed").
+GUIDE_TERMS = re.compile(r"\b(?:included|includes?|inclusions?|inclusive|allowed|allow|charged?|charges|policy|policies|rules?)\b",
+                         re.IGNORECASE)
+# Share of a message's words one topic's keywords must name for the message to be read as that one problem.
+WHOLE_MESSAGE_COVERAGE = 0.85
+
+
 def _multi_knowledge_response(message):
     """Answer independent knowledge topics separately when each clause retrieves its own evidence."""
     if RENTAL_REQUEST.search(message) or NAMED_VEHICLE_SPEC.search(message):
@@ -1268,6 +1312,10 @@ def _multi_knowledge_response(message):
     whole = retrieve_knowledge(normalized)
     if whole is not None and any(" and " in keyword.casefold() and keyword.casefold() in normalized
                                  for keyword in whole["document"].get("keywords") or []):
+        return None
+    if whole is not None and whole.get("phrase_length", 0) >= 2 and whole.get("topic_coverage", 0.0) >= WHOLE_MESSAGE_COVERAGE:
+        # One topic already names nearly everything said ("my steering wheel is locked and the key won't turn" is the
+        # steering lock), so the clauses are one problem described in two halves, not two problems.
         return None
 
     retrieved, unresolved, requests, topics = [], [], [], []
