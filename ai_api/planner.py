@@ -957,7 +957,13 @@ def plan(message, role, vocabulary=None, memory=None):
         or GENERAL_MAINTENANCE_QUESTION.search(u.text)
     if records_question and not general_advice and not u.has("explain") and not HOW_TO_DO.search(u.text):
         if not admin:
-            if u.has("maintenance", "status") and (asks_vehicle or u.has("listing", "vehicle_noun", "status")):
+            # "The rented car" / "my rented car" is the customer's own rental, not a fleet status ("which cars are rented?").
+            own_rental = re.search(r"\b(?:the|my|our|this)\s+(?:rented|rental)\s+(?:car|vehicle|unit|suv|van)\b", u.text) \
+                and not u.has("maintenance")
+            # "My headlight is out": a customer describing their own car, not asking about the fleet's status.
+            own_rental = own_rental or (re.search(r"\bmy\b", u.text) and not u.has("maintenance")
+                                        and not re.search(r"\b(?:cars|vehicles|units|fleet|all|which|list)\b", u.text))
+            if u.has("maintenance", "status") and (asks_vehicle or u.has("listing", "vehicle_noun", "status")) and not own_rental:
                 return _direct("admin_only", u)
         else:
             return _maintenance_plan(u)
