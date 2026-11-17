@@ -613,7 +613,7 @@ class AutomotiveKnowledgeTests(TestCase):
         cases = [
             ("Why does my car shake when I accelerate?", "clutch_drivetrain_vibration"),
             ("What happens if I keep driving with worn brake pads?", "brake_wear"),
-            ("How can I tell if my alternator is failing?", "battery_charging_starting"),
+            ("How can I tell if my alternator is failing?", "alternator_failing"),
             ("Why does the engine temperature rise when I am stuck in traffic?", "engine_overheating"),
             ("When should I change my engine oil?", "oil_change_schedule"),
             ("What could cause the transmission to slip?", "transmission_slip"),
