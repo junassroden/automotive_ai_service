@@ -1,15 +1,15 @@
 {
-  "built_at": "2026-11-16T10:01:30.844276+00:00",
-  "chunk_count": 9974,
+  "built_at": "2026-11-17T13:42:49.306994+00:00",
+  "chunk_count": 10090,
   "chunks_by_source": {
     "obdex": 9665,
-    "automotive_knowledge": 160,
+    "automotive_knowledge": 276,
     "automotive_fault_flowcharts": 99,
     "system_guide": 36,
     "vehicle_service_records": 14
   },
   "chunks_by_trust": {
-    "verified_reference": 9825,
+    "verified_reference": 9941,
     "unverified_reference": 99,
     "system_documentation": 36,
     "derived_from_records": 14
@@ -21,9 +21,9 @@
     "rows_rejected_invalid_part_number": 9,
     "source": "masterparts.xlsx"
   },
-  "chunks_sha256": "06fd9b3a25a9f433aac61db721b45a1f7507c3628426822ac386c8299eb6ee6d",
-  "index_sha256": "ef59c60408688ca0c93f53c065fa922956e492dbb9f959d6633ae4883cd69ce1",
-  "semantic_vectors_sha256": "8b98bc3e67f879bb43dbab0dfd434fc73b8459ffda68203c5afa38d5dab3c2d9",
+  "chunks_sha256": "5119b42d6223c4365daef2a8f3327ca8e9ca3167b2ed2fa288640a4182ec9b4b",
+  "index_sha256": "284b4b54c8ca944a8898a9ffa9dbac82863f536940747bc372af16c320d81981",
+  "semantic_vectors_sha256": "0ba54250727ab0b6f8217a654d96b7996df03fee2fea14328272bd0fdd4016a5",
   "semantic_embeddings": {
     "model_id": "intfloat/multilingual-e5-small",
     "model_revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
@@ -31,7 +31,7 @@
     "backend": "onnx",
     "onnx_model_file": "onnx/model_qint8_avx512_vnni.onnx",
     "dimensions": 384,
-    "count": 9974,
+    "count": 10090,
     "max_sequence_length": 384,
     "normalized": true,
     "license": "MIT"
@@ -41,5 +41,9 @@
     "vehicle_diagnostic_sample": "generated diagnostics with random measurements",
     "dtc_chat_sft": "templated assistant answers with truncated unrelated text",
     "auto_repair_orders": "synthetic relational sample (example.org customers)"
+  },
+  "curated_phrases": {
+    "phrases": 3284,
+    "documents": 276
   }
 }
