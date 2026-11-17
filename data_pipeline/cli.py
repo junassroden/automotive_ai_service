@@ -941,6 +941,7 @@ def _main():
     commands.add_parser("train-maintenance")
     commands.add_parser("train-chatbot")
     commands.add_parser("status")
+    commands.add_parser("fleet-service-status")
     extract = commands.add_parser("safe-extract")
     extract.add_argument("archive", type=Path)
     extract.add_argument("--destination", type=Path, required=True)
@@ -965,6 +966,9 @@ def _main():
         )
     elif arguments.command == "status":
         print(json.dumps(read_training_status(), indent=2))
+    elif arguments.command == "fleet-service-status":
+        from data_pipeline.service_need import fleet_readiness
+        print(json.dumps(fleet_readiness(RAW_ROOT), indent=2))
     elif arguments.command == "train-chatbot":
         _run_chatbot_training()
         print(json.dumps(read_training_status(), indent=2))
