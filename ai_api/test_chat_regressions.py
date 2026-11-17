@@ -1565,3 +1565,74 @@ class UnderstandingFixesTests(TestCase):
         self.assertEqual(ask("what about the front ones?")["data"].get("knowledge_id"), "brake_noise")
         switched = ask("I have an engine light and my throttle is not working. What could be the problem?")
         self.assertNotEqual(switched["data"].get("knowledge_id"), "brake_noise")
+
+
+@skipUnless(INDEX_BUILT, "knowledge index not built")
+class KnowledgeUnderstandingTests(TestCase):
+    """Meaning-level retrieval, verification and answer content added on 2026-11-17 (development questions only;
+    the sealed set in data/evaluation/sealed_2026-11-17 is never used here)."""
+
+    def ask(self, message, conversation=None):
+        return answer_chat(message, viewer_role="customer", conversation_id=conversation,
+                           conversation_scope="customer:understanding-test" if conversation else None, retrieval_protocol=1)
+
+    def test_meaning_beats_words_shared_by_accident(self):
+        # "hard ... to ... starting" holds every word of the cold-start keyword "hard to start".
+        for message, topic in (
+            ("Steering became really hard to turn after starting", "steering_heavy"),
+            ("How often should the wheels get aligned?", "wheel_alignment"),
+            ("my car is overheating", "engine_overheating"),
+            ("the fan behind the radiator doesn't spin", "radiator_fan"),
+            ("there's play in my steering wheel", "tie_rod_ends"),
+        ):
+            self.assertEqual(self.ask(message)["data"].get("knowledge_id"), topic, message)
+
+    def test_problem_answers_name_likely_causes(self):
+        answer = self.ask("My engine is misfiring")["answer"]
+        self.assertIn("Common causes include", answer)
+        self.assertIn("spark plug", answer)
+
+    def test_split_question_does_not_repeat_the_abstention(self):
+        response = self.ask("Temp needle is way up after climbing a hill; what now?")
+        self.assertEqual(response["answer"].count("anything reliable"), 0 if response["data"].get("knowledge_id") else 1)
+        both = self.ask("Who won the game yesterday; and what time is it?")
+        self.assertLessEqual(both["answer"].count("anything reliable"), 1)
+
+    def test_unrelated_request_is_not_answered_from_the_guide(self):
+        response = self.ask("Write me a python script")
+        self.assertTrue(response["data"].get("abstained"), response["answer"])
+
+    def test_one_problem_described_in_two_halves_is_not_split(self):
+        response = self.ask("My steering wheel is locked and the key won't turn")
+        self.assertEqual(response["data"].get("knowledge_id"), "steering_failure")
+        self.assertNotEqual(response.get("intent"), "multi_topic")
+
+    def test_customer_rental_ticket_is_not_refused_as_fleet_records(self):
+        self.assertNotEqual(self.ask("I got a ticket while driving the rented car").get("intent"), "permission_denied")
+        self.assertEqual(plan_message("which cars are rented right now", "customer", None, {}).get("direct"), "admin_only")
+
+    def test_new_entries_have_the_chat_fields_and_no_figures(self):
+        payload = json.loads(Path(settings.AUTOMOTIVE_KNOWLEDGE_PATH).read_text(encoding="utf-8"))
+        added = [d for d in payload["documents"] if d["id"] in {"head_gasket", "rental_accident", "dtc_p0420_catalyst", "blowbagets"}]
+        self.assertEqual(len(added), 4)
+        for document in added:
+            self.assertTrue(document["answer"] and document["drive_safety"])
+            self.assertNotRegex(json.dumps(document), r"₱|\bphp\b|\bpesos?\b")
+
+    def test_emergencies_in_taglish_and_english_reach_the_right_topic(self):
+        for message, topics in (
+            ("May apoy na lumalabas sa ilalim ng hood!", {"vehicle_fire"}),
+            ("nasusunog ang kotse ko", {"vehicle_fire"}),
+            ("walang preno!", {"brake_failure"}),
+            ("lumulubog ang preno", {"brake_pedal_soft", "brake_failure"}),
+            ("Na-flatan ako sa highway", {"tire_puncture", "changing_a_tire"}),
+            ("sumabog ang gulong habang nagmamaneho", {"tire_blowout"}),
+            ("A red thermometer light came on", {"coolant_temp_warning_light", "engine_overheating"}),
+            ("Rapid clicking when I turn the key", {"battery_charging_starting", "battery_weak_signs", "starter_motor", "jump_start"}),
+            ("The steering suddenly locked while moving", {"steering_failure"}),
+        ):
+            self.assertIn(self.ask(message)["data"].get("knowledge_id"), topics, message)
+
+    def test_customer_describing_own_car_is_not_refused(self):
+        self.assertNotEqual(self.ask("my headlight is out").get("intent"), "permission_denied")
+        self.assertNotEqual(self.ask("rough idle and shaking").get("intent"), "multi_topic")
