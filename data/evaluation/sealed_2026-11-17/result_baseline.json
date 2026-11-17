@@ -1,0 +1,174 @@
+{
+  "label": "baseline",
+  "summary": {
+    "cases_passed": 60,
+    "cases": 110,
+    "metrics": {
+      "abstention": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "accuracy": {
+        "passed": 82,
+        "total": 111,
+        "rate": 0.739
+      },
+      "answered": {
+        "passed": 101,
+        "total": 108,
+        "rate": 0.935
+      },
+      "causes": {
+        "passed": 51,
+        "total": 63,
+        "rate": 0.81
+      },
+      "context": {
+        "passed": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "identification": {
+        "passed": 68,
+        "total": 107,
+        "rate": 0.636
+      },
+      "relevance": {
+        "passed": 68,
+        "total": 107,
+        "rate": 0.636
+      },
+      "repetition": {
+        "passed": 115,
+        "total": 116,
+        "rate": 0.991
+      },
+      "retrieval": {
+        "passed": 68,
+        "total": 99,
+        "rate": 0.687
+      },
+      "safety": {
+        "passed": 17,
+        "total": 21,
+        "rate": 0.81
+      },
+      "usefulness": {
+        "passed": 92,
+        "total": 103,
+        "rate": 0.893
+      }
+    },
+    "by_tag": {
+      "brakes": {
+        "passed": 5,
+        "total": 8
+      },
+      "cooling": {
+        "passed": 4,
+        "total": 6
+      },
+      "dtc": {
+        "passed": 2,
+        "total": 5
+      },
+      "electrical": {
+        "passed": 3,
+        "total": 6
+      },
+      "engine": {
+        "passed": 6,
+        "total": 10
+      },
+      "exhaust": {
+        "passed": 3,
+        "total": 4
+      },
+      "follow_up": {
+        "passed": 2,
+        "total": 5
+      },
+      "hvac": {
+        "passed": 4,
+        "total": 4
+      },
+      "maintenance": {
+        "passed": 2,
+        "total": 8
+      },
+      "misspelled": {
+        "passed": 2,
+        "total": 2
+      },
+      "multi_symptom": {
+        "passed": 3,
+        "total": 4
+      },
+      "noise_smell": {
+        "passed": 4,
+        "total": 4
+      },
+      "out_of_domain": {
+        "passed": 3,
+        "total": 3
+      },
+      "paraphrase": {
+        "passed": 24,
+        "total": 41
+      },
+      "rental": {
+        "passed": 0,
+        "total": 4
+      },
+      "safety": {
+        "passed": 5,
+        "total": 11
+      },
+      "starting": {
+        "passed": 2,
+        "total": 4
+      },
+      "steering": {
+        "passed": 4,
+        "total": 6
+      },
+      "suspension": {
+        "passed": 2,
+        "total": 3
+      },
+      "taglish": {
+        "passed": 8,
+        "total": 17
+      },
+      "tires": {
+        "passed": 4,
+        "total": 6
+      },
+      "topic_change": {
+        "passed": 1,
+        "total": 1
+      },
+      "transmission": {
+        "passed": 2,
+        "total": 6
+      },
+      "unknown": {
+        "passed": 2,
+        "total": 2
+      },
+      "vague": {
+        "passed": 0,
+        "total": 1
+      },
+      "warning_light": {
+        "passed": 4,
+        "total": 9
+      },
+      "wheels": {
+        "passed": 1,
+        "total": 1
+      }
+    }
+  }
+}
