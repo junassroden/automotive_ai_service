@@ -13,8 +13,12 @@ free-text retrieval.
 
 Outputs (data/processed/knowledge_index/): chunks.jsonl, index.joblib
 (fitted vectorizers + BM25 statistics), semantic_vectors.npy,
-parts_lookup.json, manifest.json. The multilingual E5 model is used only to
-embed and retrieve reference passages; answer text remains grounded in them.
+parts_lookup.json, manifest.json, and curated_phrases.json with
+curated_phrase_vectors.npy (each curated topic's title, keywords, answer and
+symptoms embedded one by one, for meaning-level topic ranking). A rebuild
+re-embeds only chunks whose text changed since the previous build. The
+multilingual E5 model is used only to embed and retrieve reference passages;
+answer text remains grounded in them.
 """
 import hashlib
 import json
@@ -323,24 +327,7 @@ def _search_text(chunk):
     return " ".join([chunk["title"], chunk["text"], " ".join(chunk.get("keywords", []))]).casefold()
 
 
-def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
-    output = Path(output)
-    output.mkdir(parents=True, exist_ok=True)
-    dtc, rejected = obdex_chunks(raw_root)
-    sources = {
-        "obdex": dtc,
-        "automotive_knowledge": curated_chunks(knowledge_path),
-        "automotive_fault_flowcharts": flowchart_chunks(raw_root),
-        "system_guide": system_chunks(guide_path),
-        "vehicle_service_records": service_schedule_chunks(raw_root),
-    }
-    chunks = [chunk for items in sources.values() for chunk in items]
-    ids = [chunk["id"] for chunk in chunks]
-    if len(ids) != len(set(ids)):
-        duplicates = [key for key, count in Counter(ids).items() if count > 1]
-        raise ValueError(f"Duplicate chunk ids: {duplicates[:5]}")
-
-    texts = [_search_text(chunk) for chunk in chunks]
+def _embedding_model():
     model_path = Path(os.environ.get(
         "SEMANTIC_EMBEDDING_MODEL_PATH",
         str(SERVICE_ROOT / "trained_models" / "embeddings" / "multilingual-e5-small"),
@@ -366,13 +353,114 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
             "Install the pinned sentence-transformers and optimum-onnx dependencies to build the semantic index."
         ) from error
     model.max_seq_length = int(os.environ.get("SEMANTIC_EMBEDDING_MAX_SEQUENCE_LENGTH", "384"))
-    semantic_vectors = model.encode(
-        [f"passage: {text}" for text in texts],
+    return model
+
+
+def _previous_vectors(output, model):
+    """{(chunk id, text hash): vector} from the index being replaced, when it used the same embedding model and settings."""
+    try:
+        manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+        embeddings = manifest["semantic_embeddings"]
+        if (embeddings["model_id"], embeddings["model_revision"], embeddings["onnx_model_file"], embeddings["max_sequence_length"]) != (
+                EMBEDDING_MODEL_ID, EMBEDDING_MODEL_REVISION, EMBEDDING_ONNX_FILE, model.max_seq_length):
+            return {}
+        chunks = [json.loads(line) for line in (output / "chunks.jsonl").read_text(encoding="utf-8").splitlines() if line]
+        vectors = np.load(output / "semantic_vectors.npy")
+    except (OSError, ValueError, KeyError):
+        return {}
+    if vectors.shape[0] != len(chunks):
+        return {}
+    return {(chunk["id"], hashlib.sha256(_search_text(chunk).encode("utf-8")).hexdigest()): vectors[position]
+            for position, chunk in enumerate(chunks)}
+
+
+def _semantic_vectors(model, ids, texts, output):
+    """Passage vectors for every chunk. A chunk whose id and text are unchanged since the last build, with the same model,
+    keeps its vector; only new or edited chunks are embedded (about 9,500 code definitions rarely change)."""
+    previous = _previous_vectors(output, model)
+    keys = [(chunk_id, hashlib.sha256(text.encode("utf-8")).hexdigest()) for chunk_id, text in zip(ids, texts)]
+    missing = [position for position, key in enumerate(keys) if key not in previous]
+    encoded = model.encode(
+        [f"passage: {texts[position]}" for position in missing],
         batch_size=8,
         convert_to_numpy=True,
         normalize_embeddings=True,
-        show_progress_bar=True,
-    ).astype(np.float32)
+        show_progress_bar=len(missing) > 200,
+    ).astype(np.float32) if missing else np.empty((0, 0), dtype=np.float32)
+    fresh = dict(zip(missing, encoded))
+    return np.stack([fresh[position] if position in fresh else previous[key] for position, key in enumerate(keys)]).astype(np.float32)
+
+
+# Short descriptions of each curated topic, embedded one by one. A whole entry is one long vector whose meaning
+# is an average of everything it covers; a question like "my stopping makes a chirp from the wheels" is closer to
+# one of the entry's own short descriptions ("brake squeal", "high-pitched squeal from the wear indicator").
+PHRASE_FIELDS = ("title", "keywords", "answer", "symptoms")
+PHRASE_MIN_WORDS = 2
+
+
+def curated_phrases(knowledge_path):
+    payload = json.loads(Path(knowledge_path).read_text(encoding="utf-8"))
+    phrases = []
+    for document in payload["documents"]:
+        seen = set()
+        for field in PHRASE_FIELDS:
+            value = document.get(field)
+            for text in value if isinstance(value, list) else [value]:
+                if not isinstance(text, str) or text.startswith("Not applicable"):
+                    continue
+                text = " ".join(text.split())
+                if len(text.split()) < PHRASE_MIN_WORDS or text.casefold() in seen:
+                    continue
+                seen.add(text.casefold())
+                phrases.append({"document_id": document["id"], "field": field, "text": text})
+    return phrases
+
+
+def build_phrase_index(knowledge_path, output=INDEX_ROOT, model=None):
+    """Writes curated_phrases.json and curated_phrase_vectors.npy (rebuildable alone: it takes about a minute)."""
+    output = Path(output)
+    phrases = curated_phrases(knowledge_path)
+    model = model or _embedding_model()
+    # E5 compares two short user-style texts symmetrically, so both sides use the "query: " prefix.
+    vectors = model.encode([f"query: {item['text']}" for item in phrases], batch_size=32, convert_to_numpy=True,
+                           normalize_embeddings=True, show_progress_bar=False).astype(np.float32)
+    staged = {"curated_phrases.json": output / "curated_phrases.json.building",
+              "curated_phrase_vectors.npy": output / "curated_phrase_vectors.npy.building"}
+    staged["curated_phrases.json"].write_text(json.dumps(phrases, ensure_ascii=False) + "\n", encoding="utf-8")
+    with staged["curated_phrase_vectors.npy"].open("wb") as stream:
+        np.save(stream, vectors)
+    for name, path in staged.items():
+        for attempt in range(30):
+            try:
+                os.replace(path, output / name)
+                break
+            except PermissionError:
+                if attempt == 29:
+                    raise
+                time.sleep(1)
+    return {"phrases": len(phrases), "documents": len({item["document_id"] for item in phrases})}
+
+
+def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    dtc, rejected = obdex_chunks(raw_root)
+    sources = {
+        "obdex": dtc,
+        "automotive_knowledge": curated_chunks(knowledge_path),
+        "automotive_fault_flowcharts": flowchart_chunks(raw_root),
+        "system_guide": system_chunks(guide_path),
+        "vehicle_service_records": service_schedule_chunks(raw_root),
+    }
+    chunks = [chunk for items in sources.values() for chunk in items]
+    ids = [chunk["id"] for chunk in chunks]
+    if len(ids) != len(set(ids)):
+        duplicates = [key for key, count in Counter(ids).items() if count > 1]
+        raise ValueError(f"Duplicate chunk ids: {duplicates[:5]}")
+
+    texts = [_search_text(chunk) for chunk in chunks]
+    model = _embedding_model()
+    semantic_vectors = _semantic_vectors(model, ids, texts, output)
     counter = CountVectorizer(token_pattern=TOKEN_PATTERN, stop_words="english")
     term_frequency = counter.fit_transform(texts).tocsc().astype(np.float32)
     document_length = np.asarray(term_frequency.sum(axis=1)).ravel()
@@ -443,4 +531,6 @@ def build_index(raw_root, knowledge_path, guide_path, output=INDEX_ROOT):
                         f"{output / name} stayed locked; stop the AI service and tests, then move the remaining "
                         f"*.building files over the old ones (they are from this build).") from None
                 time.sleep(1)
+    manifest["curated_phrases"] = build_phrase_index(knowledge_path, output, model)
+    (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
