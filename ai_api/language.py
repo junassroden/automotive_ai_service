@@ -64,6 +64,10 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:one |a )?(?:whole|full|entire) week\b", "7 days"),
     (r"\b(?:for |sa )?(?:a|one|1|isang) (?:month|buwan)\b(?! rate)", " for 30 days"),
     (r"\b(?:runs?|running|run) (?:too |very |so )?hot\b", "overheating"),
+    # Turning the key, or "pinapaandar", is starting the car, not turning the wheels ("clicking when I turn the key"
+    # is the starter or battery, not a CV joint clicking in a turn).
+    (r"\bturn(?:ing|s|ed)?\s+(?:the|my|on the)\s+(?:key|ignition)\b", "start the car"),
+    (r"\b(?:pinapaandar|pinaandar|paandarin|pinapa-?start|ini-?start|inistart|sinisimulan)\b", "start"),
     (r"\bclick\w*\b(?=.*\b(?:turn the key|start|ignition)\b)", "won't start, just clicking,"),
     (r"\b(?:won'?t|wont) move\b", "broke down"),
     (r"\b(?:kukunin|kunin|kukuha|makukuha)\b", "pick up"),
@@ -86,6 +90,36 @@ _RULES = [(re.compile(pattern, re.IGNORECASE), replacement) for pattern, replace
     (r"\b(?:magrenta|umupa|arkila|arkilahin|renta|rentahan)\b", "rent"),
     (r"\b(?:makita|makikita|tingnan|titingnan|pakita|ipakita|patingin)\b", "see"),
     # Car problems in Tagalog / Taglish
+    # Emergencies first, so they are recognised whatever else the message says.
+    (r"\b(?:may\s+)?(?:apoy|nagliliyab|nag-?aapoy|lumiliyab)\b", "fire"),
+    (r"\b(?:nasusunog|nasunog)\b(?!\s+(?:na\s+)?(?:wire|goma|amoy))", "on fire"),
+    (r"\bwala(?:ng|\s+na(?:ng)?)\s+preno\b", "brakes not working"),
+    (r"\b(?:ayaw|hindi)\s+(?:na\s+)?(?:kumagat|gumana)\s+(?:ang\s+|yung\s+)?preno\b", "brakes not working"),
+    (r"\b(?:lumulubog|lumubog|lubog)\s+(?:ang\s+|yung\s+)?(?:pedal\s+(?:ng\s+)?)?(?:preno|brake(?:s|\s+pedal)?)\b", "brake pedal sinks to the floor"),
+    (r"\b(?:preno|brakes?|brake pedal)\s+(?:ay\s+)?(?:lumulubog|lumubog|lubog)\b", "brake pedal sinks to the floor"),
+    (r"\bmatigas\s+(?:ang\s+|yung\s+)?(?:preno|brake(?:s|\s+pedal)?)\b", "brake pedal is hard to press"),
+    (r"\b(?:sumabog|pumutok)\s+(?:ang\s+|yung\s+)?gulong\b", "tire blowout"),
+    (r"\bgulong\s+(?:ay\s+)?(?:sumabog|pumutok)\b", "tire blowout"),
+    (r"\b(?:na-?flatan|naflatan|na-?flat|naflat|nabutasan(?:\s+ng\s+gulong)?)\b", "got a flat tire"),
+    (r"\b(?:ayaw|hindi)\s+(?:na\s+)?(?:lumiko|pumihit|umikot)\b", "won't turn"),
+    (r"\b(?:hirap|mahirap)\s+(?:i-?pasok|ipasok|ilipat|i-?shift)\s+(?:ang\s+|yung\s+)?(?:kambyo|gear)\b", "hard to shift gears"),
+    (r"\bmahina\s+(?:ang\s+|yung\s+)?lamig\b", "not cold"),
+    (r"\b(?:nagkamali|mali)\s+(?:ako\s+)?(?:ng|nang|ang)?\s*(?:gasolina|gasoline|krudo|diesel|fuel|nilagay(?:\s+na\s+gas)?)\b", "put the wrong fuel"),
+    (r"\b(?:lumalabas|lumabas)\b", "coming out"),
+    (r"\b(?:kumakatok|katok|kumatok|kalampag ng makina)\b", "knocking"),
+    (r"\b(?:lobat|low-?bat|lowbat|na-?lowbat|naubusan ng karga)\b", "flat"),
+    # "Press the gas", "step on it", "inaapakan ko": accelerating.
+    (r"\b(?:press(?:ing)?|step(?:ping)? on|push(?:ing)?|floor(?:ing)?)\s+(?:the\s+)?(?:gas|accelerator|gas pedal)\b", "accelerate"),
+    (r"\b(?:inaapakan|tinatapakan|apak)\s+(?:ko\s+)?(?:ang\s+|yung\s+)?(?:gas|silinyador|accelerator)\b", "accelerate"),
+    (r"\b(?:sa\s+)?umaga\b", "in the morning"),
+    (r"\bgoma\b", "rubber"),
+    (r"\b(?:dumaan|lumusong)\s+(?:ako\s+)?sa\b", "drove through"),
+    (r"\b(?:baha|bumaha|binaha|nabaha)\b", "flood water"),
+    (r"\bhabang\b", "while"),
+    (r"\b(?:nagmamaneho|nagda-?drive|nagdadrive|tumatakbo|umaandar)\b", "driving"),
+    (r"\b(?:namatay|namatayan|nag-?shut ?off)\b", "stalled"),
+    (r"\b(?:nag-?iingay|umiingit|nag-?iingit)\b", "noise"),
+    (r"\bputi\b", "white"),
     (r"\b(?:kapag|pag|kung)\s+(?:nag-?preno|nagpepreno|nagbe-?brake|nagbrake)\b", "when braking"),
     (r"\b(?:nag-?preno|nagpepreno)\b", "braking"),
     # "Car wont start", "does not start", "didn't crank": the no-start wording the knowledge base names.
@@ -188,6 +222,7 @@ vehicle vehicles sedan seater seaters seats seating capacity passengers people p
 navigation aircon conditioning color colour mileage odometer engine brakes braking brake squeaking squealing grinding
 overheating overheat temperature coolant battery alternator exhaust smoke tires tire tyres puncture steering vibration
 vibrates vibrating policy policies
+smell smells smelly burning shaking shakes clicking knocking rattling whining humming stalling stalls clutch radiator
 leaking leak warning flashing blinking misfire starter maintenance service inspection revenue utilization fleet
 monday tuesday wednesday thursday friday saturday sunday january february march april june july august september october
 november december tomorrow weekend
