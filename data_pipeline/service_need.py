@@ -153,6 +153,91 @@ def load_service_records(raw_root):
     return frame.reset_index(drop=True), usage, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+# Real fleet visits exported by the Back-End (GET /api/maintenance/service-need/dataset,
+# saved as-is). Completed visits with odometer and item list; SAMPLE-/DEMO- cars excluded.
+FLEET_FILE = "fleet_service_visits.json"
+FLEET_SCHEMA_VERSION = 1
+
+# Pre-registered on 2026-11-17, before any real fleet visit was recorded. v1-v3 were
+# all judged on the same Honda Amaze hold-out, so that hold-out can no longer give
+# an unbiased verdict; the next model is accepted or rejected on fleet vehicles it
+# has never seen, under these rules, which must not be changed after the data is seen.
+FLEET_PLAN = {
+    "registered_on": "2026-11-17",
+    "min_visits": 300,
+    "min_vehicles": 20,
+    "min_vehicle_models": 3,
+    "split": "GroupShuffleSplit over vehicle_id, 25% of vehicles held out, seed 42; no vehicle on both sides",
+    "tuning": "hyperparameters, calibration and thresholds from inner leave-one-vehicle-group-out folds on training vehicles only",
+    "acceptance": "same as v3: macro balanced accuracy and macro F1 >= 0.60 and >= the milestone-lookup baseline; "
+                  "macro Brier below the prevalence baseline and ECE <= 0.15",
+    "min_test_positives_per_target": 5,
+    "undefined_targets": "a target with fewer test positives (or negatives) than min_test_positives_per_target is "
+                         "reported but excluded from every macro metric, F1 and calibration alike",
+}
+
+
+def load_fleet_visits(raw_root):
+    """Real fleet visits from the Back-End export, in the same frame shape as load_service_records."""
+    path = Path(raw_root) / FLEET_FILE
+    document = json.loads(path.read_text(encoding="utf-8"))
+    payload = document.get("data", document)  # the Back-End wraps responses in {"data": ...}
+    if payload.get("schema_version") != FLEET_SCHEMA_VERSION:
+        raise ValueError(f"{FLEET_FILE} has schema_version {payload.get('schema_version')!r}; expected {FLEET_SCHEMA_VERSION}.")
+    if set(payload.get("service_items") or []) != set(TARGETS):
+        raise ValueError(f"{FLEET_FILE} service items do not match the model targets; keep MaintenanceModel::SERVICE_ITEMS and TARGETS identical.")
+
+    raw = pd.DataFrame(payload.get("visits") or [])
+    usage = {"file": FLEET_FILE, "rows_read": int(len(raw)), "rejected": {}}
+    if raw.empty:
+        usage.update(rows_used=0, vehicles=0, vehicle_models=0)
+        return raw, usage, hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def reject(frame, mask, reason):
+        count = int(mask.sum())
+        if count:
+            usage["rejected"][reason] = usage["rejected"].get(reason, 0) + count
+        return frame.loc[~mask]
+
+    frame = raw.copy()
+    frame["vehicle_type"] = frame["category"].astype(str).str.strip().str.casefold().map(BODY_ALIASES)
+    frame["fuel_type"] = frame["fuel_type"].astype(str).str.strip().str.casefold().map(FUEL_ALIASES)
+    frame["mileage"] = pd.to_numeric(frame["odometer_km"], errors="coerce")
+    frame = reject(frame, frame["vehicle_type"].isna(), "body type outside the model domain")
+    frame = reject(frame, frame["fuel_type"].isna(), "fuel type outside the model domain")
+    frame = reject(frame, frame["mileage"].isna() | (frame["mileage"] <= 0) | (frame["mileage"] > 2_000_000),
+                   "missing or implausible odometer reading")
+    frame = reject(frame, ~frame[list(TARGETS)].isin([0, 1]).all(axis=1), "service flag not 0/1")
+    frame[list(TARGETS)] = frame[list(TARGETS)].astype(int)
+    frame["vehicle_model"] = (frame["make"].astype(str) + " " + frame["model"].astype(str)).str.strip().str.casefold()
+    frame["group"] = "fleet|" + frame["vehicle_id"].astype(str)
+    usage["rows_used"] = int(len(frame))
+    usage["vehicles"] = int(frame["vehicle_id"].nunique())
+    usage["vehicle_models"] = int(frame["vehicle_model"].nunique())
+    return frame.reset_index(drop=True), usage, hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def fleet_readiness(raw_root):
+    """Whether enough real fleet visits exist to train and test under FLEET_PLAN."""
+    try:
+        frame, usage, _ = load_fleet_visits(raw_root)
+    except FileNotFoundError:
+        return {"status": "no_export", "plan": FLEET_PLAN,
+                "next_step": f"Save GET /api/maintenance/service-need/dataset as data/raw/{FLEET_FILE}."}
+    have = {"visits": usage["rows_used"], "vehicles": usage.get("vehicles", 0), "vehicle_models": usage.get("vehicle_models", 0)}
+    need = {key: FLEET_PLAN[f"min_{key}"] for key in have}
+    missing = {key: need[key] - have[key] for key in have if have[key] < need[key]}
+    return {
+        "status": "ready" if not missing else "collecting",
+        "have": have,
+        "need": need,
+        "still_needed": missing,
+        "rejected": usage["rejected"],
+        "item_rates": {t: round(float(frame[t].mean()), 4) for t in TARGETS} if len(frame) else {},
+        "plan": FLEET_PLAN,
+    }
+
+
 def _preprocessor(scale, feature_set="full"):
     numeric = Pipeline([("scale", StandardScaler())]) if scale else "passthrough"
     if feature_set == "milestone":
