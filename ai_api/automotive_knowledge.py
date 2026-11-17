@@ -31,6 +31,14 @@ NAMED_TOPIC_RATIO = 0.7
 NAMED_TOPIC_COVERAGE = 0.75
 NAMED_TOPIC_GAIN = 0.25
 SEMANTIC_ONLY_MIN_SIMILARITY = 0.84
+# Phrase-to-question similarity runs about this much higher than whole-entry similarity for the same right topic
+# (measured on development questions on 2026-11-17).
+PHRASE_SIMILARITY_SHIFT = 0.05
+# How much closer in meaning another topic must be before it replaces a topic that only matched by shared words.
+SEMANTIC_OVERRIDE_MARGIN = 0.03
+# A topic answers on meaning alone only when one of its own short descriptions is at least this close too (real
+# paraphrases scored 0.90 to 0.95 on development questions; fleet questions that only resemble a topic, 0.83 to 0.87).
+SEMANTIC_ONLY_MIN_PHRASE_SIMILARITY = 0.88
 SEMANTIC_SINGLE_TERM_MIN_SIMILARITY = 0.84
 # Words that ask about a topic without naming one.
 QUESTION_ONLY_TERMS = {"cause", "causes", "caused", "causing", "reason", "reasons", "happen", "happens", "happening", "mean", "means",
@@ -217,17 +225,28 @@ def rank_knowledge(query):
         character_vectors,
     ) = _load_index()
     query = query.strip()
-    from .rag import KnowledgeIndexUnavailable, retrieve
+    from .rag import KnowledgeIndexUnavailable, phrase_similarity, retrieve
     try:
         semantic_results = retrieve(query, top_k=50, source_types={"curated_reference"})
+        phrases = phrase_similarity(query)
     except KnowledgeIndexUnavailable as error:
         logger.warning("semantic retrieval unavailable; using curated lexical matching: %s", error)
-        semantic_results = []
+        semantic_results, phrases = [], {}
     semantic_by_id = {
         result["id"][3:]: result["semantic_similarity"]
         for result in semantic_results
         if result["semantic_similarity"] is not None
     }
+    # Whole-entry similarity alone, for the checks that decide whether a topic may answer at all with no words in
+    # common ("which car has the lowest mileage" must not reach an engine topic by meaning alone).
+    entry_by_id = dict(semantic_by_id)
+    # What the question means is compared with each topic's own short descriptions as well as with the whole entry:
+    # the closer of the two counts for ranking. Short texts compare higher, so phrase similarity is shifted onto the
+    # whole-entry scale.
+    for document_id, (similarity, _) in phrases.items():
+        shifted = round(similarity - PHRASE_SIMILARITY_SHIFT, 4)
+        if shifted > semantic_by_id.get(document_id, 0.0):
+            semantic_by_id[document_id] = shifted
     query_terms = [
         term for term in _normalize(query).split()
         if term not in QUERY_STOP_WORDS
@@ -316,6 +335,8 @@ def rank_knowledge(query):
             "text": passage["text"],
             "score": round(score, 4),
             "semantic_similarity": round(semantic_score, 4),
+            "entry_similarity": round(entry_by_id.get(document["id"], 0.0), 4),
+            "phrase_similarity": round(phrases.get(document["id"], (0.0,))[0], 4),
             "phrase_length": phrase_length,
             "topic_coverage": topic_coverage(document_index),
         })
@@ -406,19 +427,50 @@ def retrieve_knowledge(
         }
         return matching
 
+    def meaning_supports(item, minimum):
+        # Answering on meaning with few or no words in common needs two signals: the entry as a whole and one of its
+        # own short descriptions are both close. A long, general entry can be near many questions on its own
+        # ("which car has the lowest mileage" vs. an engine-power entry about passengers and load).
+        return item["entry_similarity"] >= minimum and item["phrase_similarity"] >= SEMANTIC_ONLY_MIN_PHRASE_SIMILARITY
+
+    def may_answer(item):
+        """Whether this topic has enough in common with the question to answer it at all."""
+        matched = matching_terms(item["document"])
+        if not matched and not meaning_supports(item, SEMANTIC_ONLY_MIN_SIMILARITY):
+            return False
+        if item["phrase_length"] == 0:
+            # Without a keyword phrase, one stray word in common ("who won the NBA finals" / "won't start")
+            # is not a topic match, and at least one matched word must be specific to cars: generic words
+            # ("not working", "won't go", "smells like", "no symptoms", "open safety recall") don't identify a topic.
+            specific_matches = matched - SYMPTOM_FILLER - COVERAGE_FILLER - GENERIC_ENGLISH
+            if not specific_matches and not meaning_supports(item, SEMANTIC_ONLY_MIN_SIMILARITY):
+                return False
+            if len(specific_matches) == 1 and not meaning_supports(item, SEMANTIC_SINGLE_TERM_MIN_SIMILARITY):
+                return False
+        return True
+
+    # Verification: the words a keyword shares with the question can agree by accident ("steering became HARD TO turn
+    # after STARTing" holds every word of "hard to start"). When another topic is clearly closer in meaning to the
+    # whole question and the question also names something specific to it, the meaning wins.
+    # Without a keyword phrase on top, nothing but shared single words put it there, so the closest meaning wins outright;
+    # a real keyword phrase is only overruled by a clear margin.
+    closest = max(ranked, key=lambda item: (item["semantic_similarity"], item["score"]))
+    margin = SEMANTIC_OVERRIDE_MARGIN if ranked[0]["phrase_length"] else 0.0
+    if (closest["document"]["id"] != ranked[0]["document"]["id"]
+            and closest["semantic_similarity"] > ranked[0]["semantic_similarity"] + margin
+            # ... and it must name at least as much of what was asked: "my car is overheating" says nothing that makes a
+            # transmission-temperature topic a better fit than the engine-overheating one it ties with.
+            and closest["topic_coverage"] >= ranked[0]["topic_coverage"]
+            and (closest["phrase_length"] or matching_terms(closest["document"]) - SYMPTOM_FILLER - COVERAGE_FILLER - GENERIC_ENGLISH)
+            # ... and it must be able to answer: replacing a keyword match ("red thermometer light") with a topic that is
+            # closer in meaning but shares only "red" with the question would end in no answer at all.
+            and may_answer(closest)):
+        best_passage = max((item for item in ranked if item["document"]["id"] == closest["document"]["id"]), key=lambda item: item["score"])
+        ranked = [best_passage] + [item for item in ranked if item is not best_passage]
+
     primary = ranked[0]["document"]
-    if not matching_terms(primary) and ranked[0]["semantic_similarity"] < SEMANTIC_ONLY_MIN_SIMILARITY:
+    if not may_answer(ranked[0]):
         return None
-    if ranked[0]["phrase_length"] == 0:
-        # Without a keyword phrase, one stray word in common ("who won the NBA finals" / "won't start")
-        # is not a topic match: at least two specific words, or half of them, must match.
-        # Without a keyword phrase, at least one matched word must be specific to cars: generic words
-        # ("not working", "won't go", "smells like", "no symptoms", "open safety recall") don't identify a topic.
-        specific_matches = matching_terms(primary) - SYMPTOM_FILLER - COVERAGE_FILLER - GENERIC_ENGLISH
-        if not specific_matches and ranked[0]["semantic_similarity"] < SEMANTIC_ONLY_MIN_SIMILARITY:
-            return None
-        if len(specific_matches) == 1 and ranked[0]["semantic_similarity"] < SEMANTIC_SINGLE_TERM_MIN_SIMILARITY:
-            return None
     top_score = ranked[0]["score"]
     score_floor = max(minimum_score, top_score * RELATED_PASSAGE_SCORE_RATIO)
     selected = []
@@ -812,6 +864,13 @@ def knowledge_statements(document):
                 seen.add(text.casefold())
                 statements.append({"key": "s:" + hashlib.md5(text.encode("utf-8")).hexdigest()[:10], "kind": kind,
                                    "field": field, "text": text, "terms": frozenset(_content_terms(text))})
+    causes = [cause.strip().rstrip(".") for cause in document.get("key_causes") or [] if isinstance(cause, str) and cause.strip()][:4]
+    if causes:
+        # The entry's short list of likely causes, read as one statement ("Common causes include worn spark plugs, ...").
+        listed = causes[0] if len(causes) == 1 else ", ".join(causes[:-1]) + " or " + causes[-1]
+        text = _sentence(f"Common causes include {listed}")
+        statements.append({"key": "s:" + hashlib.md5(text.encode("utf-8")).hexdigest()[:10], "kind": "cause",
+                           "field": "key_causes", "text": text, "terms": frozenset(_content_terms(text))})
     return statements
 
 
@@ -989,11 +1048,25 @@ def compose_chat_answer(document, query="", shown=(), context="", prior_kind=Non
     ) if exclude else _select(ranked)
     if not chosen:
         return "", []
+    causes = [statement for statement in statements if statement["field"] == "key_causes" and statement["key"] not in exclude]
+    if causes and kind in {"problem", "cause"} and not any(statement["kind"] == "cause" for statement in chosen):
+        # Describing a problem or asking why gets its likely causes, not only what the symptom is: the cause list
+        # takes the place of the weakest statement when the answer is full.
+        if len(chosen) >= (FOLLOW_UP_STATEMENTS if exclude else MAX_STATEMENTS):
+            chosen = chosen[:-1]
+        chosen = chosen + causes[:1]
     stop = [statement for statement in statements if statement["field"] == "stop" and statement["key"] not in exclude]
     if stop and kind in {"problem", "action", "cause"} and not any(statement["field"] == "stop" for statement in chosen):
         # A problem that can be dangerous always carries its stop instruction, once per conversation, in place of
         # any milder safety note.
         chosen = [statement for statement in chosen if statement["kind"] != "safety"] + stop[:1]
+    # The added cause list and stop instruction count toward the length too: the weakest other statements go first.
+    kept = {"key_causes", "stop"}
+    while len(chosen) > 2 and sum(len(statement["text"].split()) for statement in chosen) > MAX_ANSWER_WORDS:
+        droppable = [statement for statement in chosen[1:] if statement["field"] not in kept]
+        if not droppable:
+            break
+        chosen = [statement for statement in chosen if statement is not droppable[-1]]
     # A direct question gets its direct answer first: the verdict on driving, the cost, what the part does, the interval.
     lead = max(KIND_WEIGHTS[kind], key=KIND_WEIGHTS[kind].get) if kind in {"drive", "cost", "function", "interval"} else None
     return _read(chosen, lead, safety_first=bool(EMERGENCY.search(query))), [statement["key"] for statement in chosen]
